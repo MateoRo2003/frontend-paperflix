@@ -26,7 +26,10 @@ import {
   ExternalLink, ThumbsUp, ThumbsDown, Bell,
   Image as ImageIcon, Upload, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Monitor,
   Sparkles, Loader2, FileSpreadsheet, AlertTriangle, CheckCircle2,
+  Calculator, FlaskConical, Globe, Dumbbell, Palette, Music,
+  Microscope, Compass, Atom, Map, Film, Code, Languages, Award, Heart,
 } from 'lucide-react';
+import { SubjectIcon, SUBJECT_ICONS } from '@/components/SubjectIcon';
 
 // ─── Local types ──────────────────────────────────────────────────────────────
 
@@ -78,6 +81,7 @@ function KpiCard({ icon: Icon, label, value, sub, color }: {
 }
 
 const SUBJECT_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4', '#ec4899', '#84cc16'];
+
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
@@ -1576,7 +1580,7 @@ export default function AdminPage() {
                     className="w-10 h-10 rounded-xl flex items-center justify-center font-extrabold text-lg shrink-0"
                     style={{ background: `${s.color || SUBJECT_COLORS[i % SUBJECT_COLORS.length]}22`, color: s.color || SUBJECT_COLORS[i % SUBJECT_COLORS.length] }}
                   >
-                    {s.name.charAt(0)}
+                    <SubjectIcon icon={s.icon} color={s.color || SUBJECT_COLORS[i % SUBJECT_COLORS.length]} size={20} fallback={s.name.charAt(0)} />
                   </div>
 
                   <div className="flex-1 min-w-0">
@@ -1901,7 +1905,12 @@ export default function AdminPage() {
                             </button>
                             <button onClick={async () => {
                               if (!confirm(`¿Eliminar "${c.name}"?`)) return;
-                              await deleteCourse(c.id); loadCatalogCourses(); showMsg('Eliminado');
+                              try {
+                                await deleteCourse(c.id); loadCatalogCourses(); showMsg('Eliminado');
+                              } catch (e: any) {
+                                const msg = e?.response?.data?.message || e?.message || 'Error al eliminar';
+                                showMsg(msg, 'err');
+                              }
                             }} className="icon-btn flex items-center justify-center rounded-lg hover:bg-red-500/20 text-red-400 shrink-0"
                               style={{ width: 30, height: 30 }}>
                               <Trash2 size={12} />
@@ -3459,6 +3468,43 @@ export default function AdminPage() {
                 </div>
               </div>
 
+              {/* Icono */}
+              <div>
+                <label className="text-xs mb-1.5 block font-medium" style={{ color: 'var(--muted)' }}>Icono</label>
+                <div className="grid grid-cols-10 gap-1.5 mb-2">
+                  {SUBJECT_ICONS.map(({ name, label }) => (
+                    <button
+                      key={name}
+                      title={label}
+                      onClick={() => setEditingSubject(prev => ({ ...prev!, icon: prev?.icon === name ? '' : name }))}
+                      className="rounded-lg flex items-center justify-center transition-colors"
+                      style={{
+                        width: 36, height: 36,
+                        background: editingSubject.icon === name
+                          ? `${editingSubject.color || '#7c3aed'}33`
+                          : 'var(--bg)',
+                        border: `1px solid ${editingSubject.icon === name ? (editingSubject.color || '#7c3aed') : 'var(--border)'}`,
+                      }}
+                    >
+                      <SubjectIcon
+                        icon={name}
+                        color={editingSubject.icon === name ? (editingSubject.color || '#c4b5fd') : 'var(--muted)'}
+                        size={16}
+                      />
+                    </button>
+                  ))}
+                </div>
+                <label className="text-[11px] mb-1 block" style={{ color: 'var(--muted)' }}>O pega un SVG personalizado</label>
+                <textarea
+                  value={editingSubject.icon?.startsWith('<') ? editingSubject.icon : ''}
+                  onChange={e => setEditingSubject(prev => ({ ...prev!, icon: e.target.value }))}
+                  placeholder='<svg xmlns="http://www.w3.org/2000/svg" ...>...</svg>'
+                  rows={2}
+                  className="w-full px-3 py-2 rounded-xl text-xs outline-none font-mono resize-none"
+                  style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
+                />
+              </div>
+
               {editingSubject.id && (
                 <div>
                   <label className="text-xs mb-1.5 block font-medium" style={{ color: 'var(--muted)' }}>Estado</label>
@@ -3635,7 +3681,7 @@ export default function AdminPage() {
                       className="w-full px-3 rounded-xl text-sm outline-none disabled:opacity-40"
                       style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', height: 42 }}>
                       <option value="">— Seleccionar —</option>
-                      {bulkUnits.map(u => (
+                      {bulkUnits.filter(u => !u.course || u.course === bulkCourse).map(u => (
                         <option key={u.id} value={u.id} style={{ color: '#1e0d38', background: '#e9e0f7' }}>{u.name}</option>
                       ))}
                     </select>

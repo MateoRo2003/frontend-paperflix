@@ -8,6 +8,7 @@ import ResourceModal from '@/components/ResourceModal';
 import SearchBar from '@/components/SearchBar';
 import { GridSkeleton } from '@/components/Skeleton';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
+import { SubjectIcon } from '@/components/SubjectIcon';
 import Link from 'next/link';
 import { useDataSync } from '@/hooks/useDataSync';
 
@@ -280,7 +281,7 @@ export default function HomePage() {
                         className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-sm font-bold shrink-0"
                         style={{ background: `${subject.color}22`, color: subject.color }}
                       >
-                        {subject.name.charAt(0)}
+                        <SubjectIcon icon={subject.icon} color={subject.color} size={18} fallback={subject.name.charAt(0)} />
                       </span>
                       <h2 className="text-xl font-bold text-white">{subject.name}</h2>
                     </div>
