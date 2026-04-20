@@ -18,7 +18,7 @@ const CSP = [
   // All API calls go through /api/* (Next.js rewrite) → same origin
   "connect-src 'self' https://*.supabase.co",
   // Never embed external content in iframes — key for institutional filters
-  "frame-src 'none' https://vercel.live",
+  "frame-src https://vercel.live",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
