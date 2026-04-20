@@ -45,10 +45,14 @@ const nextConfig = {
   },
 
   async rewrites() {
-    if (process.env.NODE_ENV !== 'production') {
-      return [{ source: '/uploads/:path*', destination: 'http://localhost:3001/uploads/:path*' }];
-    }
-    return [];
+    return [
+      {
+        source: '/uploads/:path*',
+        destination: process.env.NODE_ENV !== 'production'
+          ? 'http://localhost:3001/uploads/:path*'
+          : 'https://usnbntftlguegjzadsgv.supabase.co/storage/v1/object/public/uploads/:path*'
+      }
+    ];
   },
 
   images: {

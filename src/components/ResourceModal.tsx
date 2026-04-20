@@ -12,6 +12,14 @@ function isProxiable(url: string): boolean {
   catch { return false; }
 }
 
+const IMG_BASE = process.env.NEXT_PUBLIC_IMG_BASE || '';
+
+function resolveImg(url: string | null | undefined): string | null {
+  if (!url) return null;
+  if (url.startsWith('http')) return url;
+  return IMG_BASE + url;
+}
+
 export default function ResourceModal({ resource, onClose }: { resource: Resource; onClose: () => void }) {
   const { showViews } = useAppSettings();
 
@@ -20,8 +28,9 @@ export default function ResourceModal({ resource, onClose }: { resource: Resourc
     return () => { document.body.style.overflow = ''; };
   }, []);
 
-  const hasImage = !!resource.imageUrl;
-  const useNextImg = hasImage && isProxiable(resource.imageUrl!);
+  const imgSrc = resolveImg(resource.imageUrl);
+  const hasImage = !!imgSrc;
+  const useNextImg = hasImage && isProxiable(imgSrc!);
 
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
@@ -59,7 +68,7 @@ export default function ResourceModal({ resource, onClose }: { resource: Resourc
             <div className="relative w-full" style={{ paddingBottom: '42%', background: 'var(--sidebar)' }}>
               {useNextImg ? (
                 <Image
-                  src={resource.imageUrl!}
+                  src={imgSrc!}
                   alt={resource.title}
                   fill
                   sizes="(max-width: 768px) 100vw, 768px"
@@ -68,7 +77,7 @@ export default function ResourceModal({ resource, onClose }: { resource: Resourc
                 />
               ) : (
                 <img
-                  src={resource.imageUrl!}
+                  src={imgSrc!}
                   alt={resource.title}
                   className="absolute inset-0 w-full h-full object-cover"
                 />
