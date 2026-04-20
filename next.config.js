@@ -16,9 +16,9 @@ const CSP = [
   // Fonts served locally via next/font — no external font CDN needed
   "font-src 'self'",
   // All API calls go through /api/* (Next.js rewrite) → same origin
-  "connect-src 'self'",
+  "connect-src 'self' https://*.supabase.co",
   // Never embed external content in iframes — key for institutional filters
-  "frame-src 'none'",
+  "frame-src 'none' https://vercel.live",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
