@@ -10,10 +10,9 @@ const isDev = process.env.NODE_ENV !== 'production';
 const CSP = [
   "default-src 'self'",
   // Next.js requires unsafe-inline for styles; unsafe-eval only in dev (HMR)
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
+  `script-src 'self' 'unsafe-inline' https://vercel.live${isDev ? " 'unsafe-eval'" : ''}`,
   "style-src 'self' 'unsafe-inline'",
-  // Images: 'self' covers /_next/image (proxied); data/blob for inline/canvas
-  "img-src 'self' data: blob:",
+  "img-src 'self' data: blob: https:",
   // Fonts served locally via next/font — no external font CDN needed
   "font-src 'self'",
   // All API calls go through /api/* (Next.js rewrite) → same origin
