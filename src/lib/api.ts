@@ -16,6 +16,20 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Handle 401 Unauthorized globally
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401 && typeof window !== 'undefined') {
+      // Clear invalid credentials and force re-login
+      localStorage.removeItem('pf_token');
+      localStorage.removeItem('pf_admin');
+      window.location.reload();
+    }
+    return Promise.reject(error);
+  }
+);
+
 // SWR fetcher
 export const fetcher = (url: string) => api.get(url).then((r) => r.data);
 
