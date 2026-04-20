@@ -77,7 +77,7 @@ function KpiCard({ icon: Icon, label, value, sub, color }: {
   );
 }
 
-const SUBJECT_COLORS = ['#3b82f6','#10b981','#f59e0b','#8b5cf6','#ef4444','#06b6d4','#ec4899','#84cc16'];
+const SUBJECT_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4', '#ec4899', '#84cc16'];
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
@@ -85,48 +85,48 @@ export default function AdminPage() {
   const { admin, signIn, signOut } = useAuth();
 
   // Login
-  const [email, setEmail]       = useState('admin@paperflix.cl');
+  const [email, setEmail] = useState('admin@admin.com');
   const [password, setPassword] = useState('');
   const [loginErr, setLoginErr] = useState('');
 
   // Resources tab
-  const [resources, setResources]         = useState<Resource[]>([]);
-  const [total, setTotal]                 = useState(0);
-  const [page, setPage]                   = useState(1);
-  const [search, setSearch]               = useState('');
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
   const [filterSubject, setFilterSubject] = useState('');
-  const [filterCourse, setFilterCourse]   = useState('');
+  const [filterCourse, setFilterCourse] = useState('');
   const [filterActType, setFilterActType] = useState('');
-  const [filterUnit, setFilterUnit]       = useState('');
-  const [filterUnits, setFilterUnits]     = useState<Unit[]>([]);
-  const [showAdvanced, setShowAdvanced]   = useState(false);
-  const [loading, setLoading]             = useState(false);
-  const [editing, setEditing]             = useState<Partial<Resource> | null>(null);
-  const [saving, setSaving]               = useState(false);
-  const [scraping, setScraping]           = useState(false);
-  const [scrapeFields, setScrapeFields]   = useState<Set<string>>(new Set());
+  const [filterUnit, setFilterUnit] = useState('');
+  const [filterUnits, setFilterUnits] = useState<Unit[]>([]);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [editing, setEditing] = useState<Partial<Resource> | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [scraping, setScraping] = useState(false);
+  const [scrapeFields, setScrapeFields] = useState<Set<string>>(new Set());
 
   // Subjects tab
   const [editingSubject, setEditingSubject] = useState<Partial<Subject> | null>(null);
-  const [savingSubject, setSavingSubject]   = useState(false);
+  const [savingSubject, setSavingSubject] = useState(false);
 
   // Shared data
   const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [stats, setStats]       = useState<SubjectStat[]>([]);
+  const [stats, setStats] = useState<SubjectStat[]>([]);
   const [totalResources, setTotalResources] = useState(0);
-  const [totalViews, setTotalViews]         = useState(0);
+  const [totalViews, setTotalViews] = useState(0);
 
   // Extended stats
-  const [topResources, setTopResources]         = useState<any[]>([]);
-  const [statsByCourse, setStatsByCourse]       = useState<any[]>([]);
-  const [statsByActType, setStatsByActType]     = useState<any[]>([]);
-  const [loadingStats, setLoadingStats]         = useState(false);
+  const [topResources, setTopResources] = useState<any[]>([]);
+  const [statsByCourse, setStatsByCourse] = useState<any[]>([]);
+  const [statsByActType, setStatsByActType] = useState<any[]>([]);
+  const [loadingStats, setLoadingStats] = useState(false);
 
   // Stats date range filter
   const [statsFrom, setStatsFrom] = useState('');
-  const [statsTo, setStatsTo]     = useState('');
+  const [statsTo, setStatsTo] = useState('');
 
-  const [tab, setTab]   = useState<'resources' | 'stats' | 'subjects' | 'suggestions' | 'carousel' | 'config' | 'catalogs'>('resources');
+  const [tab, setTab] = useState<'resources' | 'stats' | 'subjects' | 'suggestions' | 'carousel' | 'config' | 'catalogs'>('resources');
 
   // Catalog tab
   const [catalogTab, setCatalogTab] = useState<'courses' | 'activityTypes' | 'units'>('courses');
@@ -134,21 +134,21 @@ export default function AdminPage() {
   const [catalogActivityTypes, setCatalogActivityTypes] = useState<ActivityTypeItem[]>([]);
   const [catalogUnits, setCatalogUnits] = useState<Unit[]>([]);
   // Derived from resources (real existing data)
-  const [derivedCourses, setDerivedCourses]         = useState<string[]>([]);
-  const [derivedActTypes, setDerivedActTypes]       = useState<string[]>([]);
+  const [derivedCourses, setDerivedCourses] = useState<string[]>([]);
+  const [derivedActTypes, setDerivedActTypes] = useState<string[]>([]);
   // Units structured by subject → course (from resources)
   const [unitsByCourse, setUnitsByCourse] = useState<{ subjectId: number; subjectName: string; courses: { course: string; units: { id: number; name: string; code: string; order: number }[] }[] }[]>([]);
   // Accordion open state: subjectId and "subjectId:course" keys
-  const [openSubjects, setOpenSubjects]   = useState<Set<string>>(new Set());
-  const [newCourseName, setNewCourseName]           = useState('');
+  const [openSubjects, setOpenSubjects] = useState<Set<string>>(new Set());
+  const [newCourseName, setNewCourseName] = useState('');
   const [newActivityTypeName, setNewActivityTypeName] = useState('');
   const [newUnit, setNewUnit] = useState({ name: '', subjectId: 0, code: '', course: '', order: 0 });
   const [savingCatalog, setSavingCatalog] = useState(false);
   // Drag-and-drop state for units reorder
-  const [dragUnitId, setDragUnitId]         = useState<number | null>(null);
-  const [dragOverId, setDragOverId]         = useState<number | null>(null);
+  const [dragUnitId, setDragUnitId] = useState<number | null>(null);
+  const [dragOverId, setDragOverId] = useState<number | null>(null);
   // Drag-and-drop state for subjects reorder
-  const [dragSubjectId, setDragSubjectId]   = useState<number | null>(null);
+  const [dragSubjectId, setDragSubjectId] = useState<number | null>(null);
   const [dragOverSubjectId, setDragOverSubjectId] = useState<number | null>(null);
 
   // Inline edit state for catalog items
@@ -162,11 +162,11 @@ export default function AdminPage() {
   } | null>(null);
 
   // Resource modal catalog data
-  const [modalCourses, setModalCourses]             = useState<Course[]>([]);
+  const [modalCourses, setModalCourses] = useState<Course[]>([]);
   const [modalActivityTypes, setModalActivityTypes] = useState<ActivityTypeItem[]>([]);
-  const [modalUnits, setModalUnits]                 = useState<Unit[]>([]);
-  const [selectedActTypes, setSelectedActTypes]     = useState<string[]>([]);
-  const [authors, setAuthors]                       = useState<string[]>([]);
+  const [modalUnits, setModalUnits] = useState<Unit[]>([]);
+  const [selectedActTypes, setSelectedActTypes] = useState<string[]>([]);
+  const [authors, setAuthors] = useState<string[]>([]);
   const [uploadingResourceImg, setUploadingResourceImg] = useState(false);
 
   // Bulk import modal
@@ -176,39 +176,39 @@ export default function AdminPage() {
     codigo_oa?: string; descripcion_oa?: string;
     _error?: string;
   }
-  const [showBulk, setShowBulk]         = useState(false);
-  const [bulkSubject, setBulkSubject]   = useState('');
-  const [bulkUnit, setBulkUnit]         = useState('');
-  const [bulkCourse, setBulkCourse]     = useState('');
-  const [bulkUnits, setBulkUnits]       = useState<Unit[]>([]);
-  const [bulkRows, setBulkRows]         = useState<BulkRow[]>([]);
+  const [showBulk, setShowBulk] = useState(false);
+  const [bulkSubject, setBulkSubject] = useState('');
+  const [bulkUnit, setBulkUnit] = useState('');
+  const [bulkCourse, setBulkCourse] = useState('');
+  const [bulkUnits, setBulkUnits] = useState<Unit[]>([]);
+  const [bulkRows, setBulkRows] = useState<BulkRow[]>([]);
   const [bulkImporting, setBulkImporting] = useState(false);
-  const [bulkResult, setBulkResult]     = useState<{ created: number; errors: { row: number; message: string }[] } | null>(null);
+  const [bulkResult, setBulkResult] = useState<{ created: number; errors: { row: number; message: string }[] } | null>(null);
 
   // Config tab
   const [showViews, setShowViews] = useState(false);
   const [savingConfig, setSavingConfig] = useState(false);
-  const [migratingImages, setMigratingImages]   = useState(false);
-  const [scrapingMissing, setScrapingMissing]   = useState(false);
+  const [migratingImages, setMigratingImages] = useState(false);
+  const [scrapingMissing, setScrapingMissing] = useState(false);
   const [rescrapingImages, setRescrapingImages] = useState(false);
-  const [rescrapeSubject, setRescrapeSubject]   = useState('');
+  const [rescrapeSubject, setRescrapeSubject] = useState('');
   const [rescrapeProgress, setRescrapeProgress] = useState({ done: 0, total: 0, updated: 0, failed: 0, errors: [] as { id: number; title: string; reason: string }[] });
   const [migrateCount, setMigrateCount] = useState<{ total: number; pending: number; alreadyWebp: number; noImage: number; noImageWithUrl: number } | null>(null);
   const [migrateProgress, setMigrateProgress] = useState({ done: 0, total: 0, converted: 0, failed: 0, errors: [] as { id: number; title: string; reason: string }[] });
-  const [scrapeProgress, setScrapeProgress]   = useState({ done: 0, total: 0, saved: 0, failed: 0, errors: [] as { id: number; title: string; reason: string }[] });
+  const [scrapeProgress, setScrapeProgress] = useState({ done: 0, total: 0, saved: 0, failed: 0, errors: [] as { id: number; title: string; reason: string }[] });
 
   // Carousel / Slides tab
-  const [slides, setSlides]               = useState<Slide[]>([]);
-  const [editingSlide, setEditingSlide]   = useState<Partial<Slide> | null>(null);
-  const [savingSlide, setSavingSlide]     = useState(false);
-  const [uploadingImg, setUploadingImg]   = useState(false);
-  const [previewIdx, setPreviewIdx]       = useState(0);
-  const [msg, setMsg]   = useState('');
+  const [slides, setSlides] = useState<Slide[]>([]);
+  const [editingSlide, setEditingSlide] = useState<Partial<Slide> | null>(null);
+  const [savingSlide, setSavingSlide] = useState(false);
+  const [uploadingImg, setUploadingImg] = useState(false);
+  const [previewIdx, setPreviewIdx] = useState(0);
+  const [msg, setMsg] = useState('');
   const [msgType, setMsgType] = useState<'ok' | 'err'>('ok');
 
   // Suggestions tab
-  const [suggestions, setSuggestions]           = useState<Suggestion[]>([]);
-  const [pendingCount, setPendingCount]         = useState(0);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [pendingCount, setPendingCount] = useState(0);
   const [suggestionFilter, setSuggestionFilter] = useState<'' | 'pending' | 'approved' | 'rejected'>('');
 
   function showMsg(text: string, type: 'ok' | 'err' = 'ok') {
@@ -263,7 +263,7 @@ export default function AdminPage() {
       const totV = normalized.reduce((a, s) => a + (s.views || 0), 0);
       setTotalResources(totR);
       setTotalViews(totV);
-    } catch {}
+    } catch { }
   }
 
   async function loadResources() {
@@ -292,21 +292,21 @@ export default function AdminPage() {
       setTopResources(top);
       setStatsByCourse(byCourse);
       setStatsByActType(byType);
-    } catch {} finally { setLoadingStats(false); }
+    } catch { } finally { setLoadingStats(false); }
   }
 
   async function loadSuggestions(status?: string) {
     try {
       const data = await getSuggestions(status || undefined);
       setSuggestions(data);
-    } catch {}
+    } catch { }
   }
 
   async function refreshPendingCount() {
     try {
       const { count } = await getPendingCount();
       setPendingCount(count ?? 0);
-    } catch {}
+    } catch { }
   }
 
   async function loadCatalogCourses() {
@@ -314,31 +314,31 @@ export default function AdminPage() {
       const [managed, derived] = await Promise.all([getCourses(), getDistinctCourses()]);
       setCatalogCourses(managed);
       setDerivedCourses(derived);
-    } catch {}
+    } catch { }
   }
   async function loadCatalogActivityTypes() {
     try {
       const [managed, derived] = await Promise.all([getActivityTypes(), getDistinctActivityTypes()]);
       setCatalogActivityTypes(managed);
       setDerivedActTypes(derived);
-    } catch {}
+    } catch { }
   }
   async function loadCatalogUnits() {
     try {
       const [all, byCourse] = await Promise.all([getUnits(), getUnitsByCourse()]);
       setCatalogUnits(all);
       setUnitsByCourse(byCourse);
-    } catch {}
+    } catch { }
   }
 
   useEffect(() => {
     if (admin) {
       loadSubjects(); loadStats(); loadExtendedStats(); loadSuggestions(); refreshPendingCount(); loadSlides();
       loadCatalogCourses(); loadCatalogActivityTypes(); loadCatalogUnits();
-      getAuthors().then(setAuthors).catch(() => {});
+      getAuthors().then(setAuthors).catch(() => { });
       getSettings().then((s: Record<string, string>) => {
         setShowViews(s.showViews !== 'false');
-      }).catch(() => {});
+      }).catch(() => { });
     }
   }, [admin]);
 
@@ -482,7 +482,7 @@ export default function AdminPage() {
   // ── Slides / Carousel handlers ──────────────────────────────────────────────
 
   async function loadSlides() {
-    try { setSlides(await getAllSlides()); } catch {}
+    try { setSlides(await getAllSlides()); } catch { }
   }
 
   async function handleSaveSlide() {
@@ -643,22 +643,22 @@ export default function AdminPage() {
 
       {/* ── KPI Strip ──────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <KpiCard icon={Database}    label="Total recursos"      value={totalResources.toLocaleString()} color="#7c3aed" />
-        <KpiCard icon={Eye}         label="Visualizaciones"     value={totalViews.toLocaleString()}     color="#3b82f6" />
-        <KpiCard icon={BookOpen}    label="Asignaturas activas" value={activeSubs}                      color="#10b981" />
-        <KpiCard icon={TrendingUp}  label="Promedio vistas/rec" value={totalResources ? Math.round(totalViews / totalResources) : 0} color="#f59e0b" />
+        <KpiCard icon={Database} label="Total recursos" value={totalResources.toLocaleString()} color="#7c3aed" />
+        <KpiCard icon={Eye} label="Visualizaciones" value={totalViews.toLocaleString()} color="#3b82f6" />
+        <KpiCard icon={BookOpen} label="Asignaturas activas" value={activeSubs} color="#10b981" />
+        <KpiCard icon={TrendingUp} label="Promedio vistas/rec" value={totalResources ? Math.round(totalViews / totalResources) : 0} color="#f59e0b" />
       </div>
 
       {/* ── Tabs ───────────────────────────────────────────────────── */}
       <div className="flex gap-2 overflow-x-auto">
         {([
-          { key: 'resources',   label: `Recursos (${total})`, icon: Database },
-          { key: 'stats',       label: 'Estadísticas',        icon: BarChart2 },
-          { key: 'subjects',    label: 'Asignaturas',         icon: Layers },
-          { key: 'suggestions', label: 'Sugerencias',         icon: Lightbulb },
-          { key: 'carousel',    label: 'Carrusel',            icon: Monitor },
-          { key: 'catalogs',    label: 'Catálogos',           icon: Layers },
-          { key: 'config',      label: 'Configuración',       icon: Star },
+          { key: 'resources', label: `Recursos (${total})`, icon: Database },
+          { key: 'stats', label: 'Estadísticas', icon: BarChart2 },
+          { key: 'subjects', label: 'Asignaturas', icon: Layers },
+          { key: 'suggestions', label: 'Sugerencias', icon: Lightbulb },
+          { key: 'carousel', label: 'Carrusel', icon: Monitor },
+          { key: 'catalogs', label: 'Catálogos', icon: Layers },
+          { key: 'config', label: 'Configuración', icon: Star },
         ] as const).map(({ key, label, icon: Icon }) => (
           <button
             key={key}
@@ -925,9 +925,9 @@ export default function AdminPage() {
           TAB: ESTADÍSTICAS
       ══════════════════════════════════════════════════════════════ */}
       {tab === 'stats' && (() => {
-        const maxViews  = Math.max(...stats.map(s => s.views || 0), 1);
+        const maxViews = Math.max(...stats.map(s => s.views || 0), 1);
         const maxCourseViews = Math.max(...statsByCourse.map(c => +c.views || 0), 1);
-        const totalActViews  = statsByActType.reduce((a, t) => a + (+t.count || 0), 0);
+        const totalActViews = statsByActType.reduce((a, t) => a + (+t.count || 0), 0);
 
         // ── Export helpers ──────────────────────────────────────────
         async function exportExcel() {
@@ -939,25 +939,25 @@ export default function AdminPage() {
           const periodLabel = statsFrom || statsTo
             ? `${statsFrom || 'inicio'} → ${statsTo || 'hoy'}`
             : 'Todo el período';
-          const fileName = `paperflix-estadisticas-${statsFrom || statsTo ? `${statsFrom || 'inicio'}_${statsTo || 'hoy'}` : new Date().toISOString().slice(0,10)}.xlsx`;
+          const fileName = `paperflix-estadisticas-${statsFrom || statsTo ? `${statsFrom || 'inicio'}_${statsTo || 'hoy'}` : new Date().toISOString().slice(0, 10)}.xlsx`;
 
           // ── Paleta ───────────────────────────────────────────────────
           const C = {
-            purple:     '5B21B6', purpleLight: 'EDE9FE', purpleDark: '3B0764',
-            accent:     'F5C518', accentLight: 'FEF9C3',
-            green:      '059669', greenLight:  'D1FAE5',
-            blue:       '1D4ED8', blueLight:   'DBEAFE',
-            rowEven:    'F5F3FF', rowOdd:      'FFFFFF',
-            text:       '1E1B4B', muted:       '6B7280', white: 'FFFFFF',
-            border:     'C4B5FD',
+            purple: '5B21B6', purpleLight: 'EDE9FE', purpleDark: '3B0764',
+            accent: 'F5C518', accentLight: 'FEF9C3',
+            green: '059669', greenLight: 'D1FAE5',
+            blue: '1D4ED8', blueLight: 'DBEAFE',
+            rowEven: 'F5F3FF', rowOdd: 'FFFFFF',
+            text: '1E1B4B', muted: '6B7280', white: 'FFFFFF',
+            border: 'C4B5FD',
           } as const;
 
           // ── Shared helpers ───────────────────────────────────────────
           const borderAll = (color: string = C.border) => ({
-            top:    { style: 'thin' as const, color: { argb: color } },
-            left:   { style: 'thin' as const, color: { argb: color } },
+            top: { style: 'thin' as const, color: { argb: color } },
+            left: { style: 'thin' as const, color: { argb: color } },
             bottom: { style: 'thin' as const, color: { argb: color } },
-            right:  { style: 'thin' as const, color: { argb: color } },
+            right: { style: 'thin' as const, color: { argb: color } },
           });
           const borderBottom = (color: string = C.border) => ({
             bottom: { style: 'medium' as const, color: { argb: color } },
@@ -966,8 +966,8 @@ export default function AdminPage() {
           function styleHeader(row: ExcelJS.Row, bgColor: string = C.purple) {
             row.height = 28;
             row.eachCell(cell => {
-              cell.fill   = { type: 'pattern', pattern: 'solid', fgColor: { argb: bgColor } };
-              cell.font   = { bold: true, color: { argb: C.white }, size: 11, name: 'Calibri' };
+              cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bgColor } };
+              cell.font = { bold: true, color: { argb: C.white }, size: 11, name: 'Calibri' };
               cell.alignment = { horizontal: 'center', vertical: 'middle' };
               cell.border = borderBottom();
             });
@@ -975,9 +975,9 @@ export default function AdminPage() {
 
           function styleTitle(row: ExcelJS.Row) {
             row.height = 36;
-            row.getCell(1).value    = row.getCell(1).value;
-            row.getCell(1).font     = { bold: true, color: { argb: C.white }, size: 16, name: 'Calibri' };
-            row.getCell(1).fill     = { type: 'pattern', pattern: 'solid', fgColor: { argb: C.purpleDark } };
+            row.getCell(1).value = row.getCell(1).value;
+            row.getCell(1).font = { bold: true, color: { argb: C.white }, size: 16, name: 'Calibri' };
+            row.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: C.purpleDark } };
             row.getCell(1).alignment = { horizontal: 'left', vertical: 'middle', indent: 1 };
           }
 
@@ -985,8 +985,8 @@ export default function AdminPage() {
             row.height = 18;
             for (let c = 1; c <= cols; c++) {
               const cell = row.getCell(c);
-              cell.fill  = { type: 'pattern', pattern: 'solid', fgColor: { argb: C.purpleDark } };
-              cell.font  = { italic: true, color: { argb: 'A78BFA' }, size: 9, name: 'Calibri' };
+              cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: C.purpleDark } };
+              cell.font = { italic: true, color: { argb: 'A78BFA' }, size: 9, name: 'Calibri' };
             }
           }
 
@@ -994,8 +994,8 @@ export default function AdminPage() {
             const bg = even ? C.rowEven : C.rowOdd;
             row.height = 20;
             row.eachCell({ includeEmpty: true }, (cell, colNum) => {
-              cell.fill   = { type: 'pattern', pattern: 'solid', fgColor: { argb: bg } };
-              cell.font   = { size: 10, name: 'Calibri', color: { argb: C.text } };
+              cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bg } };
+              cell.font = { size: 10, name: 'Calibri', color: { argb: C.text } };
               cell.border = borderAll();
               if (numCols.includes(colNum)) {
                 cell.alignment = { horizontal: 'right', vertical: 'middle' };
@@ -1006,7 +1006,7 @@ export default function AdminPage() {
             });
           }
 
-          function addKpiBlock(ws: ExcelJS.Worksheet, startRow: number, items: {label:string; value:string|number; color:string}[]) {
+          function addKpiBlock(ws: ExcelJS.Worksheet, startRow: number, items: { label: string; value: string | number; color: string }[]) {
             items.forEach((kpi, i) => {
               const col = i + 1;
               const r1 = ws.getRow(startRow);
@@ -1017,14 +1017,14 @@ export default function AdminPage() {
               r3.height = 18;
               const c1 = r2.getCell(col);
               c1.value = kpi.value;
-              c1.font  = { bold: true, size: 18, color: { argb: kpi.color }, name: 'Calibri' };
-              c1.fill  = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'F5F3FF' } };
+              c1.font = { bold: true, size: 18, color: { argb: kpi.color }, name: 'Calibri' };
+              c1.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'F5F3FF' } };
               c1.alignment = { horizontal: 'center', vertical: 'middle' };
               c1.border = { top: { style: 'medium', color: { argb: kpi.color } }, ...borderAll('E5E7EB') };
               const c2 = r3.getCell(col);
               c2.value = kpi.label;
-              c2.font  = { size: 9, italic: true, color: { argb: C.muted }, name: 'Calibri' };
-              c2.fill  = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'F5F3FF' } };
+              c2.font = { size: 9, italic: true, color: { argb: C.muted }, name: 'Calibri' };
+              c2.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'F5F3FF' } };
               c2.alignment = { horizontal: 'center' };
               c2.border = { ...borderAll('E5E7EB'), bottom: { style: 'medium', color: { argb: kpi.color } } };
             });
@@ -1038,8 +1038,8 @@ export default function AdminPage() {
             pageSetup: { fitToPage: true, fitToWidth: 1 },
           });
           ws1.columns = [
-            { key:'a', width: 34 }, { key:'b', width: 16 },
-            { key:'c', width: 16 }, { key:'d', width: 14 },
+            { key: 'a', width: 34 }, { key: 'b', width: 16 },
+            { key: 'c', width: 16 }, { key: 'd', width: 14 },
           ];
 
           // Título
@@ -1052,10 +1052,10 @@ export default function AdminPage() {
 
           // KPIs
           addKpiBlock(ws1, 4, [
-            { label: 'Total recursos',       value: totalResources,   color: C.purple },
-            { label: 'Vistas acumuladas',     value: totalViews,       color: C.blue   },
-            { label: 'Promedio vistas/rec.',  value: totalResources ? Math.round(totalViews/totalResources) : 0, color: C.green },
-            { label: 'Asignaturas activas',   value: stats.length,     color: '7C3AED' },
+            { label: 'Total recursos', value: totalResources, color: C.purple },
+            { label: 'Vistas acumuladas', value: totalViews, color: C.blue },
+            { label: 'Promedio vistas/rec.', value: totalResources ? Math.round(totalViews / totalResources) : 0, color: C.green },
+            { label: 'Asignaturas activas', value: stats.length, color: '7C3AED' },
           ]);
           ws1.getRow(8).height = 14;
 
@@ -1068,18 +1068,18 @@ export default function AdminPage() {
           ws1.spliceRows(9, 1);
           const tableHeader = ws1.insertRow(9, ['#', 'Asignatura', 'Recursos', 'Vistas', '% del total']);
           ws1.columns = [
-            { key:'num', width: 6 }, { key:'name', width: 34 },
-            { key:'count', width: 14 }, { key:'views', width: 16 }, { key:'pct', width: 14 },
+            { key: 'num', width: 6 }, { key: 'name', width: 34 },
+            { key: 'count', width: 14 }, { key: 'views', width: 16 }, { key: 'pct', width: 14 },
           ];
           styleHeader(tableHeader);
 
-          const sortedStats = [...stats].sort((a,b) => (b.views||0)-(a.views||0));
+          const sortedStats = [...stats].sort((a, b) => (b.views || 0) - (a.views || 0));
           sortedStats.forEach((s, i) => {
             const row = ws1.addRow([
               i + 1, s.name, s.count, s.views || 0,
-              totalViews > 0 ? (s.views||0)/totalViews : 0,
+              totalViews > 0 ? (s.views || 0) / totalViews : 0,
             ]);
-            styleDataRow(row, i%2===0, [1,3,4,5]);
+            styleDataRow(row, i % 2 === 0, [1, 3, 4, 5]);
             row.getCell(5).numFmt = '0.0%';
             // Color dot on rank col
             if (i < 3) {
@@ -1099,8 +1099,8 @@ export default function AdminPage() {
             properties: { tabColor: { argb: C.accent } },
           });
           ws2.columns = [
-            { key:'num', width:6 }, { key:'course', width:28 },
-            { key:'count', width:14 }, { key:'views', width:16 }, { key:'pct', width:14 },
+            { key: 'num', width: 6 }, { key: 'course', width: 28 },
+            { key: 'count', width: 14 }, { key: 'views', width: 16 }, { key: 'pct', width: 14 },
           ];
           ws2.mergeCells('A1:E1'); ws2.mergeCells('A2:E2');
           ws2.getRow(1).getCell(1).value = '  PaperFlix — Estadísticas por Curso';
@@ -1111,18 +1111,18 @@ export default function AdminPage() {
 
           const h2 = ws2.addRow(['#', 'Curso', 'Recursos', 'Vistas', '% de vistas']);
           styleHeader(h2, '92400E'); // amber dark
-          h2.eachCell(c => { c.fill = { type:'pattern', pattern:'solid', fgColor:{argb:'78350F'} }; });
+          h2.eachCell(c => { c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '78350F' } }; });
 
           const sortedCourses = sortCourses(statsByCourse.map(c => ({ ...c, name: c.course })));
-          const totalCVis = statsByCourse.reduce((a,c) => a+(+c.views||0), 0);
+          const totalCVis = statsByCourse.reduce((a, c) => a + (+c.views || 0), 0);
           sortedCourses.forEach((c, i) => {
-            const row = ws2.addRow([i+1, c.course, +c.count, +c.views||0, totalCVis>0 ? (+c.views||0)/totalCVis : 0]);
-            styleDataRow(row, i%2===0, [1,3,4,5]);
+            const row = ws2.addRow([i + 1, c.course, +c.count, +c.views || 0, totalCVis > 0 ? (+c.views || 0) / totalCVis : 0]);
+            styleDataRow(row, i % 2 === 0, [1, 3, 4, 5]);
             row.getCell(5).numFmt = '0.0%';
-            row.getCell(2).font = { bold: i<3, size:10, color:{argb: i<3?'92400E':C.text}, name:'Calibri' };
+            row.getCell(2).font = { bold: i < 3, size: 10, color: { argb: i < 3 ? '92400E' : C.text }, name: 'Calibri' };
           });
-          ws2.views = [{ state:'frozen', xSplit:0, ySplit:4 }];
-          ws2.autoFilter = { from:'A4', to:'E4' };
+          ws2.views = [{ state: 'frozen', xSplit: 0, ySplit: 4 }];
+          ws2.autoFilter = { from: 'A4', to: 'E4' };
 
           // ════════════════════════════════════════════════════════════
           // Hoja 3 — Tipos de Actividad
@@ -1131,8 +1131,8 @@ export default function AdminPage() {
             properties: { tabColor: { argb: C.green } },
           });
           ws3.columns = [
-            { key:'num', width:6 }, { key:'type', width:36 },
-            { key:'count', width:14 }, { key:'pct', width:14 },
+            { key: 'num', width: 6 }, { key: 'type', width: 36 },
+            { key: 'count', width: 14 }, { key: 'pct', width: 14 },
           ];
           ws3.mergeCells('A1:D1'); ws3.mergeCells('A2:D2');
           ws3.getRow(1).getCell(1).value = '  PaperFlix — Tipos de Actividad';
@@ -1143,22 +1143,22 @@ export default function AdminPage() {
 
           const h3 = ws3.addRow(['#', 'Tipo de actividad', 'Recursos', '% del total']);
           h3.eachCell(c => {
-            c.fill = { type:'pattern', pattern:'solid', fgColor:{argb:'065F46'} };
-            c.font = { bold:true, color:{argb:C.white}, size:11, name:'Calibri' };
-            c.alignment = { horizontal:'center', vertical:'middle' };
+            c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '065F46' } };
+            c.font = { bold: true, color: { argb: C.white }, size: 11, name: 'Calibri' };
+            c.alignment = { horizontal: 'center', vertical: 'middle' };
             c.border = borderBottom('6EE7B7');
           });
           h3.height = 28;
 
           statsByActType.forEach((t, i) => {
-            const row = ws3.addRow([i+1, t.activityType, +t.count, totalActViews>0 ? +t.count/totalActViews : 0]);
-            styleDataRow(row, i%2===0, [1,3,4]);
+            const row = ws3.addRow([i + 1, t.activityType, +t.count, totalActViews > 0 ? +t.count / totalActViews : 0]);
+            styleDataRow(row, i % 2 === 0, [1, 3, 4]);
             row.getCell(4).numFmt = '0.0%';
-            const bg = i%2===0 ? 'ECFDF5' : 'FFFFFF';
-            row.eachCell(c => { c.fill = {type:'pattern',pattern:'solid',fgColor:{argb:bg}}; });
+            const bg = i % 2 === 0 ? 'ECFDF5' : 'FFFFFF';
+            row.eachCell(c => { c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bg } }; });
           });
-          ws3.views = [{ state:'frozen', xSplit:0, ySplit:4 }];
-          ws3.autoFilter = { from:'A4', to:'D4' };
+          ws3.views = [{ state: 'frozen', xSplit: 0, ySplit: 4 }];
+          ws3.autoFilter = { from: 'A4', to: 'D4' };
 
           // ════════════════════════════════════════════════════════════
           // Hoja 4 — Top Recursos
@@ -1167,9 +1167,9 @@ export default function AdminPage() {
             properties: { tabColor: { argb: C.blue } },
           });
           ws4.columns = [
-            { key:'rank', width:6 }, { key:'title', width:52 },
-            { key:'subject', width:24 }, { key:'course', width:18 },
-            { key:'actType', width:22 }, { key:'views', width:12 },
+            { key: 'rank', width: 6 }, { key: 'title', width: 52 },
+            { key: 'subject', width: 24 }, { key: 'course', width: 18 },
+            { key: 'actType', width: 22 }, { key: 'views', width: 12 },
           ];
           ws4.mergeCells('A1:F1'); ws4.mergeCells('A2:F2');
           ws4.getRow(1).getCell(1).value = '  PaperFlix — Top 20 Recursos Más Vistos';
@@ -1180,42 +1180,42 @@ export default function AdminPage() {
 
           const h4 = ws4.addRow(['#', 'Título', 'Asignatura', 'Curso', 'Tipo', 'Vistas']);
           h4.eachCell(c => {
-            c.fill = { type:'pattern', pattern:'solid', fgColor:{argb:'1E3A5F'} };
-            c.font = { bold:true, color:{argb:C.white}, size:11, name:'Calibri' };
-            c.alignment = { horizontal:'center', vertical:'middle' };
+            c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '1E3A5F' } };
+            c.font = { bold: true, color: { argb: C.white }, size: 11, name: 'Calibri' };
+            c.alignment = { horizontal: 'center', vertical: 'middle' };
             c.border = borderBottom('93C5FD');
           });
           h4.height = 28;
 
           topResources.forEach((r, i) => {
             const row = ws4.addRow([
-              i+1, r.title, r.subject?.name||'—', r.course||'—',
-              r.activityType?.split(',')[0]||'—', r.views,
+              i + 1, r.title, r.subject?.name || '—', r.course || '—',
+              r.activityType?.split(',')[0] || '—', r.views,
             ]);
             row.height = 22;
-            const bg = i%2===0 ? 'EFF6FF' : 'FFFFFF';
+            const bg = i % 2 === 0 ? 'EFF6FF' : 'FFFFFF';
             row.eachCell((cell, col) => {
-              cell.fill   = { type:'pattern', pattern:'solid', fgColor:{argb:bg} };
-              cell.font   = { size:10, name:'Calibri', color:{argb:C.text} };
+              cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bg } };
+              cell.font = { size: 10, name: 'Calibri', color: { argb: C.text } };
               cell.border = borderAll('BFDBFE');
-              cell.alignment = col===6
-                ? { horizontal:'right', vertical:'middle' }
-                : { horizontal: col===1?'center':'left', vertical:'middle', indent:col>1?1:0 };
-              if (col===6) cell.numFmt = '#,##0';
+              cell.alignment = col === 6
+                ? { horizontal: 'right', vertical: 'middle' }
+                : { horizontal: col === 1 ? 'center' : 'left', vertical: 'middle', indent: col > 1 ? 1 : 0 };
+              if (col === 6) cell.numFmt = '#,##0';
             });
             // Top 3 gold rank
             if (i < 3) {
-              const medalColors = ['F5C518','C0C0C0','CD7F32'];
-              row.getCell(1).font = { bold:true, size:12, color:{argb:medalColors[i]}, name:'Calibri' };
-              row.getCell(2).font = { bold:true, size:10, color:{argb:C.blue}, name:'Calibri' };
-              row.getCell(6).font = { bold:true, size:10, color:{argb:'1D4ED8'}, name:'Calibri' };
+              const medalColors = ['F5C518', 'C0C0C0', 'CD7F32'];
+              row.getCell(1).font = { bold: true, size: 12, color: { argb: medalColors[i] }, name: 'Calibri' };
+              row.getCell(2).font = { bold: true, size: 10, color: { argb: C.blue }, name: 'Calibri' };
+              row.getCell(6).font = { bold: true, size: 10, color: { argb: '1D4ED8' }, name: 'Calibri' };
             }
           });
-          ws4.views = [{ state:'frozen', xSplit:0, ySplit:4 }];
+          ws4.views = [{ state: 'frozen', xSplit: 0, ySplit: 4 }];
 
           // ── Download ─────────────────────────────────────────────────
           const buf = await wb.xlsx.writeBuffer();
-          const blob = new Blob([buf], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+          const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
           const a = document.createElement('a');
           a.href = URL.createObjectURL(blob);
           a.download = fileName;
@@ -1227,7 +1227,7 @@ export default function AdminPage() {
           const win = window.open('', '_blank');
           if (!win) return;
           const rows = (arr: any[][], head: string[]) =>
-            `<table><thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${arr.map(row=>`<tr>${row.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+            `<table><thead><tr>${head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${arr.map(row => `<tr>${row.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
           win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Estadísticas Paperflix</title>
             <style>body{font-family:sans-serif;padding:24px;color:#111}h1{color:#7c3aed}h2{color:#444;margin-top:28px;font-size:14px}
             table{width:100%;border-collapse:collapse;margin-top:8px;font-size:12px}
@@ -1238,13 +1238,13 @@ export default function AdminPage() {
             <p>Período: <b>${statsFrom || statsTo ? `${statsFrom || 'inicio'} → ${statsTo || 'hoy'}` : 'Todo el período'}</b></p>
             <p>Total recursos: <b>${totalResources}</b> · Total vistas: <b>${totalViews.toLocaleString()}</b></p>
             <h2>Recursos por asignatura</h2>
-            ${rows([...stats].sort((a,b)=>b.count-a.count).map(s=>[s.name,s.count,(s.views||0).toLocaleString()]),['Asignatura','Recursos','Vistas'])}
+            ${rows([...stats].sort((a, b) => b.count - a.count).map(s => [s.name, s.count, (s.views || 0).toLocaleString()]), ['Asignatura', 'Recursos', 'Vistas'])}
             <h2>Vistas por curso</h2>
-            ${rows(statsByCourse.map(c=>[c.course,c.count,(+c.views||0).toLocaleString()]),['Curso','Recursos','Vistas'])}
+            ${rows(statsByCourse.map(c => [c.course, c.count, (+c.views || 0).toLocaleString()]), ['Curso', 'Recursos', 'Vistas'])}
             <h2>Tipo de actividad</h2>
-            ${rows(statsByActType.map(t=>[t.activityType,t.count]),['Tipo','Recursos'])}
+            ${rows(statsByActType.map(t => [t.activityType, t.count]), ['Tipo', 'Recursos'])}
             <h2>Top 20 recursos más vistos</h2>
-            ${rows(topResources.map((r,i)=>[i+1,r.title,r.subject?.name||'—',r.course||'—',r.views]),['#','Título','Asignatura','Curso','Vistas'])}
+            ${rows(topResources.map((r, i) => [i + 1, r.title, r.subject?.name || '—', r.course || '—', r.views]), ['#', 'Título', 'Asignatura', 'Curso', 'Vistas'])}
             </body></html>`);
           win.document.close(); win.focus(); setTimeout(() => win.print(), 400);
         }
@@ -1260,7 +1260,7 @@ export default function AdminPage() {
                   <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>
                     {statsFrom || statsTo
                       ? `${statsFrom || '—'} → ${statsTo || '—'}`
-                      : `Todos los períodos · ${new Date().toLocaleDateString('es-CL', { day:'numeric', month:'long', year:'numeric' })}`}
+                      : `Todos los períodos · ${new Date().toLocaleDateString('es-CL', { day: 'numeric', month: 'long', year: 'numeric' })}`}
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -1287,7 +1287,7 @@ export default function AdminPage() {
                   { label: 'Esta semana', from: iso(new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay())), to: iso(now) },
                   { label: 'Este mes', from: iso(new Date(now.getFullYear(), now.getMonth(), 1)), to: iso(now) },
                   { label: 'Este año', from: iso(new Date(now.getFullYear(), 0, 1)), to: iso(now) },
-                  { label: 'Año anterior', from: iso(new Date(now.getFullYear()-1, 0, 1)), to: iso(new Date(now.getFullYear()-1, 11, 31)) },
+                  { label: 'Año anterior', from: iso(new Date(now.getFullYear() - 1, 0, 1)), to: iso(new Date(now.getFullYear() - 1, 11, 31)) },
                 ];
                 const active = presets.find(p => p.from === statsFrom && p.to === statsTo);
                 return (
@@ -1331,8 +1331,8 @@ export default function AdminPage() {
               {[
                 { label: 'Total recursos', value: totalResources.toLocaleString(), sub: 'en el catálogo', color: '#7c3aed' },
                 { label: 'Total vistas', value: totalViews.toLocaleString(), sub: 'acumuladas', color: '#3b82f6' },
-                { label: 'Promedio vistas', value: totalResources ? Math.round(totalViews/totalResources) : 0, sub: 'por recurso', color: '#10b981' },
-                { label: 'Asignatura líder', value: topByViews[0]?.name?.split(' ')[0] || '—', sub: `${(topByViews[0]?.views||0).toLocaleString()} vistas`, color: '#f59e0b' },
+                { label: 'Promedio vistas', value: totalResources ? Math.round(totalViews / totalResources) : 0, sub: 'por recurso', color: '#10b981' },
+                { label: 'Asignatura líder', value: topByViews[0]?.name?.split(' ')[0] || '—', sub: `${(topByViews[0]?.views || 0).toLocaleString()} vistas`, color: '#f59e0b' },
               ].map(k => (
                 <div key={k.label} className="rounded-xl p-4 flex items-center gap-3" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
                   <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${k.color}20`, color: k.color }}>
@@ -1358,8 +1358,8 @@ export default function AdminPage() {
                   </h3>
                   <span className="text-[11px] px-2 py-0.5 rounded-full" style={{ background: 'rgba(124,58,237,0.15)', color: '#c4b5fd' }}>por vistas</span>
                 </div>
-                {[...stats].sort((a,b) => (b.views||0)-(a.views||0)).map((s, i) => {
-                  const pct = Math.round(((s.views||0)/maxViews)*100);
+                {[...stats].sort((a, b) => (b.views || 0) - (a.views || 0)).map((s, i) => {
+                  const pct = Math.round(((s.views || 0) / maxViews) * 100);
                   const color = SUBJECT_COLORS[i % SUBJECT_COLORS.length];
                   return (
                     <div key={s.id}>
@@ -1370,7 +1370,7 @@ export default function AdminPage() {
                         </div>
                         <div className="flex items-center gap-3 text-[11px]" style={{ color: 'var(--muted)' }}>
                           <span>{s.count} rec.</span>
-                          <span className="flex items-center gap-1 font-semibold" style={{ color }}><Eye size={10}/>{(s.views||0).toLocaleString()}</span>
+                          <span className="flex items-center gap-1 font-semibold" style={{ color }}><Eye size={10} />{(s.views || 0).toLocaleString()}</span>
                         </div>
                       </div>
                       <div className="h-2 rounded-full overflow-hidden" style={{ background: 'var(--bg)' }}>
@@ -1391,26 +1391,26 @@ export default function AdminPage() {
                 </div>
                 {loadingStats ? <p className="text-xs" style={{ color: 'var(--muted)' }}>Cargando…</p>
                   : sortCourses(statsByCourse.map(c => ({ ...c, name: c.course }))).map((c, i) => {
-                  const pct = Math.round(((+c.views||0)/maxCourseViews)*100);
-                  const color = SUBJECT_COLORS[(i+2) % SUBJECT_COLORS.length];
-                  return (
-                    <div key={c.course}>
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
-                          <span className="text-xs font-medium text-white">{c.course}</span>
+                    const pct = Math.round(((+c.views || 0) / maxCourseViews) * 100);
+                    const color = SUBJECT_COLORS[(i + 2) % SUBJECT_COLORS.length];
+                    return (
+                      <div key={c.course}>
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
+                            <span className="text-xs font-medium text-white">{c.course}</span>
+                          </div>
+                          <div className="flex items-center gap-3 text-[11px]" style={{ color: 'var(--muted)' }}>
+                            <span>{c.count} rec.</span>
+                            <span className="flex items-center gap-1 font-semibold" style={{ color }}><Eye size={10} />{(+c.views || 0).toLocaleString()}</span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-3 text-[11px]" style={{ color: 'var(--muted)' }}>
-                          <span>{c.count} rec.</span>
-                          <span className="flex items-center gap-1 font-semibold" style={{ color }}><Eye size={10}/>{(+c.views||0).toLocaleString()}</span>
+                        <div className="h-2 rounded-full overflow-hidden" style={{ background: 'var(--bg)' }}>
+                          <div className="h-full rounded-full" style={{ width: `${pct}%`, background: `linear-gradient(90deg,${color}99,${color})` }} />
                         </div>
                       </div>
-                      <div className="h-2 rounded-full overflow-hidden" style={{ background: 'var(--bg)' }}>
-                        <div className="h-full rounded-full" style={{ width: `${pct}%`, background: `linear-gradient(90deg,${color}99,${color})` }} />
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
               </div>
             </div>
 
@@ -1423,27 +1423,27 @@ export default function AdminPage() {
                 <div className="flex items-center gap-2 text-[10px]" style={{ color: 'var(--muted)' }}>
                   <span>Baja</span>
                   <div className="flex gap-0.5">
-                    {[0.15,0.3,0.45,0.6,0.75,0.9].map(v => (
-                      <span key={v} className="block rounded-sm" style={{ width:14, height:14, background: `rgba(124,58,237,${v})` }} />
+                    {[0.15, 0.3, 0.45, 0.6, 0.75, 0.9].map(v => (
+                      <span key={v} className="block rounded-sm" style={{ width: 14, height: 14, background: `rgba(124,58,237,${v})` }} />
                     ))}
                   </div>
                   <span>Alta</span>
                 </div>
               </div>
               <div className="grid gap-2" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))' }}>
-                {[...stats].sort((a,b) => (b.views||0)-(a.views||0)).map((s, i) => {
-                  const intensity = (s.views||0) / maxViews;
-                  const viewsPct = totalViews > 0 ? ((s.views||0)/totalViews*100).toFixed(1) : '0';
+                {[...stats].sort((a, b) => (b.views || 0) - (a.views || 0)).map((s, i) => {
+                  const intensity = (s.views || 0) / maxViews;
+                  const viewsPct = totalViews > 0 ? ((s.views || 0) / totalViews * 100).toFixed(1) : '0';
                   return (
                     <div key={s.id} className="rounded-xl p-3 flex flex-col gap-1"
-                      title={`${s.name} · ${(s.views||0).toLocaleString()} vistas · ${s.count} recursos`}
+                      title={`${s.name} · ${(s.views || 0).toLocaleString()} vistas · ${s.count} recursos`}
                       style={{
                         background: `rgba(124,58,237,${0.08 + intensity * 0.55})`,
                         border: `1px solid rgba(124,58,237,${0.15 + intensity * 0.45})`,
                       }}>
                       <p className="text-xs font-bold text-white leading-tight truncate">{s.name}</p>
-                      <p className="text-lg font-extrabold leading-none" style={{ color: `rgba(${hexToRgb(SUBJECT_COLORS[i % SUBJECT_COLORS.length])},${0.6+intensity*0.4})` }}>
-                        {(s.views||0).toLocaleString()}
+                      <p className="text-lg font-extrabold leading-none" style={{ color: `rgba(${hexToRgb(SUBJECT_COLORS[i % SUBJECT_COLORS.length])},${0.6 + intensity * 0.4})` }}>
+                        {(s.views || 0).toLocaleString()}
                       </p>
                       <div className="flex items-center justify-between">
                         <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.5)' }}>{s.count} rec.</span>
@@ -1465,24 +1465,24 @@ export default function AdminPage() {
                 </h3>
                 {loadingStats ? <p className="text-xs" style={{ color: 'var(--muted)' }}>Cargando…</p>
                   : statsByActType.length === 0 ? <p className="text-xs" style={{ color: 'var(--muted)' }}>Sin datos</p>
-                  : (() => {
-                  const maxTypeCount = Math.max(...statsByActType.map(t => +t.count), 1);
-                  return statsByActType.slice(0, 12).map((t, i) => {
-                    const pct = Math.round((+t.count / totalActViews) * 100);
-                    const barPct = Math.round((+t.count / maxTypeCount) * 100);
-                    const color = SUBJECT_COLORS[i % SUBJECT_COLORS.length];
-                    return (
-                      <div key={t.activityType} className="flex items-center gap-3">
-                        <span className="text-xs text-white shrink-0 truncate" style={{ width: 120 }}>{t.activityType}</span>
-                        <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: 'var(--bg)' }}>
-                          <div className="h-full rounded-full" style={{ width: `${barPct}%`, background: color }} />
-                        </div>
-                        <span className="text-[11px] font-bold shrink-0 w-8 text-right" style={{ color }}>{pct}%</span>
-                        <span className="text-[11px] shrink-0 w-10 text-right" style={{ color: 'var(--muted)' }}>{t.count}</span>
-                      </div>
-                    );
-                  });
-                })()}
+                    : (() => {
+                      const maxTypeCount = Math.max(...statsByActType.map(t => +t.count), 1);
+                      return statsByActType.slice(0, 12).map((t, i) => {
+                        const pct = Math.round((+t.count / totalActViews) * 100);
+                        const barPct = Math.round((+t.count / maxTypeCount) * 100);
+                        const color = SUBJECT_COLORS[i % SUBJECT_COLORS.length];
+                        return (
+                          <div key={t.activityType} className="flex items-center gap-3">
+                            <span className="text-xs text-white shrink-0 truncate" style={{ width: 120 }}>{t.activityType}</span>
+                            <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background: 'var(--bg)' }}>
+                              <div className="h-full rounded-full" style={{ width: `${barPct}%`, background: color }} />
+                            </div>
+                            <span className="text-[11px] font-bold shrink-0 w-8 text-right" style={{ color }}>{pct}%</span>
+                            <span className="text-[11px] shrink-0 w-10 text-right" style={{ color: 'var(--muted)' }}>{t.count}</span>
+                          </div>
+                        );
+                      });
+                    })()}
               </div>
 
               {/* Top recursos más vistos */}
@@ -1491,23 +1491,23 @@ export default function AdminPage() {
                   <TrendingUp size={16} style={{ color: '#10b981' }} /> Top 10 recursos más vistos
                 </h3>
                 {loadingStats ? <p className="text-xs" style={{ color: 'var(--muted)' }}>Cargando…</p>
-                  : topResources.slice(0,10).map((r, i) => (
-                  <div key={r.id} className="flex items-center gap-3 py-1.5 border-b last:border-0" style={{ borderColor: 'var(--border)' }}>
-                    <span className="w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-extrabold shrink-0"
-                      style={{ background: i < 3 ? 'var(--accent)' : 'rgba(255,255,255,0.06)', color: i < 3 ? '#1e0d38' : 'var(--muted)' }}>
-                      {i+1}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-white truncate">{r.title}</p>
-                      <p className="text-[10px]" style={{ color: 'var(--muted)' }}>
-                        {r.subject?.name || '—'}{r.course ? ` · ${r.course}` : ''}
-                      </p>
+                  : topResources.slice(0, 10).map((r, i) => (
+                    <div key={r.id} className="flex items-center gap-3 py-1.5 border-b last:border-0" style={{ borderColor: 'var(--border)' }}>
+                      <span className="w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-extrabold shrink-0"
+                        style={{ background: i < 3 ? 'var(--accent)' : 'rgba(255,255,255,0.06)', color: i < 3 ? '#1e0d38' : 'var(--muted)' }}>
+                        {i + 1}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold text-white truncate">{r.title}</p>
+                        <p className="text-[10px]" style={{ color: 'var(--muted)' }}>
+                          {r.subject?.name || '—'}{r.course ? ` · ${r.course}` : ''}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1 text-xs font-bold shrink-0" style={{ color: '#3b82f6' }}>
+                        <Eye size={11} />{r.views.toLocaleString()}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1 text-xs font-bold shrink-0" style={{ color: '#3b82f6' }}>
-                      <Eye size={11}/>{r.views.toLocaleString()}
-                    </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
 
@@ -1537,7 +1537,7 @@ export default function AdminPage() {
             {subjects.map((s, i) => {
               const stat = stats.find(st => st.slug === s.slug);
               const isDragging = dragSubjectId === s.id;
-              const isOver     = dragOverSubjectId === s.id;
+              const isOver = dragOverSubjectId === s.id;
               return (
                 <div
                   key={s.id}
@@ -1550,7 +1550,7 @@ export default function AdminPage() {
                     if (dragSubjectId === null || dragSubjectId === s.id) { setDragSubjectId(null); setDragOverSubjectId(null); return; }
                     const list = [...subjects];
                     const fromIdx = list.findIndex(x => x.id === dragSubjectId);
-                    const toIdx   = list.findIndex(x => x.id === s.id);
+                    const toIdx = list.findIndex(x => x.id === s.id);
                     if (fromIdx === -1 || toIdx === -1) return;
                     list.splice(toIdx, 0, list.splice(fromIdx, 1)[0]);
                     const reordered = list.map((x, idx) => ({ id: x.id, order: idx + 1 }));
@@ -1570,7 +1570,7 @@ export default function AdminPage() {
                 >
                   {/* Drag handle */}
                   <span className="shrink-0 flex flex-col gap-[3px] opacity-25 hover:opacity-60 transition-opacity" style={{ cursor: 'grab' }}>
-                    {[0,1,2].map(i => <span key={i} className="block rounded-full" style={{ width: 16, height: 2.5, background: 'var(--muted)' }} />)}
+                    {[0, 1, 2].map(i => <span key={i} className="block rounded-full" style={{ width: 16, height: 2.5, background: 'var(--muted)' }} />)}
                   </span>
 
                   {/* Order badge */}
@@ -1633,10 +1633,10 @@ export default function AdminPage() {
           {/* Filtro de estado */}
           <div className="flex gap-2 flex-wrap">
             {([
-              { val: '',           label: 'Todas' },
-              { val: 'pending',    label: 'Pendientes' },
-              { val: 'approved',   label: 'Aprobadas' },
-              { val: 'rejected',   label: 'Rechazadas' },
+              { val: '', label: 'Todas' },
+              { val: 'pending', label: 'Pendientes' },
+              { val: 'approved', label: 'Aprobadas' },
+              { val: 'rejected', label: 'Rechazadas' },
             ] as const).map(({ val, label }) => (
               <button
                 key={val}
@@ -1791,9 +1791,9 @@ export default function AdminPage() {
           {/* Sub-tabs */}
           <div className="flex gap-2 flex-wrap">
             {([
-              { key: 'courses',       label: 'Cursos' },
+              { key: 'courses', label: 'Cursos' },
               { key: 'activityTypes', label: 'Tipos de actividad' },
-              { key: 'units',         label: 'Unidades / Objetivos' },
+              { key: 'units', label: 'Unidades / Objetivos' },
             ] as const).map(({ key, label }) => (
               <button key={key} onClick={() => setCatalogTab(key)}
                 className="px-4 rounded-xl text-sm font-medium transition-colors"
@@ -1863,59 +1863,59 @@ export default function AdminPage() {
                 {catalogCourses.length === 0
                   ? <p className="py-10 text-center text-sm" style={{ color: 'var(--muted)' }}>Sin cursos. Usa "Importar desde recursos" o agrega uno.</p>
                   : sortCourses(catalogCourses).map((c, i) => {
-                      const isEditing = editingCatalog?.type === 'course' && editingCatalog.id === c.id;
-                      return (
-                        <div key={c.id} className="flex items-center gap-2 px-4 py-2.5 border-b last:border-0"
-                          style={{ borderColor: 'var(--border)', background: isEditing ? 'rgba(124,58,237,0.06)' : undefined }}>
-                          <span className="text-xs font-mono w-6 text-center shrink-0" style={{ color: 'var(--muted)' }}>{i + 1}</span>
-                          {isEditing ? (
-                            <>
-                              <input autoFocus value={editingCatalog.name}
-                                onChange={e => setEditingCatalog(prev => prev ? { ...prev, name: e.target.value } : null)}
-                                onKeyDown={async e => {
-                                  if (e.key === 'Escape') { setEditingCatalog(null); return; }
-                                  if (e.key === 'Enter' && editingCatalog.name.trim()) {
-                                    setSavingCatalog(true);
-                                    try { await updateCourse(c.id, { name: editingCatalog.name.trim() }); setEditingCatalog(null); await loadCatalogCourses(); showMsg('Curso actualizado'); }
-                                    catch { showMsg('Error', 'err'); } finally { setSavingCatalog(false); }
-                                  }
-                                }}
-                                className="flex-1 px-3 rounded-lg text-sm outline-none text-white"
-                                style={{ background: 'var(--bg)', border: '1px solid rgba(124,58,237,0.5)', height: 36 }} />
-                              <button onClick={async () => {
-                                if (!editingCatalog.name.trim()) return;
-                                setSavingCatalog(true);
-                                try { await updateCourse(c.id, { name: editingCatalog.name.trim() }); setEditingCatalog(null); await loadCatalogCourses(); showMsg('Curso actualizado'); }
-                                catch { showMsg('Error', 'err'); } finally { setSavingCatalog(false); }
-                              }} className="flex items-center justify-center rounded-lg shrink-0"
-                                style={{ width: 30, height: 30, background: 'rgba(124,58,237,0.2)', color: '#c4b5fd' }}>
-                                <Check size={13} />
-                              </button>
-                              <button onClick={() => setEditingCatalog(null)} className="flex items-center justify-center rounded-lg shrink-0"
-                                style={{ width: 30, height: 30, color: 'var(--muted)' }}>
-                                <X size={13} />
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <span className="flex-1 text-sm font-medium text-white">{c.name}</span>
-                              <button onClick={() => setEditingCatalog({ type: 'course', id: c.id, name: c.name })}
-                                className="icon-btn flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors shrink-0"
-                                style={{ color: 'var(--muted)', width: 30, height: 30 }}>
-                                <Pencil size={12} />
-                              </button>
-                              <button onClick={async () => {
-                                if (!confirm(`¿Eliminar "${c.name}"?`)) return;
-                                await deleteCourse(c.id); loadCatalogCourses(); showMsg('Eliminado');
-                              }} className="icon-btn flex items-center justify-center rounded-lg hover:bg-red-500/20 text-red-400 shrink-0"
-                                style={{ width: 30, height: 30 }}>
-                                <Trash2 size={12} />
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      );
-                    })
+                    const isEditing = editingCatalog?.type === 'course' && editingCatalog.id === c.id;
+                    return (
+                      <div key={c.id} className="flex items-center gap-2 px-4 py-2.5 border-b last:border-0"
+                        style={{ borderColor: 'var(--border)', background: isEditing ? 'rgba(124,58,237,0.06)' : undefined }}>
+                        <span className="text-xs font-mono w-6 text-center shrink-0" style={{ color: 'var(--muted)' }}>{i + 1}</span>
+                        {isEditing ? (
+                          <>
+                            <input autoFocus value={editingCatalog.name}
+                              onChange={e => setEditingCatalog(prev => prev ? { ...prev, name: e.target.value } : null)}
+                              onKeyDown={async e => {
+                                if (e.key === 'Escape') { setEditingCatalog(null); return; }
+                                if (e.key === 'Enter' && editingCatalog.name.trim()) {
+                                  setSavingCatalog(true);
+                                  try { await updateCourse(c.id, { name: editingCatalog.name.trim() }); setEditingCatalog(null); await loadCatalogCourses(); showMsg('Curso actualizado'); }
+                                  catch { showMsg('Error', 'err'); } finally { setSavingCatalog(false); }
+                                }
+                              }}
+                              className="flex-1 px-3 rounded-lg text-sm outline-none text-white"
+                              style={{ background: 'var(--bg)', border: '1px solid rgba(124,58,237,0.5)', height: 36 }} />
+                            <button onClick={async () => {
+                              if (!editingCatalog.name.trim()) return;
+                              setSavingCatalog(true);
+                              try { await updateCourse(c.id, { name: editingCatalog.name.trim() }); setEditingCatalog(null); await loadCatalogCourses(); showMsg('Curso actualizado'); }
+                              catch { showMsg('Error', 'err'); } finally { setSavingCatalog(false); }
+                            }} className="flex items-center justify-center rounded-lg shrink-0"
+                              style={{ width: 30, height: 30, background: 'rgba(124,58,237,0.2)', color: '#c4b5fd' }}>
+                              <Check size={13} />
+                            </button>
+                            <button onClick={() => setEditingCatalog(null)} className="flex items-center justify-center rounded-lg shrink-0"
+                              style={{ width: 30, height: 30, color: 'var(--muted)' }}>
+                              <X size={13} />
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <span className="flex-1 text-sm font-medium text-white">{c.name}</span>
+                            <button onClick={() => setEditingCatalog({ type: 'course', id: c.id, name: c.name })}
+                              className="icon-btn flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors shrink-0"
+                              style={{ color: 'var(--muted)', width: 30, height: 30 }}>
+                              <Pencil size={12} />
+                            </button>
+                            <button onClick={async () => {
+                              if (!confirm(`¿Eliminar "${c.name}"?`)) return;
+                              await deleteCourse(c.id); loadCatalogCourses(); showMsg('Eliminado');
+                            }} className="icon-btn flex items-center justify-center rounded-lg hover:bg-red-500/20 text-red-400 shrink-0"
+                              style={{ width: 30, height: 30 }}>
+                              <Trash2 size={12} />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    );
+                  })
                 }
               </div>
             </div>
@@ -2139,15 +2139,15 @@ export default function AdminPage() {
 
                 // Inline unit row renderer (shared between course groups and unassigned)
                 const renderUnitRow = (u: { id: number; name: string; code: string; order: number }, idx: number, groupUnits: { id: number; name: string; code: string; order: number }[]) => {
-                  const isEditing  = editingCatalog?.type === 'unit' && editingCatalog.id === u.id;
+                  const isEditing = editingCatalog?.type === 'unit' && editingCatalog.id === u.id;
                   const isDragging = dragUnitId === u.id;
-                  const isOver     = dragOverId === u.id;
+                  const isOver = dragOverId === u.id;
 
                   const handleDrop = async (targetId: number) => {
                     if (dragUnitId === null || dragUnitId === targetId) { setDragUnitId(null); setDragOverId(null); return; }
                     const list = [...groupUnits];
                     const fromIdx = list.findIndex(x => x.id === dragUnitId);
-                    const toIdx   = list.findIndex(x => x.id === targetId);
+                    const toIdx = list.findIndex(x => x.id === targetId);
                     if (fromIdx === -1 || toIdx === -1) return;
                     list.splice(toIdx, 0, list.splice(fromIdx, 1)[0]);
                     const reordered = list.map((x, i) => ({ id: x.id, order: i + 1 }));
@@ -2157,7 +2157,7 @@ export default function AdminPage() {
                         ...sub,
                         courses: sub.courses.map(c =>
                           !c.units.some(x => x.id === u.id) ? c :
-                          { ...c, units: list.map((x, i) => ({ ...x, order: i + 1 })) }
+                            { ...c, units: list.map((x, i) => ({ ...x, order: i + 1 })) }
                         ),
                       }
                     ));
@@ -2221,7 +2221,7 @@ export default function AdminPage() {
                       ) : (
                         <div className="flex items-center gap-3 pl-8 pr-4 py-2">
                           <span className="shrink-0 flex flex-col gap-[3px] opacity-30 hover:opacity-70 transition-opacity" style={{ cursor: 'grab' }}>
-                            {[0,1,2].map(i => <span key={i} className="block rounded-full" style={{ width: 12, height: 2, background: 'var(--muted)' }} />)}
+                            {[0, 1, 2].map(i => <span key={i} className="block rounded-full" style={{ width: 12, height: 2, background: 'var(--muted)' }} />)}
                           </span>
                           <span className="text-[11px] font-mono w-5 text-center shrink-0 rounded px-1"
                             style={{ color: 'var(--accent)', background: 'rgba(245,197,24,0.1)' }}>
@@ -2403,7 +2403,7 @@ export default function AdminPage() {
                           if (host.includes('wordwall')) detectedAuthor = 'wordwall';
                           else if (host.includes('educaplay')) detectedAuthor = 'educaplay';
                           else detectedAuthor = host.replace(/^www\./, '').split('.')[0];
-                        } catch {}
+                        } catch { }
                         setEditing(prev => {
                           const next = { ...prev! };
                           if (data.title && !prev?.title) { next.title = data.title; filled.add('title'); }
@@ -2499,11 +2499,11 @@ export default function AdminPage() {
                 <div>
                   <label className="text-xs mb-1.5 block font-medium" style={{ color: 'var(--muted)' }}>Asignatura *</label>
                   <select value={(editing as any).subjectId || ''} onChange={async e => {
-                      const sid = +e.target.value;
-                      setEditing(prev => ({ ...prev!, subjectId: sid, unitId: undefined }));
-                      if (sid) setModalUnits(await getUnits(sid));
-                      else setModalUnits([]);
-                    }}
+                    const sid = +e.target.value;
+                    setEditing(prev => ({ ...prev!, subjectId: sid, unitId: undefined }));
+                    if (sid) setModalUnits(await getUnits(sid));
+                    else setModalUnits([]);
+                  }}
                     className="w-full px-3 rounded-xl text-sm outline-none"
                     style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)', height: 44 }}>
                     <option value="">Sin asignatura</option>
@@ -2836,107 +2836,107 @@ export default function AdminPage() {
           {/* ── Ajustes rápidos ── */}
           <div className="max-w-xl">
 
-          {/* Toggle: mostrar vistas al público */}
-          <div
-            className="rounded-2xl p-5 space-y-4"
-            style={{
-              background: 'var(--card)',
-              border: `1px solid ${showViews ? 'rgba(245,197,24,0.25)' : 'var(--border)'}`,
-              transition: 'border-color 0.3s ease',
-            }}
-          >
-            {/* Header row */}
-            <div className="flex items-center gap-3">
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300"
-                style={{
-                  background: showViews ? 'rgba(245,197,24,0.18)' : 'rgba(255,255,255,0.06)',
-                  color: showViews ? 'var(--accent)' : 'var(--muted)',
-                }}
-              >
-                <Eye size={18} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-white">Visualizaciones públicas</p>
-                <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>
-                  Contador de vistas en tarjetas y modal de recursos
-                </p>
-              </div>
-              {/* State badge */}
-              <span
-                className="text-[11px] px-2.5 py-1 rounded-full font-bold shrink-0 transition-all duration-300"
-                style={{
-                  background: showViews ? 'rgba(245,197,24,0.15)' : 'rgba(255,255,255,0.06)',
-                  color: showViews ? 'var(--accent)' : 'var(--muted)',
-                }}
-              >
-                {showViews ? 'ACTIVADO' : 'DESACTIVADO'}
-              </span>
-            </div>
-
-            {/* Divider */}
-            <div style={{ height: 1, background: 'var(--border)' }} />
-
-            {/* Description + toggle row */}
-            <div className="flex items-center justify-between gap-4">
-              <p className="text-xs leading-relaxed" style={{ color: 'var(--muted)' }}>
-                {showViews
-                  ? 'Los visitantes pueden ver cuántas veces se ha visto cada recurso.'
-                  : 'El contador de vistas está oculto para los visitantes del sitio.'}
-              </p>
-
-              {/* Big toggle */}
-              <button
-                onClick={async () => {
-                  const next = !showViews;
-                  setSavingConfig(true);
-                  try {
-                    await updateSetting('showViews', String(next));
-                    setShowViews(next);
-                    showMsg(`Visualizaciones ${next ? 'visibles' : 'ocultas'} para el público`);
-                  } catch { showMsg('Error al guardar', 'err'); }
-                  finally { setSavingConfig(false); }
-                }}
-                disabled={savingConfig}
-                title={showViews ? 'Desactivar' : 'Activar'}
-                className="shrink-0 flex items-center gap-2 px-4 rounded-xl font-semibold text-sm transition-all duration-300 disabled:opacity-50"
-                style={{
-                  height: 44,
-                  background: showViews ? 'rgba(245,197,24,0.18)' : 'rgba(255,255,255,0.07)',
-                  border: `1px solid ${showViews ? 'rgba(245,197,24,0.4)' : 'rgba(255,255,255,0.12)'}`,
-                  color: showViews ? 'var(--accent)' : 'var(--muted)',
-                  minWidth: 130,
-                }}
-              >
-                {/* Pill switch */}
-                <span
-                  className="relative shrink-0"
+            {/* Toggle: mostrar vistas al público */}
+            <div
+              className="rounded-2xl p-5 space-y-4"
+              style={{
+                background: 'var(--card)',
+                border: `1px solid ${showViews ? 'rgba(245,197,24,0.25)' : 'var(--border)'}`,
+                transition: 'border-color 0.3s ease',
+              }}
+            >
+              {/* Header row */}
+              <div className="flex items-center gap-3">
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300"
                   style={{
-                    display: 'inline-block',
-                    width: 44,
-                    height: 24,
-                    borderRadius: 9999,
-                    background: showViews ? 'var(--accent)' : 'rgba(255,255,255,0.15)',
-                    transition: 'background 0.3s ease',
+                    background: showViews ? 'rgba(245,197,24,0.18)' : 'rgba(255,255,255,0.06)',
+                    color: showViews ? 'var(--accent)' : 'var(--muted)',
                   }}
                 >
-                  <span
-                    style={{
-                      position: 'absolute',
-                      top: 3,
-                      left: showViews ? 23 : 3,
-                      width: 18,
-                      height: 18,
-                      borderRadius: '50%',
-                      background: showViews ? '#1e0d38' : 'rgba(255,255,255,0.6)',
-                      transition: 'left 0.25s cubic-bezier(.4,0,.2,1), background 0.3s ease',
-                    }}
-                  />
+                  <Eye size={18} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-white">Visualizaciones públicas</p>
+                  <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>
+                    Contador de vistas en tarjetas y modal de recursos
+                  </p>
+                </div>
+                {/* State badge */}
+                <span
+                  className="text-[11px] px-2.5 py-1 rounded-full font-bold shrink-0 transition-all duration-300"
+                  style={{
+                    background: showViews ? 'rgba(245,197,24,0.15)' : 'rgba(255,255,255,0.06)',
+                    color: showViews ? 'var(--accent)' : 'var(--muted)',
+                  }}
+                >
+                  {showViews ? 'ACTIVADO' : 'DESACTIVADO'}
                 </span>
-                <span>{savingConfig ? 'Guardando…' : showViews ? 'Activado' : 'Desactivado'}</span>
-              </button>
+              </div>
+
+              {/* Divider */}
+              <div style={{ height: 1, background: 'var(--border)' }} />
+
+              {/* Description + toggle row */}
+              <div className="flex items-center justify-between gap-4">
+                <p className="text-xs leading-relaxed" style={{ color: 'var(--muted)' }}>
+                  {showViews
+                    ? 'Los visitantes pueden ver cuántas veces se ha visto cada recurso.'
+                    : 'El contador de vistas está oculto para los visitantes del sitio.'}
+                </p>
+
+                {/* Big toggle */}
+                <button
+                  onClick={async () => {
+                    const next = !showViews;
+                    setSavingConfig(true);
+                    try {
+                      await updateSetting('showViews', String(next));
+                      setShowViews(next);
+                      showMsg(`Visualizaciones ${next ? 'visibles' : 'ocultas'} para el público`);
+                    } catch { showMsg('Error al guardar', 'err'); }
+                    finally { setSavingConfig(false); }
+                  }}
+                  disabled={savingConfig}
+                  title={showViews ? 'Desactivar' : 'Activar'}
+                  className="shrink-0 flex items-center gap-2 px-4 rounded-xl font-semibold text-sm transition-all duration-300 disabled:opacity-50"
+                  style={{
+                    height: 44,
+                    background: showViews ? 'rgba(245,197,24,0.18)' : 'rgba(255,255,255,0.07)',
+                    border: `1px solid ${showViews ? 'rgba(245,197,24,0.4)' : 'rgba(255,255,255,0.12)'}`,
+                    color: showViews ? 'var(--accent)' : 'var(--muted)',
+                    minWidth: 130,
+                  }}
+                >
+                  {/* Pill switch */}
+                  <span
+                    className="relative shrink-0"
+                    style={{
+                      display: 'inline-block',
+                      width: 44,
+                      height: 24,
+                      borderRadius: 9999,
+                      background: showViews ? 'var(--accent)' : 'rgba(255,255,255,0.15)',
+                      transition: 'background 0.3s ease',
+                    }}
+                  >
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: 3,
+                        left: showViews ? 23 : 3,
+                        width: 18,
+                        height: 18,
+                        borderRadius: '50%',
+                        background: showViews ? '#1e0d38' : 'rgba(255,255,255,0.6)',
+                        transition: 'left 0.25s cubic-bezier(.4,0,.2,1), background 0.3s ease',
+                      }}
+                    />
+                  </span>
+                  <span>{savingConfig ? 'Guardando…' : showViews ? 'Activado' : 'Desactivado'}</span>
+                </button>
+              </div>
             </div>
-          </div>
 
           </div>{/* end max-w-xl */}
 
@@ -2945,364 +2945,364 @@ export default function AdminPage() {
             <h3 className="text-sm font-semibold text-white mb-4">Herramientas de imágenes</h3>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
-          {/* ── Migración de imágenes a WebP ── */}
-          <div className="rounded-2xl p-5 space-y-4"
-            style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                style={{ background: 'rgba(16,185,129,0.15)', color: '#34d399' }}>
-                <ImageIcon size={18} />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-semibold text-white">Migrar imágenes preview a WebP local</p>
-                <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>
-                  Descarga cada imagen externa (ibb.co, etc.), la convierte a <span className="font-mono">.webp</span> y la guarda en el servidor. Las imágenes dejan de depender de URLs externas.
-                </p>
-              </div>
-            </div>
-
-            <div style={{ height: 1, background: 'var(--border)' }} />
-
-            {/* Análisis previo */}
-            {migrateCount && (
-              <div className="grid grid-cols-5 gap-2 text-center text-xs">
-                {[
-                  { label: 'Total',        value: migrateCount.total,          color: 'var(--muted)' },
-                  { label: 'URL→WebP',     value: migrateCount.pending,        color: '#f5c518' },
-                  { label: 'Ya en WebP',   value: migrateCount.alreadyWebp,    color: '#34d399' },
-                  { label: 'Sin imagen',   value: migrateCount.noImage,        color: '#f87171' },
-                  { label: 'Scrapeables', value: migrateCount.noImageWithUrl,  color: '#c4b5fd' },
-                ].map(k => (
-                  <div key={k.label} className="rounded-xl p-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
-                    <p className="text-base font-bold" style={{ color: k.color }}>{k.value}</p>
-                    <p style={{ color: 'var(--muted)' }}>{k.label}</p>
+              {/* ── Migración de imágenes a WebP ── */}
+              <div className="rounded-2xl p-5 space-y-4"
+                style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                    style={{ background: 'rgba(16,185,129,0.15)', color: '#34d399' }}>
+                    <ImageIcon size={18} />
                   </div>
-                ))}
-              </div>
-            )}
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-white">Migrar imágenes preview a WebP local</p>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>
+                      Descarga cada imagen externa (ibb.co, etc.), la convierte a <span className="font-mono">.webp</span> y la guarda en el servidor. Las imágenes dejan de depender de URLs externas.
+                    </p>
+                  </div>
+                </div>
 
-            {/* Barra de progreso */}
-            {migrateProgress.total > 0 && (
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs" style={{ color: 'var(--muted)' }}>
-                  <span>Procesando {migrateProgress.done} / {migrateProgress.total}</span>
-                  <span style={{ color: '#34d399' }}>{migrateProgress.converted} convertidas · {migrateProgress.failed} fallidas</span>
-                </div>
-                <div className="rounded-full overflow-hidden" style={{ background: 'var(--bg)', height: 8 }}>
-                  <div className="h-full rounded-full transition-all duration-300"
-                    style={{ width: `${Math.round(migrateProgress.done / migrateProgress.total * 100)}%`, background: 'linear-gradient(90deg,#7c3aed,#34d399)' }} />
-                </div>
-                <p className="text-[11px]" style={{ color: 'var(--muted)' }}>
-                  {migrateProgress.done >= migrateProgress.total
-                    ? '✓ Completado'
-                    : 'No cierres esta ventana mientras procesa…'}
-                </p>
-                {migrateProgress.errors.length > 0 && (
-                  <details className="text-xs">
-                    <summary className="cursor-pointer text-red-400">Ver errores ({migrateProgress.errors.length})</summary>
-                    <ul className="mt-1 space-y-0.5 pl-3" style={{ color: 'var(--muted)' }}>
-                      {migrateProgress.errors.slice(0, 30).map(e => (
-                        <li key={e.id}>ID {e.id} — {e.title}: <span className="text-red-400">{e.reason}</span></li>
-                      ))}
-                      {migrateProgress.errors.length > 30 && <li>…y {migrateProgress.errors.length - 30} más</li>}
-                    </ul>
-                  </details>
+                <div style={{ height: 1, background: 'var(--border)' }} />
+
+                {/* Análisis previo */}
+                {migrateCount && (
+                  <div className="grid grid-cols-5 gap-2 text-center text-xs">
+                    {[
+                      { label: 'Total', value: migrateCount.total, color: 'var(--muted)' },
+                      { label: 'URL→WebP', value: migrateCount.pending, color: '#f5c518' },
+                      { label: 'Ya en WebP', value: migrateCount.alreadyWebp, color: '#34d399' },
+                      { label: 'Sin imagen', value: migrateCount.noImage, color: '#f87171' },
+                      { label: 'Scrapeables', value: migrateCount.noImageWithUrl, color: '#c4b5fd' },
+                    ].map(k => (
+                      <div key={k.label} className="rounded-xl p-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
+                        <p className="text-base font-bold" style={{ color: k.color }}>{k.value}</p>
+                        <p style={{ color: 'var(--muted)' }}>{k.label}</p>
+                      </div>
+                    ))}
+                  </div>
                 )}
-              </div>
-            )}
 
-            <div className="flex gap-2 flex-wrap">
-              <button
-                disabled={migratingImages}
-                onClick={async () => {
-                  setMigratingImages(true);
-                  try {
-                    const r = await countImageMigration();
-                    setMigrateCount(r);
-                  } catch { showMsg('Error al analizar', 'err'); }
-                  finally { setMigratingImages(false); }
-                }}
-                className="flex items-center gap-2 px-4 rounded-xl text-xs font-semibold disabled:opacity-50"
-                style={{ height: 38, background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--muted)' }}>
-                {migratingImages && migrateProgress.total === 0 ? <Loader2 size={13} className="animate-spin" /> : <Eye size={13} />}
-                Analizar
-              </button>
+                {/* Barra de progreso */}
+                {migrateProgress.total > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs" style={{ color: 'var(--muted)' }}>
+                      <span>Procesando {migrateProgress.done} / {migrateProgress.total}</span>
+                      <span style={{ color: '#34d399' }}>{migrateProgress.converted} convertidas · {migrateProgress.failed} fallidas</span>
+                    </div>
+                    <div className="rounded-full overflow-hidden" style={{ background: 'var(--bg)', height: 8 }}>
+                      <div className="h-full rounded-full transition-all duration-300"
+                        style={{ width: `${Math.round(migrateProgress.done / migrateProgress.total * 100)}%`, background: 'linear-gradient(90deg,#7c3aed,#34d399)' }} />
+                    </div>
+                    <p className="text-[11px]" style={{ color: 'var(--muted)' }}>
+                      {migrateProgress.done >= migrateProgress.total
+                        ? '✓ Completado'
+                        : 'No cierres esta ventana mientras procesa…'}
+                    </p>
+                    {migrateProgress.errors.length > 0 && (
+                      <details className="text-xs">
+                        <summary className="cursor-pointer text-red-400">Ver errores ({migrateProgress.errors.length})</summary>
+                        <ul className="mt-1 space-y-0.5 pl-3" style={{ color: 'var(--muted)' }}>
+                          {migrateProgress.errors.slice(0, 30).map(e => (
+                            <li key={e.id}>ID {e.id} — {e.title}: <span className="text-red-400">{e.reason}</span></li>
+                          ))}
+                          {migrateProgress.errors.length > 30 && <li>…y {migrateProgress.errors.length - 30} más</li>}
+                        </ul>
+                      </details>
+                    )}
+                  </div>
+                )}
 
-              <button
-                disabled={migratingImages || (migrateCount !== null && migrateCount.pending === 0)}
-                onClick={async () => {
-                  if (!confirm('Esto descargará y convertirá todas las imágenes externas a WebP local. Puede tardar varios minutos. ¿Continuar?')) return;
-                  setMigratingImages(true);
-                  const BATCH = 10;
-                  const MAX_RETRIES = 3;
+                <div className="flex gap-2 flex-wrap">
+                  <button
+                    disabled={migratingImages}
+                    onClick={async () => {
+                      setMigratingImages(true);
+                      try {
+                        const r = await countImageMigration();
+                        setMigrateCount(r);
+                      } catch { showMsg('Error al analizar', 'err'); }
+                      finally { setMigratingImages(false); }
+                    }}
+                    className="flex items-center gap-2 px-4 rounded-xl text-xs font-semibold disabled:opacity-50"
+                    style={{ height: 38, background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--muted)' }}>
+                    {migratingImages && migrateProgress.total === 0 ? <Loader2 size={13} className="animate-spin" /> : <Eye size={13} />}
+                    Analizar
+                  </button>
 
-                  // Get fresh count
-                  let count = migrateCount;
-                  if (!count) { count = await countImageMigration(); setMigrateCount(count); }
-                  const total = count.pending;
-                  setMigrateProgress({ done: 0, total, converted: 0, failed: 0, errors: [] });
+                  <button
+                    disabled={migratingImages || (migrateCount !== null && migrateCount.pending === 0)}
+                    onClick={async () => {
+                      if (!confirm('Esto descargará y convertirá todas las imágenes externas a WebP local. Puede tardar varios minutos. ¿Continuar?')) return;
+                      setMigratingImages(true);
+                      const BATCH = 10;
+                      const MAX_RETRIES = 3;
 
-                  let offset = 0, totalConverted = 0, totalFailed = 0, done = 0;
-                  const allErrors: { id: number; title: string; reason: string }[] = [];
+                      // Get fresh count
+                      let count = migrateCount;
+                      if (!count) { count = await countImageMigration(); setMigrateCount(count); }
+                      const total = count.pending;
+                      setMigrateProgress({ done: 0, total, converted: 0, failed: 0, errors: [] });
 
-                  try {
-                    while (true) {
-                      // Retry logic for network errors
-                      let r: Awaited<ReturnType<typeof migrateImagesBatch>> | null = null;
-                      for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-                        try {
-                          r = await migrateImagesBatch(offset, BATCH);
-                          break;
-                        } catch (e: any) {
-                          if (attempt === MAX_RETRIES) throw e;
-                          // Wait 2s before retry
-                          await new Promise(res => setTimeout(res, 2000));
+                      let offset = 0, totalConverted = 0, totalFailed = 0, done = 0;
+                      const allErrors: { id: number; title: string; reason: string }[] = [];
+
+                      try {
+                        while (true) {
+                          // Retry logic for network errors
+                          let r: Awaited<ReturnType<typeof migrateImagesBatch>> | null = null;
+                          for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+                            try {
+                              r = await migrateImagesBatch(offset, BATCH);
+                              break;
+                            } catch (e: any) {
+                              if (attempt === MAX_RETRIES) throw e;
+                              // Wait 2s before retry
+                              await new Promise(res => setTimeout(res, 2000));
+                            }
+                          }
+                          if (!r) break;
+                          totalConverted += r.converted;
+                          totalFailed += r.failed;
+                          allErrors.push(...r.errors);
+                          done = Math.min(offset + r.processed, total);
+                          setMigrateProgress({ done, total, converted: totalConverted, failed: totalFailed, errors: allErrors });
+                          if (r.done || r.processed === 0) break;
+                          offset += BATCH;
                         }
+                        showMsg(`✓ ${totalConverted} imágenes convertidas a WebP`, 'ok');
+                        countImageMigration().then(setMigrateCount).catch(() => { });
+                      } catch (e: any) {
+                        showMsg(`Error en lote (offset ${offset}): ${e?.message} — puedes reintentar, retomará desde donde quedó`, 'err');
+                      } finally {
+                        setMigratingImages(false);
                       }
-                      if (!r) break;
-                      totalConverted += r.converted;
-                      totalFailed    += r.failed;
-                      allErrors.push(...r.errors);
-                      done = Math.min(offset + r.processed, total);
-                      setMigrateProgress({ done, total, converted: totalConverted, failed: totalFailed, errors: allErrors });
-                      if (r.done || r.processed === 0) break;
-                      offset += BATCH;
-                    }
-                    showMsg(`✓ ${totalConverted} imágenes convertidas a WebP`, 'ok');
-                    countImageMigration().then(setMigrateCount).catch(() => {});
-                  } catch (e: any) {
-                    showMsg(`Error en lote (offset ${offset}): ${e?.message} — puedes reintentar, retomará desde donde quedó`, 'err');
-                  } finally {
-                    setMigratingImages(false);
-                  }
-                }}
-                className="flex items-center gap-2 px-5 rounded-xl text-xs font-bold disabled:opacity-50"
-                style={{ height: 38, background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', color: '#34d399' }}>
-                {migratingImages && migrateProgress.total > 0
-                  ? <><Loader2 size={13} className="animate-spin" /> Procesando lote {Math.ceil(migrateProgress.done / 30)} / {Math.ceil(migrateProgress.total / 30)}…</>
-                  : <><Upload size={13} /> Descargar y convertir a WebP</>}
-              </button>
-            </div>
-          </div>
-
-          {/* ── Scraping de imágenes faltantes ── */}
-          <div className="rounded-2xl p-5 space-y-4"
-            style={{ background: 'var(--card)', border: '1px solid rgba(124,58,237,0.3)' }}>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                style={{ background: 'rgba(124,58,237,0.15)', color: '#c4b5fd' }}>
-                <Sparkles size={18} />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-semibold text-white">Scraping de imágenes faltantes</p>
-                <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>
-                  Para cada recurso sin imagen que tiene URL, accede a la página, extrae la imagen principal (og:image) y la guarda localmente en WebP.
-                </p>
-              </div>
-            </div>
-
-            <div style={{ height: 1, background: 'var(--border)' }} />
-
-            {/* Progreso */}
-            {scrapeProgress.total > 0 && (
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs" style={{ color: 'var(--muted)' }}>
-                  <span>Procesando {scrapeProgress.done} / {scrapeProgress.total}</span>
-                  <span style={{ color: '#c4b5fd' }}>{scrapeProgress.saved} guardadas · {scrapeProgress.failed} sin imagen</span>
+                    }}
+                    className="flex items-center gap-2 px-5 rounded-xl text-xs font-bold disabled:opacity-50"
+                    style={{ height: 38, background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', color: '#34d399' }}>
+                    {migratingImages && migrateProgress.total > 0
+                      ? <><Loader2 size={13} className="animate-spin" /> Procesando lote {Math.ceil(migrateProgress.done / 30)} / {Math.ceil(migrateProgress.total / 30)}…</>
+                      : <><Upload size={13} /> Descargar y convertir a WebP</>}
+                  </button>
                 </div>
-                <div className="rounded-full overflow-hidden" style={{ background: 'var(--bg)', height: 8 }}>
-                  <div className="h-full rounded-full transition-all duration-300"
-                    style={{ width: `${Math.round(scrapeProgress.done / scrapeProgress.total * 100)}%`, background: 'linear-gradient(90deg,#7c3aed,#c4b5fd)' }} />
+              </div>
+
+              {/* ── Scraping de imágenes faltantes ── */}
+              <div className="rounded-2xl p-5 space-y-4"
+                style={{ background: 'var(--card)', border: '1px solid rgba(124,58,237,0.3)' }}>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                    style={{ background: 'rgba(124,58,237,0.15)', color: '#c4b5fd' }}>
+                    <Sparkles size={18} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-white">Scraping de imágenes faltantes</p>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>
+                      Para cada recurso sin imagen que tiene URL, accede a la página, extrae la imagen principal (og:image) y la guarda localmente en WebP.
+                    </p>
+                  </div>
+                </div>
+
+                <div style={{ height: 1, background: 'var(--border)' }} />
+
+                {/* Progreso */}
+                {scrapeProgress.total > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs" style={{ color: 'var(--muted)' }}>
+                      <span>Procesando {scrapeProgress.done} / {scrapeProgress.total}</span>
+                      <span style={{ color: '#c4b5fd' }}>{scrapeProgress.saved} guardadas · {scrapeProgress.failed} sin imagen</span>
+                    </div>
+                    <div className="rounded-full overflow-hidden" style={{ background: 'var(--bg)', height: 8 }}>
+                      <div className="h-full rounded-full transition-all duration-300"
+                        style={{ width: `${Math.round(scrapeProgress.done / scrapeProgress.total * 100)}%`, background: 'linear-gradient(90deg,#7c3aed,#c4b5fd)' }} />
+                    </div>
+                    <p className="text-[11px]" style={{ color: 'var(--muted)' }}>
+                      {scrapeProgress.done >= scrapeProgress.total ? '✓ Completado' : 'El scraping puede tardar — no cierres esta ventana…'}
+                    </p>
+                    {scrapeProgress.errors.length > 0 && (
+                      <details className="text-xs">
+                        <summary className="cursor-pointer" style={{ color: '#f5c518' }}>Sin imagen encontrada ({scrapeProgress.errors.length})</summary>
+                        <ul className="mt-1 space-y-0.5 pl-3" style={{ color: 'var(--muted)' }}>
+                          {scrapeProgress.errors.slice(0, 30).map(e => (
+                            <li key={e.id}>ID {e.id} — {e.title}: <span style={{ color: '#f87171' }}>{e.reason}</span></li>
+                          ))}
+                          {scrapeProgress.errors.length > 30 && <li>…y {scrapeProgress.errors.length - 30} más</li>}
+                        </ul>
+                      </details>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex gap-2 items-center flex-wrap">
+                  {migrateCount && (
+                    <span className="text-xs px-3 py-1 rounded-full" style={{ background: 'rgba(124,58,237,0.15)', color: '#c4b5fd', border: '1px solid rgba(124,58,237,0.3)' }}>
+                      {migrateCount.noImageWithUrl} recursos scrapeables
+                    </span>
+                  )}
+                  <button
+                    disabled={scrapingMissing || migratingImages || (migrateCount !== null && migrateCount.noImageWithUrl === 0)}
+                    onClick={async () => {
+                      if (!confirm('Accederá a la URL de cada recurso sin imagen para extraer su imagen principal. Puede tardar varios minutos. ¿Continuar?')) return;
+                      setScrapingMissing(true);
+                      const BATCH = 10;
+                      const MAX_RETRIES = 3;
+
+                      let count = migrateCount;
+                      if (!count) { count = await countImageMigration(); setMigrateCount(count); }
+                      const total = count.noImageWithUrl;
+                      setScrapeProgress({ done: 0, total, saved: 0, failed: 0, errors: [] });
+
+                      let offset = 0, totalSaved = 0, totalFailed = 0;
+                      const allErrors: { id: number; title: string; reason: string }[] = [];
+
+                      try {
+                        while (true) {
+                          let r: Awaited<ReturnType<typeof scrapeMissingImagesBatch>> | null = null;
+                          for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+                            try { r = await scrapeMissingImagesBatch(offset, BATCH); break; }
+                            catch { if (attempt === MAX_RETRIES) throw new Error('Timeout tras 3 intentos'); await new Promise(res => setTimeout(res, 2000)); }
+                          }
+                          if (!r) break;
+                          totalSaved += r.saved;
+                          totalFailed += r.failed;
+                          allErrors.push(...r.errors);
+                          const done = Math.min(offset + r.processed, total);
+                          setScrapeProgress({ done, total, saved: totalSaved, failed: totalFailed, errors: allErrors });
+                          if (r.done || r.processed === 0) break;
+                          offset += BATCH;
+                        }
+                        showMsg(`✓ ${totalSaved} imágenes encontradas y guardadas`, 'ok');
+                        countImageMigration().then(setMigrateCount).catch(() => { });
+                      } catch (e: any) {
+                        showMsg(`Error en scraping: ${e?.message} — puedes reintentar`, 'err');
+                      } finally {
+                        setScrapingMissing(false);
+                      }
+                    }}
+                    className="flex items-center gap-2 px-5 rounded-xl text-xs font-bold disabled:opacity-50"
+                    style={{ height: 38, background: 'rgba(124,58,237,0.12)', border: '1px solid rgba(124,58,237,0.3)', color: '#c4b5fd' }}>
+                    {scrapingMissing
+                      ? <><Loader2 size={13} className="animate-spin" /> Scrapeando lote {Math.ceil((scrapeProgress.done || 1) / 10)}…</>
+                      : <><Sparkles size={13} /> Scrapear imágenes faltantes</>}
+                  </button>
                 </div>
                 <p className="text-[11px]" style={{ color: 'var(--muted)' }}>
-                  {scrapeProgress.done >= scrapeProgress.total ? '✓ Completado' : 'El scraping puede tardar — no cierres esta ventana…'}
+                  Los recursos sin URL o cuya página no tiene og:image quedarán sin imagen. Si se interrumpe, puedes reintentar — solo procesa los que aún no tienen imagen.
                 </p>
-                {scrapeProgress.errors.length > 0 && (
-                  <details className="text-xs">
-                    <summary className="cursor-pointer" style={{ color: '#f5c518' }}>Sin imagen encontrada ({scrapeProgress.errors.length})</summary>
-                    <ul className="mt-1 space-y-0.5 pl-3" style={{ color: 'var(--muted)' }}>
-                      {scrapeProgress.errors.slice(0, 30).map(e => (
-                        <li key={e.id}>ID {e.id} — {e.title}: <span style={{ color: '#f87171' }}>{e.reason}</span></li>
-                      ))}
-                      {scrapeProgress.errors.length > 30 && <li>…y {scrapeProgress.errors.length - 30} más</li>}
-                    </ul>
-                  </details>
-                )}
               </div>
-            )}
 
-            <div className="flex gap-2 items-center flex-wrap">
-              {migrateCount && (
-                <span className="text-xs px-3 py-1 rounded-full" style={{ background: 'rgba(124,58,237,0.15)', color: '#c4b5fd', border: '1px solid rgba(124,58,237,0.3)' }}>
-                  {migrateCount.noImageWithUrl} recursos scrapeables
-                </span>
-              )}
-              <button
-                disabled={scrapingMissing || migratingImages || (migrateCount !== null && migrateCount.noImageWithUrl === 0)}
-                onClick={async () => {
-                  if (!confirm('Accederá a la URL de cada recurso sin imagen para extraer su imagen principal. Puede tardar varios minutos. ¿Continuar?')) return;
-                  setScrapingMissing(true);
-                  const BATCH = 10;
-                  const MAX_RETRIES = 3;
+              {/* ── Corregir imágenes incorrectas ── */}
+              <div className="rounded-2xl p-5 space-y-4"
+                style={{ background: 'var(--card)', border: '1px solid rgba(239,68,68,0.25)' }}>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                    style={{ background: 'rgba(239,68,68,0.12)', color: '#f87171' }}>
+                    <Pencil size={18} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-white">Corregir imágenes incorrectas</p>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>
+                      Vuelve a scrapear la imagen desde la URL de cada recurso, sobreescribiendo la imagen actual. Útil cuando la imagen no coincide con el título. Filtra por asignatura para procesar solo las afectadas.
+                    </p>
+                  </div>
+                </div>
 
-                  let count = migrateCount;
-                  if (!count) { count = await countImageMigration(); setMigrateCount(count); }
-                  const total = count.noImageWithUrl;
-                  setScrapeProgress({ done: 0, total, saved: 0, failed: 0, errors: [] });
+                <div style={{ height: 1, background: 'var(--border)' }} />
 
-                  let offset = 0, totalSaved = 0, totalFailed = 0;
-                  const allErrors: { id: number; title: string; reason: string }[] = [];
+                <div className="flex gap-3 items-end flex-wrap">
+                  <div className="flex-1" style={{ minWidth: 200 }}>
+                    <label className="text-[11px] mb-1.5 block font-medium" style={{ color: 'var(--muted)' }}>
+                      Filtrar por asignatura <span style={{ fontWeight: 400 }}>(vacío = todas)</span>
+                    </label>
+                    <select value={rescrapeSubject} onChange={e => setRescrapeSubject(e.target.value)}
+                      disabled={rescrapingImages}
+                      className="w-full px-3 rounded-xl text-sm outline-none disabled:opacity-40"
+                      style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)', height: 42 }}>
+                      <option value="">— Todas las asignaturas —</option>
+                      {subjects.filter(s => s.isActive).map(s => (
+                        <option key={s.id} value={s.id} style={{ color: '#1e0d38', background: '#e9e0f7' }}>{s.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
 
-                  try {
-                    while (true) {
-                      let r: Awaited<ReturnType<typeof scrapeMissingImagesBatch>> | null = null;
-                      for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-                        try { r = await scrapeMissingImagesBatch(offset, BATCH); break; }
-                        catch { if (attempt === MAX_RETRIES) throw new Error('Timeout tras 3 intentos'); await new Promise(res => setTimeout(res, 2000)); }
+                {rescrapeProgress.total > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs" style={{ color: 'var(--muted)' }}>
+                      <span>Procesando {rescrapeProgress.done} / {rescrapeProgress.total}</span>
+                      <span style={{ color: '#34d399' }}>{rescrapeProgress.updated} actualizadas · <span className="text-red-400">{rescrapeProgress.failed} sin imagen</span></span>
+                    </div>
+                    <div className="rounded-full overflow-hidden" style={{ background: 'var(--bg)', height: 8 }}>
+                      <div className="h-full rounded-full transition-all duration-300"
+                        style={{ width: `${Math.round(rescrapeProgress.done / rescrapeProgress.total * 100)}%`, background: 'linear-gradient(90deg,#ef4444,#f59e0b)' }} />
+                    </div>
+                    <p className="text-[11px]" style={{ color: 'var(--muted)' }}>
+                      {rescrapeProgress.done >= rescrapeProgress.total ? '✓ Completado' : 'No cierres esta ventana mientras procesa…'}
+                    </p>
+                    {rescrapeProgress.errors.length > 0 && (
+                      <details className="text-xs">
+                        <summary className="cursor-pointer text-red-400">Sin imagen encontrada ({rescrapeProgress.errors.length})</summary>
+                        <ul className="mt-1 space-y-0.5 pl-3 max-h-40 overflow-y-auto" style={{ color: 'var(--muted)' }}>
+                          {rescrapeProgress.errors.map(e => (
+                            <li key={e.id}>ID {e.id} — {e.title}: <span className="text-red-400">{e.reason}</span></li>
+                          ))}
+                        </ul>
+                      </details>
+                    )}
+                  </div>
+                )}
+
+                <button
+                  disabled={rescrapingImages || migratingImages || scrapingMissing}
+                  onClick={async () => {
+                    const subjectName = rescrapeSubject
+                      ? subjects.find(s => String(s.id) === rescrapeSubject)?.name
+                      : 'TODAS las asignaturas';
+                    if (!confirm(`Esto sobreescribirá las imágenes actuales de "${subjectName}" con las obtenidas desde la URL de cada recurso. ¿Continuar?`)) return;
+
+                    setRescrapingImages(true);
+                    const BATCH = 5;
+                    const MAX_RETRIES = 3;
+                    const subjectId = rescrapeSubject ? +rescrapeSubject : undefined;
+                    setRescrapeProgress({ done: 0, total: 0, updated: 0, failed: 0, errors: [] });
+
+                    let offset = 0, totalUpdated = 0, totalFailed = 0, grandTotal = 0;
+                    const allErrors: { id: number; title: string; reason: string }[] = [];
+
+                    try {
+                      while (true) {
+                        let r: Awaited<ReturnType<typeof rescrapeImagesBatch>> | null = null;
+                        for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+                          try { r = await rescrapeImagesBatch(offset, BATCH, subjectId); break; }
+                          catch { if (attempt === MAX_RETRIES) throw new Error('Timeout tras 3 intentos'); await new Promise(res => setTimeout(res, 2000)); }
+                        }
+                        if (!r) break;
+                        if (grandTotal === 0) grandTotal = r.total;
+                        totalUpdated += r.updated;
+                        totalFailed += r.failed;
+                        allErrors.push(...r.errors);
+                        const done = Math.min(offset + r.processed, grandTotal);
+                        setRescrapeProgress({ done, total: grandTotal, updated: totalUpdated, failed: totalFailed, errors: allErrors });
+                        if (r.done || r.processed === 0) break;
+                        offset += BATCH;
                       }
-                      if (!r) break;
-                      totalSaved  += r.saved;
-                      totalFailed += r.failed;
-                      allErrors.push(...r.errors);
-                      const done = Math.min(offset + r.processed, total);
-                      setScrapeProgress({ done, total, saved: totalSaved, failed: totalFailed, errors: allErrors });
-                      if (r.done || r.processed === 0) break;
-                      offset += BATCH;
+                      showMsg(`✓ ${totalUpdated} imágenes corregidas`, 'ok');
+                      countImageMigration().then(setMigrateCount).catch(() => { });
+                    } catch (e: any) {
+                      showMsg(`Error: ${e?.message} — puedes reintentar`, 'err');
+                    } finally {
+                      setRescrapingImages(false);
                     }
-                    showMsg(`✓ ${totalSaved} imágenes encontradas y guardadas`, 'ok');
-                    countImageMigration().then(setMigrateCount).catch(() => {});
-                  } catch (e: any) {
-                    showMsg(`Error en scraping: ${e?.message} — puedes reintentar`, 'err');
-                  } finally {
-                    setScrapingMissing(false);
-                  }
-                }}
-                className="flex items-center gap-2 px-5 rounded-xl text-xs font-bold disabled:opacity-50"
-                style={{ height: 38, background: 'rgba(124,58,237,0.12)', border: '1px solid rgba(124,58,237,0.3)', color: '#c4b5fd' }}>
-                {scrapingMissing
-                  ? <><Loader2 size={13} className="animate-spin" /> Scrapeando lote {Math.ceil((scrapeProgress.done || 1) / 10)}…</>
-                  : <><Sparkles size={13} /> Scrapear imágenes faltantes</>}
-              </button>
-            </div>
-            <p className="text-[11px]" style={{ color: 'var(--muted)' }}>
-              Los recursos sin URL o cuya página no tiene og:image quedarán sin imagen. Si se interrumpe, puedes reintentar — solo procesa los que aún no tienen imagen.
-            </p>
-          </div>
+                  }}
+                  className="flex items-center gap-2 px-5 rounded-xl text-xs font-bold disabled:opacity-50"
+                  style={{ height: 38, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171' }}>
+                  {rescrapingImages
+                    ? <><Loader2 size={13} className="animate-spin" /> Corrigiendo {rescrapeProgress.done}/{rescrapeProgress.total}…</>
+                    : <><Sparkles size={13} /> {rescrapeSubject ? `Corregir ${subjects.find(s => String(s.id) === rescrapeSubject)?.name}` : 'Corregir todas'}</>}
+                </button>
 
-          {/* ── Corregir imágenes incorrectas ── */}
-          <div className="rounded-2xl p-5 space-y-4"
-            style={{ background: 'var(--card)', border: '1px solid rgba(239,68,68,0.25)' }}>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                style={{ background: 'rgba(239,68,68,0.12)', color: '#f87171' }}>
-                <Pencil size={18} />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-semibold text-white">Corregir imágenes incorrectas</p>
-                <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>
-                  Vuelve a scrapear la imagen desde la URL de cada recurso, sobreescribiendo la imagen actual. Útil cuando la imagen no coincide con el título. Filtra por asignatura para procesar solo las afectadas.
+                <p className="text-[11px]" style={{ color: '#f87171', opacity: 0.8 }}>
+                  ⚠ Sobreescribe las imágenes actuales. Úsala asignatura por asignatura para verificar los resultados antes de continuar.
                 </p>
               </div>
-            </div>
-
-            <div style={{ height: 1, background: 'var(--border)' }} />
-
-            <div className="flex gap-3 items-end flex-wrap">
-              <div className="flex-1" style={{ minWidth: 200 }}>
-                <label className="text-[11px] mb-1.5 block font-medium" style={{ color: 'var(--muted)' }}>
-                  Filtrar por asignatura <span style={{ fontWeight: 400 }}>(vacío = todas)</span>
-                </label>
-                <select value={rescrapeSubject} onChange={e => setRescrapeSubject(e.target.value)}
-                  disabled={rescrapingImages}
-                  className="w-full px-3 rounded-xl text-sm outline-none disabled:opacity-40"
-                  style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)', height: 42 }}>
-                  <option value="">— Todas las asignaturas —</option>
-                  {subjects.filter(s => s.isActive).map(s => (
-                    <option key={s.id} value={s.id} style={{ color: '#1e0d38', background: '#e9e0f7' }}>{s.name}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {rescrapeProgress.total > 0 && (
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs" style={{ color: 'var(--muted)' }}>
-                  <span>Procesando {rescrapeProgress.done} / {rescrapeProgress.total}</span>
-                  <span style={{ color: '#34d399' }}>{rescrapeProgress.updated} actualizadas · <span className="text-red-400">{rescrapeProgress.failed} sin imagen</span></span>
-                </div>
-                <div className="rounded-full overflow-hidden" style={{ background: 'var(--bg)', height: 8 }}>
-                  <div className="h-full rounded-full transition-all duration-300"
-                    style={{ width: `${Math.round(rescrapeProgress.done / rescrapeProgress.total * 100)}%`, background: 'linear-gradient(90deg,#ef4444,#f59e0b)' }} />
-                </div>
-                <p className="text-[11px]" style={{ color: 'var(--muted)' }}>
-                  {rescrapeProgress.done >= rescrapeProgress.total ? '✓ Completado' : 'No cierres esta ventana mientras procesa…'}
-                </p>
-                {rescrapeProgress.errors.length > 0 && (
-                  <details className="text-xs">
-                    <summary className="cursor-pointer text-red-400">Sin imagen encontrada ({rescrapeProgress.errors.length})</summary>
-                    <ul className="mt-1 space-y-0.5 pl-3 max-h-40 overflow-y-auto" style={{ color: 'var(--muted)' }}>
-                      {rescrapeProgress.errors.map(e => (
-                        <li key={e.id}>ID {e.id} — {e.title}: <span className="text-red-400">{e.reason}</span></li>
-                      ))}
-                    </ul>
-                  </details>
-                )}
-              </div>
-            )}
-
-            <button
-              disabled={rescrapingImages || migratingImages || scrapingMissing}
-              onClick={async () => {
-                const subjectName = rescrapeSubject
-                  ? subjects.find(s => String(s.id) === rescrapeSubject)?.name
-                  : 'TODAS las asignaturas';
-                if (!confirm(`Esto sobreescribirá las imágenes actuales de "${subjectName}" con las obtenidas desde la URL de cada recurso. ¿Continuar?`)) return;
-
-                setRescrapingImages(true);
-                const BATCH = 5;
-                const MAX_RETRIES = 3;
-                const subjectId = rescrapeSubject ? +rescrapeSubject : undefined;
-                setRescrapeProgress({ done: 0, total: 0, updated: 0, failed: 0, errors: [] });
-
-                let offset = 0, totalUpdated = 0, totalFailed = 0, grandTotal = 0;
-                const allErrors: { id: number; title: string; reason: string }[] = [];
-
-                try {
-                  while (true) {
-                    let r: Awaited<ReturnType<typeof rescrapeImagesBatch>> | null = null;
-                    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-                      try { r = await rescrapeImagesBatch(offset, BATCH, subjectId); break; }
-                      catch { if (attempt === MAX_RETRIES) throw new Error('Timeout tras 3 intentos'); await new Promise(res => setTimeout(res, 2000)); }
-                    }
-                    if (!r) break;
-                    if (grandTotal === 0) grandTotal = r.total;
-                    totalUpdated += r.updated;
-                    totalFailed  += r.failed;
-                    allErrors.push(...r.errors);
-                    const done = Math.min(offset + r.processed, grandTotal);
-                    setRescrapeProgress({ done, total: grandTotal, updated: totalUpdated, failed: totalFailed, errors: allErrors });
-                    if (r.done || r.processed === 0) break;
-                    offset += BATCH;
-                  }
-                  showMsg(`✓ ${totalUpdated} imágenes corregidas`, 'ok');
-                  countImageMigration().then(setMigrateCount).catch(() => {});
-                } catch (e: any) {
-                  showMsg(`Error: ${e?.message} — puedes reintentar`, 'err');
-                } finally {
-                  setRescrapingImages(false);
-                }
-              }}
-              className="flex items-center gap-2 px-5 rounded-xl text-xs font-bold disabled:opacity-50"
-              style={{ height: 38, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', color: '#f87171' }}>
-              {rescrapingImages
-                ? <><Loader2 size={13} className="animate-spin" /> Corrigiendo {rescrapeProgress.done}/{rescrapeProgress.total}…</>
-                : <><Sparkles size={13} /> {rescrapeSubject ? `Corregir ${subjects.find(s => String(s.id) === rescrapeSubject)?.name}` : 'Corregir todas'}</>}
-            </button>
-
-            <p className="text-[11px]" style={{ color: '#f87171', opacity: 0.8 }}>
-              ⚠ Sobreescribe las imágenes actuales. Úsala asignatura por asignatura para verificar los resultados antes de continuar.
-            </p>
-          </div>
 
             </div>{/* end grid */}
           </div>{/* end herramientas */}
@@ -3599,10 +3599,10 @@ export default function AdminPage() {
                   onClick={async () => {
                     const XLSX = await import('xlsx');
                     const ws = XLSX.utils.aoa_to_sheet([
-                      ['titulo','url','descripcion','tipo_actividad','autor','codigo_oa','descripcion_oa'],
-                      ['Introducción a las fracciones','https://ejemplo.com','Descripción opcional','Video','Autor Ejemplo','MA01 OA 01','Descripción del objetivo de aprendizaje'],
+                      ['titulo', 'url', 'descripcion', 'tipo_actividad', 'autor', 'codigo_oa', 'descripcion_oa'],
+                      ['Introducción a las fracciones', 'https://ejemplo.com', 'Descripción opcional', 'Video', 'Autor Ejemplo', 'MA01 OA 01', 'Descripción del objetivo de aprendizaje'],
                     ]);
-                    ws['!cols'] = [36,44,44,22,22,30,15,44].map(w => ({ wch: w }));
+                    ws['!cols'] = [36, 44, 44, 22, 22, 30, 15, 44].map(w => ({ wch: w }));
                     const wb = XLSX.utils.book_new();
                     XLSX.utils.book_append_sheet(wb, ws, 'Recursos');
                     XLSX.writeFile(wb, 'plantilla-recursos-paperflix.xlsx');
@@ -3712,25 +3712,25 @@ export default function AdminPage() {
                         setBulkRows([]);
                         setBulkResult(null);
                         const XLSX = await import('xlsx');
-                        const buf  = await file.arrayBuffer();
-                        const wb   = XLSX.read(buf, { type: 'array' });
-                        const ws   = wb.Sheets[wb.SheetNames[0]];
+                        const buf = await file.arrayBuffer();
+                        const wb = XLSX.read(buf, { type: 'array' });
+                        const ws = wb.Sheets[wb.SheetNames[0]];
                         const raw: any[] = XLSX.utils.sheet_to_json(ws, { defval: '' });
 
-                        const VALID_COLS = new Set(['titulo','url','descripcion','tipo_actividad','autor','codigo_oa','descripcion_oa']);
+                        const VALID_COLS = new Set(['titulo', 'url', 'descripcion', 'tipo_actividad', 'autor', 'codigo_oa', 'descripcion_oa']);
                         const parsed: BulkRow[] = raw.map((r) => {
                           const norm: Record<string, string> = {};
                           for (const k of Object.keys(r)) {
-                            const nk = k.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g,'_');
+                            const nk = k.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '_');
                             if (VALID_COLS.has(nk)) norm[nk] = String(r[k] ?? '').trim();
                           }
                           const row: BulkRow = {
-                            titulo:         norm.titulo || '',
-                            url:            norm.url || '',
-                            descripcion:    norm.descripcion,
+                            titulo: norm.titulo || '',
+                            url: norm.url || '',
+                            descripcion: norm.descripcion,
                             tipo_actividad: norm.tipo_actividad,
-                            autor:          norm.autor,
-                            codigo_oa:      norm.codigo_oa,
+                            autor: norm.autor,
+                            codigo_oa: norm.codigo_oa,
                             descripcion_oa: norm.descripcion_oa,
                           };
                           if (!row.titulo) row._error = 'Sin título';
@@ -3769,7 +3769,7 @@ export default function AdminPage() {
                     <table className="w-full text-xs min-w-[700px]">
                       <thead>
                         <tr style={{ background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}>
-                          {['#','Título','URL','Tipo actividad','Autor','Cód. OA','Estado'].map(h => (
+                          {['#', 'Título', 'URL', 'Tipo actividad', 'Autor', 'Cód. OA', 'Estado'].map(h => (
                             <th key={h} className="px-3 py-2 text-left font-semibold" style={{ color: 'var(--muted)' }}>{h}</th>
                           ))}
                         </tr>
@@ -3831,7 +3831,7 @@ export default function AdminPage() {
                   {!bulkSubject || !bulkCourse || !bulkUnit
                     ? 'Selecciona asignatura, curso y unidad antes de importar'
                     : bulkRows.filter(r => !r._error).length > 0
-                      ? `Se importarán ${bulkRows.filter(r => !r._error).length} recursos → ${subjects.find(s=>String(s.id)===bulkSubject)?.name} · ${bulkCourse} · ${bulkUnits.find(u=>String(u.id)===bulkUnit)?.name}`
+                      ? `Se importarán ${bulkRows.filter(r => !r._error).length} recursos → ${subjects.find(s => String(s.id) === bulkSubject)?.name} · ${bulkCourse} · ${bulkUnits.find(u => String(u.id) === bulkUnit)?.name}`
                       : 'Sube un archivo para previsualizar'}
                 </p>
                 <div className="flex gap-2">
@@ -3848,16 +3848,16 @@ export default function AdminPage() {
                       try {
                         const validRows = bulkRows.filter(r => !r._error);
                         const items = validRows.map(r => ({
-                          subjectId:      +bulkSubject,
-                          unitId:         bulkUnit ? +bulkUnit : undefined,
-                          course:         bulkCourse,
-                          title:          r.titulo,
-                          linkUrl:        r.url,
-                          description:    r.descripcion   || undefined,
-                          activityType:   r.tipo_actividad || undefined,
-                          author:         r.autor          || undefined,
-                          oaCode:         r.codigo_oa      || undefined,
-                          oaDescription:  r.descripcion_oa || undefined,
+                          subjectId: +bulkSubject,
+                          unitId: bulkUnit ? +bulkUnit : undefined,
+                          course: bulkCourse,
+                          title: r.titulo,
+                          linkUrl: r.url,
+                          description: r.descripcion || undefined,
+                          activityType: r.tipo_actividad || undefined,
+                          author: r.autor || undefined,
+                          oaCode: r.codigo_oa || undefined,
+                          oaDescription: r.descripcion_oa || undefined,
                           isActive: true,
                         }));
                         const result = await bulkCreateResources(items);
