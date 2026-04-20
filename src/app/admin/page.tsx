@@ -2172,7 +2172,7 @@ export default function AdminPage() {
                       onDragEnd={() => { setDragUnitId(null); setDragOverId(null); }}
                       onDragOver={e => { e.preventDefault(); if (dragUnitId !== u.id) setDragOverId(u.id); }}
                       onDragLeave={() => setDragOverId(null)}
-                      onDrop={() => handleDrop(u.id)}
+                      onDrop={e => { e.preventDefault(); handleDrop(u.id); }}
                       className="border-t transition-colors"
                       style={{
                         borderColor: 'var(--border)',

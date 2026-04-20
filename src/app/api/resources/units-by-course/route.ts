@@ -3,6 +3,18 @@ import { ok } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
+const COURSE_ORDER = ['Primero', 'Segundo', 'Tercero', 'Cuarto', 'Quinto', 'Sexto', 'Septimo', 'Séptimo', 'Octavo'];
+function sortCourses(courses: string[]): string[] {
+  return [...courses].sort((a, b) => {
+    const ai = COURSE_ORDER.findIndex(c => c.toLowerCase() === a.toLowerCase());
+    const bi = COURSE_ORDER.findIndex(c => c.toLowerCase() === b.toLowerCase());
+    if (ai === -1 && bi === -1) return a.localeCompare(b);
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  });
+}
+
 export async function GET() {
   const units = await prisma.unit.findMany({
     orderBy: [{ subject: { name: 'asc' } }, { course: 'asc' }, { order: 'asc' }],
@@ -38,9 +50,9 @@ export async function GET() {
   const result = Array.from(subjectMap.values()).map(sub => ({
     subjectId: sub.subjectId,
     subjectName: sub.subjectName,
-    courses: Array.from(sub.coursesMap.entries()).map(([course, units]) => ({
+    courses: sortCourses(Array.from(sub.coursesMap.keys())).map(course => ({
       course,
-      units,
+      units: sub.coursesMap.get(course)!,
     })),
   }));
 
