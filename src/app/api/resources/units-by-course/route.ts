@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/prisma';
 import { ok } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const units = await prisma.unit.findMany({
     orderBy: [{ subject: { name: 'asc' } }, { course: 'asc' }, { order: 'asc' }],
