@@ -2074,7 +2074,12 @@ export default function AdminPage() {
                             await createUnit({ name: newUnit.name.trim(), subjectId: newUnit.subjectId, code: newUnit.code || undefined, course: newUnit.course || undefined });
                             setNewUnit(prev => ({ ...prev, name: '', code: '', course: '' }));
                             await loadCatalogUnits();
-                            setOpenSubjects(prev => new Set([...prev, String(newUnit.subjectId)]));
+                            setOpenSubjects(prev => {
+                              const next = new Set<string>();
+                              prev.forEach(v => next.add(v));
+                              next.add(String(newUnit.subjectId));
+                              return next;
+                            });
                             showMsg('Unidad creada');
                           } catch { showMsg('Error al crear unidad', 'err'); }
                           finally { setSavingCatalog(false); }
@@ -2099,7 +2104,12 @@ export default function AdminPage() {
                             await createUnit({ name: newUnit.name.trim(), subjectId: newUnit.subjectId, code: newUnit.code || undefined, course: newUnit.course || undefined });
                             setNewUnit(prev => ({ ...prev, name: '', code: '', course: '' }));
                             await loadCatalogUnits();
-                            setOpenSubjects(prev => new Set([...prev, String(newUnit.subjectId)]));
+                            setOpenSubjects(prev => {
+                              const next = new Set<string>();
+                              prev.forEach(v => next.add(v));
+                              next.add(String(newUnit.subjectId));
+                              return next;
+                            });
                             showMsg('Unidad creada');
                           } catch { showMsg('Error al crear unidad', 'err'); }
                           finally { setSavingCatalog(false); }
@@ -2248,7 +2258,8 @@ export default function AdminPage() {
                     {/* Subject header */}
                     <button className="w-full flex items-center justify-between px-4 py-3 hover:bg-white/[0.03] transition-colors"
                       onClick={() => setOpenSubjects(prev => {
-                        const next = new Set(prev);
+                        const next = new Set<string>();
+                        prev.forEach(v => next.add(v));
                         if (next.has(subKey)) next.delete(subKey); else next.add(subKey);
                         return next;
                       })}>
@@ -2280,7 +2291,8 @@ export default function AdminPage() {
                               <button className="w-full flex items-center justify-between px-5 py-2 hover:bg-white/[0.02] transition-colors"
                                 style={{ borderTop: '1px solid var(--border)', background: 'rgba(255,255,255,0.015)' }}
                                 onClick={() => setOpenSubjects(prev => {
-                                  const next = new Set(prev);
+                                  const next = new Set<string>();
+                                  prev.forEach(v => next.add(v));
                                   if (next.has(courseKey)) next.delete(courseKey); else next.add(courseKey);
                                   return next;
                                 })}>
@@ -2306,7 +2318,8 @@ export default function AdminPage() {
                               <button className="w-full flex items-center justify-between px-5 py-2 hover:bg-white/[0.02] transition-colors"
                                 style={{ borderTop: '1px solid var(--border)', background: 'rgba(255,255,255,0.015)' }}
                                 onClick={() => setOpenSubjects(prev => {
-                                  const next = new Set(prev);
+                                  const next = new Set<string>();
+                                  prev.forEach(v => next.add(v));
                                   if (next.has(courseKey)) next.delete(courseKey); else next.add(courseKey);
                                   return next;
                                 })}>
@@ -3717,7 +3730,6 @@ export default function AdminPage() {
                             descripcion:    norm.descripcion,
                             tipo_actividad: norm.tipo_actividad,
                             autor:          norm.autor,
-                            tags:           norm.tags,
                             codigo_oa:      norm.codigo_oa,
                             descripcion_oa: norm.descripcion_oa,
                           };
