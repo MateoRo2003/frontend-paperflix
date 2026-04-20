@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
   if (subjectId) where.subjectId = Number(subjectId);
   if (unitId) where.unitId = Number(unitId);
   if (course) where.course = course;
-  if (activityType) where.activityType = activityType;
+  if (activityType) where.activityType = { contains: activityType, mode: 'insensitive' };
   if (oaCode) where.oaCode = oaCode;
   if (search) where.OR = [
     { title: { contains: search, mode: 'insensitive' } },

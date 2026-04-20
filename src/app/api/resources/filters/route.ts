@@ -23,9 +23,18 @@ export async function GET(req: NextRequest) {
     prisma.resource.findMany({ where, select: { activityType: true }, distinct: ['activityType'] }),
   ]);
 
+  // Split comma-separated combinations and collect individual unique types
+  const actTypeSet = new Set<string>();
+  activityTypes.forEach(r => {
+    if (r.activityType) r.activityType.split(',').forEach((t: string) => {
+      const trimmed = t.trim();
+      if (trimmed) actTypeSet.add(trimmed);
+    });
+  });
+
   return ok({
     courses: courses.map(r => r.course).filter(Boolean),
     units,
-    activityTypes: activityTypes.map(r => r.activityType).filter(Boolean),
+    activityTypes: Array.from(actTypeSet).sort(),
   });
 }
