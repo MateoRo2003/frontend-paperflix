@@ -26,3 +26,6 @@ Thumbs.db
 .vercel
 resource.sql
 ingles.json
+
+# Temp scripts
+scratch/
