@@ -5,7 +5,13 @@
       "Bash(grep \"INSERT INTO \\\\`units\\\\`\" \"C:\\\\Users\\\\Mateo\\\\Desktop\\\\paginas web\\\\paperflix-front\\\\frontend\\\\seed.sql\")",
       "Bash(node sync-ingles-db.mjs)",
       "Bash(grep \"INSERT INTO \\\\`resources\\\\` VALUES\" \"C:\\\\Users\\\\Mateo\\\\Desktop\\\\paginas web\\\\paperflix-front\\\\frontend\\\\seed.sql\")",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Read(//c/Users/Mateo/Desktop/paginas web/paperflix-front/**)",
+      "Bash(xargs grep *)",
+      "Bash(npx prisma *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ],
     "additionalDirectories": [
       "\\tmp"
