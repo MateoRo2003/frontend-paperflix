@@ -953,13 +953,13 @@ export default function AdminPage() {
           } as const;
 
           // ── Shared helpers ───────────────────────────────────────────
-          const borderAll = (color = C.border) => ({
+          const borderAll = (color: string = C.border) => ({
             top:    { style: 'thin' as const, color: { argb: color } },
             left:   { style: 'thin' as const, color: { argb: color } },
             bottom: { style: 'thin' as const, color: { argb: color } },
             right:  { style: 'thin' as const, color: { argb: color } },
           });
-          const borderBottom = (color = C.border) => ({
+          const borderBottom = (color: string = C.border) => ({
             bottom: { style: 'medium' as const, color: { argb: color } },
           });
 
