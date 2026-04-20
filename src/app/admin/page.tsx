@@ -1,4 +1,5 @@
 'use client';
+import type ExcelJS from 'exceljs';
 import { useState, useEffect } from 'react';
 import NextImage from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
