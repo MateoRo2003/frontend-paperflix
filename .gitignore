@@ -1,6 +1,6 @@
 # Dependencies
 node_modules/
-scratch/
+
 # Next.js build output
 .next/
 out/
