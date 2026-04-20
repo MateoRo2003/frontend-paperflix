@@ -963,7 +963,7 @@ export default function AdminPage() {
             bottom: { style: 'medium' as const, color: { argb: color } },
           });
 
-          function styleHeader(row: ExcelJS.Row, bgColor = C.purple) {
+          function styleHeader(row: ExcelJS.Row, bgColor: string = C.purple) {
             row.height = 28;
             row.eachCell(cell => {
               cell.fill   = { type: 'pattern', pattern: 'solid', fgColor: { argb: bgColor } };
