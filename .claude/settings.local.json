@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -A50 \"CREATE TABLE \\\\`resources\\\\`\" \"C:\\\\Users\\\\Mateo\\\\Desktop\\\\paginas web\\\\paperflix-front\\\\frontend\\\\seed.sql\")",
+      "Bash(grep \"INSERT INTO \\\\`units\\\\`\" \"C:\\\\Users\\\\Mateo\\\\Desktop\\\\paginas web\\\\paperflix-front\\\\frontend\\\\seed.sql\")",
+      "Bash(node sync-ingles-db.mjs)",
+      "Bash(grep \"INSERT INTO \\\\`resources\\\\` VALUES\" \"C:\\\\Users\\\\Mateo\\\\Desktop\\\\paginas web\\\\paperflix-front\\\\frontend\\\\seed.sql\")",
+      "Bash(node -e ' *)"
+    ],
+    "additionalDirectories": [
+      "\\tmp"
+    ]
+  }
+}

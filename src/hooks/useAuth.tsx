@@ -23,9 +23,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function signIn(email: string, pw: string) {
     const res = await apiLogin(email, pw);
-    setToken(res.access_token);
+    setToken(res.token);
     setAdmin(res.admin);
-    localStorage.setItem('pf_token', res.access_token);
+    localStorage.setItem('pf_token', res.token);
     localStorage.setItem('pf_admin', JSON.stringify(res.admin));
   }
 
