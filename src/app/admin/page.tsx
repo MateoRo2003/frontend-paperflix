@@ -361,9 +361,8 @@ export default function AdminPage() {
     const existing = (resource as any).activityType || '';
     setSelectedActTypes(existing ? existing.split(',').map((t: string) => t.trim()).filter(Boolean) : []);
 
-    // Load catalog data + derived data from resources, merge for the selectors
-    const [managed_c, managed_a, derived_c, derived_a] = await Promise.all([
-      getCourses(), getActivityTypes(), getDistinctCourses(), getDistinctActivityTypes(),
+    const [managed_c, managed_a, derived_c] = await Promise.all([
+      getCourses(), getActivityTypes(), getDistinctCourses(),
     ]);
     // Union: catalog entries take precedence, derived fill the rest
     const managedCourseNames = new Set(managed_c.map((c: Course) => c.name));
@@ -372,11 +371,7 @@ export default function AdminPage() {
       .map((name, i) => ({ id: -(i + 1), name, isActive: true, sortOrder: 999 }));
     setModalCourses([...managed_c, ...extraCourses]);
 
-    const managedTypeNames = new Set(managed_a.map((a: ActivityTypeItem) => a.name));
-    const extraTypes: ActivityTypeItem[] = derived_a
-      .filter(name => !managedTypeNames.has(name))
-      .map((name, i) => ({ id: -(i + 1), name, isActive: true }));
-    setModalActivityTypes([...managed_a, ...extraTypes]);
+    setModalActivityTypes(managed_a);
 
     if ((resource as any).subjectId) {
       setModalUnits(await getUnits((resource as any).subjectId));
@@ -1928,23 +1923,6 @@ export default function AdminPage() {
                 <p className="text-sm" style={{ color: 'var(--muted)' }}>
                   {catalogActivityTypes.length} tipo{catalogActivityTypes.length !== 1 ? 's' : ''} en el catálogo
                 </p>
-                {derivedActTypes.length > catalogActivityTypes.length && (
-                  <button
-                    disabled={savingCatalog}
-                    onClick={async () => {
-                      setSavingCatalog(true);
-                      try {
-                        const { inserted } = await seedActivityTypes();
-                        await loadCatalogActivityTypes();
-                        showMsg(`${inserted} tipo${inserted !== 1 ? 's' : ''} importado${inserted !== 1 ? 's' : ''} desde recursos`);
-                      } catch { showMsg('Error al importar', 'err'); }
-                      finally { setSavingCatalog(false); }
-                    }}
-                    className="flex items-center gap-2 px-4 rounded-xl text-xs font-bold disabled:opacity-40"
-                    style={{ height: 36, background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)', color: '#34d399' }}>
-                    <Sparkles size={13} /> Importar {derivedActTypes.length - catalogActivityTypes.length} desde recursos
-                  </button>
-                )}
               </div>
               <div className="flex gap-2">
                 <input value={newActivityTypeName} onChange={e => setNewActivityTypeName(e.target.value)}
