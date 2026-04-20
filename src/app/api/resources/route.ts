@@ -2,6 +2,8 @@ import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth, ok, err } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   const p = req.nextUrl.searchParams;
   const page = Number(p.get('page') || 1);
@@ -27,9 +29,10 @@ export async function GET(req: NextRequest) {
   const [data, total] = await Promise.all([
     prisma.resource.findMany({
       where,
-      orderBy: { order: 'asc' },
+      orderBy: { id: 'asc' },
       skip: (page - 1) * limit,
       take: limit,
+      include: { subject: { select: { id: true, name: true } } },
     }),
     prisma.resource.count({ where }),
   ]);
