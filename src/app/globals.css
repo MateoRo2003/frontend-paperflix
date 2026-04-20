@@ -1,0 +1,189 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Font is loaded via next/font in layout.tsx — no external CDN request */
+
+:root {
+  --bg:        #3F226A;
+  --bg-dark:   #1e0d38;
+  --sidebar:   #2d1757;
+  --card:      #4a2878;
+  --card-hover:#5a3290;
+  --accent:    #F5C518;
+  --purple:    #9b59e8;
+  --text:      #ede6f7;
+  --muted:     #b09dce;
+  --border:    rgba(255,255,255,0.10);
+
+  /* Pen/stylus input — Paperlux targets mínimos */
+  --touch-min:  48px;
+  --btn-radius: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-inter, system-ui, sans-serif);
+  /* Degradado principal: #3F226A arriba → #1e0d38 abajo */
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-dark) 100%);
+  background-attachment: fixed;
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--sidebar); }
+::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 3px; }
+
+/* Card hover lift */
+.resource-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.resource-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(124,58,237,0.3);
+}
+
+/* Sidebar active item */
+.nav-item.active {
+  background: rgba(124,58,237,0.25);
+  border-left: 3px solid var(--accent);
+  color: #fff;
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--card) 25%, var(--card-hover) 50%, var(--card) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* Hero banner gradient */
+.hero-overlay {
+  background:
+    linear-gradient(to top,  rgba(30,13,56,0.97) 0%, rgba(30,13,56,0.55) 45%, transparent 70%),
+    linear-gradient(to right, rgba(30,13,56,0.72) 0%, transparent 55%);
+}
+
+/* Hero carousel fade transition */
+@keyframes heroFadeIn {
+  from { opacity: 0; transform: scale(1.04); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.hero-img-enter {
+  animation: heroFadeIn 0.6s cubic-bezier(0.4,0,0.2,1) forwards;
+}
+
+/* Hero progress bar */
+@keyframes heroProgress {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+.hero-progress {
+  animation: heroProgress 6s linear forwards;
+}
+
+/* ─── Pen/stylus friendly targets ─────────────────────────────────── */
+
+/* Todos los botones e inputs tienen altura mínima 48px para el lápiz */
+button,
+[role="button"] {
+  min-height: var(--touch-min);
+  cursor: pointer;
+}
+
+/* Excepción: botones icon-only pequeños que tienen clase .icon-btn */
+.icon-btn {
+  min-height: 36px;
+  min-width: 36px;
+}
+
+/* Inputs y selects más grandes */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="url"],
+input[type="search"],
+select,
+textarea {
+  min-height: 48px;
+  font-size: 15px;
+}
+
+/* Nav items del sidebar: altura generosa para el lápiz */
+.nav-item {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+}
+
+/* Chips/tabs con área de click más grande */
+.pill-btn {
+  min-height: 40px;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Paginación botones */
+.page-btn {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Separador visual para secciones del admin */
+.section-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0;
+}
+
+/* KPI cards */
+.kpi-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  transition: border-color 0.2s;
+}
+.kpi-card:hover {
+  border-color: rgba(124,58,237,0.4);
+}
+
+/* Bar chart fill animation */
+@keyframes barGrow {
+  from { width: 0; }
+  to   { width: var(--bar-w); }
+}
+.bar-fill {
+  animation: barGrow 0.8s ease forwards;
+}
+
+/* Heat map cell */
+.heat-cell {
+  border-radius: 10px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: default;
+}
+.heat-cell:hover {
+  transform: scale(1.04);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+
+/* Disabled subject link */
+.subject-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
