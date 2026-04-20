@@ -26,8 +26,6 @@ import {
   ExternalLink, ThumbsUp, ThumbsDown, Bell,
   Image as ImageIcon, Upload, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Monitor,
   Sparkles, Loader2, FileSpreadsheet, AlertTriangle, CheckCircle2,
-  Calculator, FlaskConical, Globe, Dumbbell, Palette, Music,
-  Microscope, Compass, Atom, Map, Film, Code, Languages, Award, Heart,
 } from 'lucide-react';
 import { SubjectIcon, SUBJECT_ICONS } from '@/components/SubjectIcon';
 
@@ -3476,7 +3474,7 @@ export default function AdminPage() {
                     <button
                       key={name}
                       title={label}
-                      onClick={() => setEditingSubject(prev => ({ ...prev!, icon: prev?.icon === name ? '' : name }))}
+                      onClick={() => setEditingSubject(prev => ({ ...prev!, icon: prev?.icon === name ? undefined : name }))}
                       className="rounded-lg flex items-center justify-center transition-colors"
                       style={{
                         width: 36, height: 36,
@@ -3497,7 +3495,7 @@ export default function AdminPage() {
                 <label className="text-[11px] mb-1 block" style={{ color: 'var(--muted)' }}>O pega un SVG personalizado</label>
                 <textarea
                   value={editingSubject.icon?.startsWith('<') ? editingSubject.icon : ''}
-                  onChange={e => setEditingSubject(prev => ({ ...prev!, icon: e.target.value }))}
+                  onChange={e => setEditingSubject(prev => ({ ...prev!, icon: e.target.value || undefined }))}
                   placeholder='<svg xmlns="http://www.w3.org/2000/svg" ...>...</svg>'
                   rows={2}
                   className="w-full px-3 py-2 rounded-xl text-xs outline-none font-mono resize-none"
