@@ -28,8 +28,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <SettingsProvider>
             <div className="flex min-h-screen">
               <Sidebar />
-              <main className="flex-1 ml-[320px] min-h-screen overflow-y-auto text-[18px]">
-                {children}
+              <main className="flex-1 ml-[320px] min-h-screen overflow-y-auto text-[18px] flex flex-col">
+                <div className="flex-1">{children}</div>
+                <footer className="px-8 py-5 text-sm text-center" style={{ color: 'var(--muted)', borderTop: '1px solid var(--border)' }}>
+                  © {new Date().getFullYear()} Paperlux. Todos los derechos reservados.
+                </footer>
               </main>
             </div>
           </SettingsProvider>
