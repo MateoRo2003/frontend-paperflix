@@ -407,7 +407,7 @@ export default function AdminPage() {
     if (!(editing as any).course?.trim()) { showMsg('El curso es obligatorio', 'err'); return; }
     if (!(editing as any).unitId) { showMsg('La unidad es obligatoria', 'err'); return; }
     if (!(editing as any).author?.trim()) { showMsg('El autor es obligatorio', 'err'); return; }
-    const payload = { ...editing, activityType: selectedActTypes.join(',') };
+    const payload = { ...editing, activityType: selectedActTypes.length ? selectedActTypes.join(',') : undefined };
     setSaving(true);
     try {
       if (editing.id) {
@@ -2539,7 +2539,7 @@ export default function AdminPage() {
               {/* ── Tipo de actividad (multi-select chips) ── */}
               <div>
                 <label className="text-xs mb-1.5 block font-medium" style={{ color: 'var(--muted)' }}>
-                  Tipo de actividad *
+                  Tipo de actividad
                   {selectedActTypes.length > 0 && <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: 'rgba(124,58,237,0.2)', color: '#c4b5fd' }}>{selectedActTypes.length} seleccionado{selectedActTypes.length > 1 ? 's' : ''}</span>}
                 </label>
                 {modalActivityTypes.length > 0 ? (
