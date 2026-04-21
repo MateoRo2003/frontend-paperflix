@@ -3621,7 +3621,7 @@ export default function AdminPage() {
                 </p>
                 {catalogActivityTypes.length > 0 && (
                   <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                    <span className="text-[11px] font-semibold" style={{ color: 'var(--muted)' }}>Tipos válidos:</span>
+                    <span className="text-[11px] font-semibold" style={{ color: 'var(--muted)' }}>Tipos válidos <span className="font-normal">(opcional — si no se indica o no coincide, se importa sin tipo)</span>:</span>
                     {catalogActivityTypes.filter(t => t.isActive).map(t => (
                       <span key={t.id} className="px-2 py-0.5 rounded font-mono text-[11px]"
                         style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)', color: '#34d399' }}>
