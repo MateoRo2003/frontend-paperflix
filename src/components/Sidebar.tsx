@@ -59,16 +59,16 @@ export default function Sidebar() {
 
   return (
     <aside
-      className="fixed top-0 left-0 h-screen w-[280px] flex flex-col z-30"
+      className="fixed top-0 left-0 h-screen w-[320px] flex flex-col z-30"
       style={{ background: 'var(--sidebar)', borderRight: '1px solid var(--border)' }}
     >
       {/* Logo */}
-      <div className="px-5 py-5 flex items-center border-b" style={{ borderColor: 'var(--border)' }}>
+      <div className="px-6 py-6 flex items-center border-b" style={{ borderColor: 'var(--border)' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/logo.png"
           alt="PaperFlix"
-          style={{ height: 44, width: 'auto', maxWidth: 200, objectFit: 'contain' }}
+          style={{ height: 52, width: 'auto', maxWidth: 220, objectFit: 'contain' }}
         />
       </div>
 
@@ -113,11 +113,11 @@ export default function Sidebar() {
       <div className="px-3 pb-6 border-t pt-4" style={{ borderColor: 'var(--border)' }}>
         <Link
           href="/admin"
-          className={`nav-item flex items-center gap-3 px-5 py-4 rounded-xl text-base font-medium transition-colors ${
+          className={`nav-item flex items-center gap-3 px-5 rounded-xl text-lg font-medium transition-colors ${
             path.startsWith('/admin') ? 'active text-white' : 'text-[var(--muted)] hover:text-white hover:bg-white/5'
           }`}
         >
-          <ShieldCheck size={22} strokeWidth={path.startsWith('/admin') ? 2.5 : 2} />
+          <ShieldCheck size={26} strokeWidth={path.startsWith('/admin') ? 2.5 : 2} />
           <span>Admin</span>
         </Link>
       </div>
@@ -135,19 +135,19 @@ interface NavItemProps {
 }
 
 function NavItem({ label, href, icon: Icon, active, enabled, color }: NavItemProps) {
-  const base = 'flex items-center gap-3 px-5 rounded-xl text-base font-medium transition-colors';
+  const base = 'flex items-center gap-4 px-5 rounded-xl text-lg font-medium transition-colors';
 
   if (!enabled) {
     return (
       <div
         className={`${base} subject-disabled`}
-        style={{ height: 60, cursor: 'not-allowed' }}
+        style={{ height: 68, cursor: 'not-allowed' }}
         title="Sin recursos disponibles"
       >
-        <Icon size={22} strokeWidth={2} style={{ opacity: 0.5 }} />
+        <Icon size={26} strokeWidth={2} style={{ opacity: 0.5 }} />
         <span className="flex-1 truncate">{label}</span>
         <span
-          className="text-xs px-2 py-0.5 rounded-full shrink-0"
+          className="text-sm px-2 py-0.5 rounded-full shrink-0"
           style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--muted)' }}
         >
           0
@@ -163,12 +163,12 @@ function NavItem({ label, href, icon: Icon, active, enabled, color }: NavItemPro
         active ? 'active text-white' : 'text-[var(--muted)] hover:text-white hover:bg-white/5'
       }`}
       style={{
-        height: 60,
+        height: 68,
         ...(active && color ? { borderLeft: `3px solid ${color}` } : {}),
       }}
     >
       <Icon
-        size={22}
+        size={26}
         strokeWidth={active ? 2.5 : 2}
         style={active && color ? { color } : undefined}
       />

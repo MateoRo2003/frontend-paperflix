@@ -16,15 +16,16 @@
   --muted:     #b09dce;
   --border:    rgba(255,255,255,0.10);
 
-  /* Pen/stylus input — Paperlux targets mínimos */
-  --touch-min:  48px;
-  --btn-radius: 12px;
+  /* Pen/stylus input — targets generosos para proyector + lápiz */
+  --touch-min:  56px;
+  --btn-radius: 14px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html {
   min-height: 100%;
+  font-size: 18px;
 }
 
 body {
@@ -105,8 +106,8 @@ button,
 
 /* Excepción: botones icon-only pequeños que tienen clase .icon-btn */
 .icon-btn {
-  min-height: 36px;
-  min-width: 36px;
+  min-height: 44px;
+  min-width: 44px;
 }
 
 /* Inputs y selects más grandes */
@@ -117,29 +118,30 @@ input[type="url"],
 input[type="search"],
 select,
 textarea {
-  min-height: 48px;
-  font-size: 15px;
+  min-height: 56px;
+  font-size: 17px;
 }
 
 /* Nav items del sidebar: altura generosa para el lápiz */
 .nav-item {
-  min-height: 48px;
+  min-height: 64px;
   display: flex;
   align-items: center;
 }
 
 /* Chips/tabs con área de click más grande */
 .pill-btn {
-  min-height: 40px;
-  padding: 0 16px;
+  min-height: 48px;
+  padding: 0 20px;
   display: inline-flex;
   align-items: center;
+  font-size: 15px;
 }
 
 /* Paginación botones */
 .page-btn {
-  min-height: 44px;
-  min-width: 44px;
+  min-height: 52px;
+  min-width: 52px;
 }
 
 /* Separador visual para secciones del admin */

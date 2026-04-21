@@ -205,7 +205,7 @@ export default function SubjectPage() {
           {availCourses.length === 0 ? (
             <div className="flex gap-2">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="skeleton rounded-full" style={{ width: 80, height: 36 }} />
+                <div key={i} className="skeleton rounded-full" style={{ width: 90, height: 52 }} />
               ))}
             </div>
           ) : (
@@ -214,11 +214,11 @@ export default function SubjectPage() {
                 <button
                   key={c}
                   onClick={() => { setCourse(prev => prev === c ? '' : c); setPage(1); }}
-                  className="pill-btn shrink-0 rounded-full text-sm font-semibold transition-all hover:brightness-110 hover:scale-[1.03]"
+                  className="pill-btn shrink-0 rounded-full text-base font-semibold transition-all hover:brightness-110 hover:scale-[1.03]"
                   style={{
-                    height: 36,
-                    paddingLeft: 16,
-                    paddingRight: 16,
+                    height: 52,
+                    paddingLeft: 22,
+                    paddingRight: 22,
                     background: course === c ? 'var(--accent)' : 'rgba(255,255,255,0.07)',
                     color: course === c ? '#1e0d38' : 'var(--muted)',
                     border: `1px solid ${course === c ? 'transparent' : 'var(--border)'}`,
