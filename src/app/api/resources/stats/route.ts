@@ -20,18 +20,21 @@ export async function GET(req: NextRequest) {
     prisma.resource.groupBy({
       by: ['subjectId'],
       _count: { id: true },
+      _sum: { views: true },
       where: { isActive: true, ...dateFilter },
     }),
   ]);
 
   const subjects = await prisma.subject.findMany({
-    select: { id: true, slug: true },
+    select: { id: true, name: true, slug: true },
   });
-  const slugMap = Object.fromEntries(subjects.map(s => [s.id, s.slug]));
+  const subjectMap = Object.fromEntries(subjects.map(s => [s.id, s]));
 
   const bySubject = bySubjectRaw.map(r => ({
-    slug: slugMap[r.subjectId] ?? '',
+    subject: subjectMap[r.subjectId]?.name ?? '',
+    slug: subjectMap[r.subjectId]?.slug ?? '',
     count: r._count.id,
+    views: r._sum.views ?? 0,
   }));
 
   return ok({

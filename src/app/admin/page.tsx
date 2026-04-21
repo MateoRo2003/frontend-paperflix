@@ -263,7 +263,7 @@ export default function AdminPage() {
 
       setStats(normalized);
       const totR = typeof raw?.active === 'number' ? raw.active : normalized.reduce((a, s) => a + s.count, 0);
-      const totV = normalized.reduce((a, s) => a + (s.views || 0), 0);
+      const totV = typeof raw?.totalViews === 'number' ? raw.totalViews : normalized.reduce((a, s) => a + (s.views || 0), 0);
       setTotalResources(totR);
       setTotalViews(totV);
     } catch { }
