@@ -28,6 +28,7 @@ import {
   Sparkles, Loader2, FileSpreadsheet, AlertTriangle, CheckCircle2,
 } from 'lucide-react';
 import { SubjectIcon, SUBJECT_ICONS } from '@/components/SubjectIcon';
+import { swalConfirm, swalConfirmDanger } from '@/lib/swal';
 
 // ─── Local types ──────────────────────────────────────────────────────────────
 
@@ -392,7 +393,8 @@ export default function AdminPage() {
   // ── CRUD Resources ──────────────────────────────────────────────────────────
 
   async function handleDelete(id: number) {
-    if (!confirm('¿Eliminar este recurso?')) return;
+    const res = await swalConfirmDanger('¿Eliminar recurso?', 'Esta acción no se puede deshacer.');
+    if (!res.isConfirmed) return;
     await deleteResource(id);
     showMsg('Recurso eliminado'); loadResources(); loadStats();
     broadcastDataChange();
@@ -473,7 +475,8 @@ export default function AdminPage() {
   }
 
   async function handleDeleteSuggestion(id: number) {
-    if (!confirm('¿Eliminar esta sugerencia definitivamente?')) return;
+    const res = await swalConfirmDanger('¿Eliminar sugerencia?', 'Esta acción no se puede deshacer.');
+    if (!res.isConfirmed) return;
     try {
       await deleteSuggestion(id);
       showMsg('Sugerencia eliminada');
@@ -509,7 +512,8 @@ export default function AdminPage() {
   }
 
   async function handleDeleteSlide(id: number) {
-    if (!confirm('¿Eliminar este slide?')) return;
+    const res = await swalConfirmDanger('¿Eliminar slide?', 'Esta acción no se puede deshacer.');
+    if (!res.isConfirmed) return;
     try {
       await deleteSlide(id);
       showMsg('Slide eliminado');
@@ -542,7 +546,16 @@ export default function AdminPage() {
 
   async function handleDeleteSubject(id: number) {
     const s = subjects.find(s => s.id === id);
-    if (!confirm(`¿Eliminar permanentemente "${s?.name}"?\n\nLa asignatura quedará eliminada del sistema (los recursos asociados no se borran). Para ocultarla del sidebar sin eliminarla, usa "Editar → Inactiva".`)) return;
+    const resourceCount = (s as any)?._count?.resources ?? 0;
+    const html = resourceCount > 0
+      ? `<b style="color:#f87171">${resourceCount} recurso${resourceCount !== 1 ? 's' : ''}</b> vinculado${resourceCount !== 1 ? 's' : ''} serán eliminados junto con la asignatura.<br/><br/>Para ocultarla sin eliminar, usa <b>Editar → Inactiva</b>.`
+      : `La asignatura <b>${s?.name}</b> será eliminada del sistema permanentemente.`;
+    const res = await swalConfirmDanger(
+      `¿Eliminar "${s?.name}"?`,
+      html,
+      'Sí, eliminar',
+    );
+    if (!res.isConfirmed) return;
     try {
       await deleteSubject(id);
       showMsg('Asignatura eliminada'); loadSubjects(); loadStats();
@@ -763,7 +776,7 @@ export default function AdminPage() {
                         className="w-full px-3 rounded-xl text-sm outline-none"
                         style={{ background: 'var(--bg)', border: `1px solid ${filterSubject ? 'rgba(124,58,237,0.4)' : 'var(--border)'}`, color: 'var(--text)', height: 40 }}>
                         <option value="">Todas</option>
-                        {subjects.map(s => <option key={s.id} value={s.id} style={{ color: '#1e0d38', background: '#e9e0f7' }}>{s.name}</option>)}
+                        {subjects.filter(s => s.isActive).map(s => <option key={s.id} value={s.id} style={{ color: '#1e0d38', background: '#e9e0f7' }}>{s.name}</option>)}
                       </select>
                     </div>
 
@@ -1908,7 +1921,7 @@ export default function AdminPage() {
                               <Pencil size={12} />
                             </button>
                             <button onClick={async () => {
-                              if (!confirm(`¿Eliminar "${c.name}"?`)) return;
+                              const res = await swalConfirmDanger(`¿Eliminar "${c.name}"?`); if (!res.isConfirmed) return;
                               try {
                                 await deleteCourse(c.id); loadCatalogCourses(); showMsg('Eliminado');
                               } catch (e: any) {
@@ -2010,7 +2023,7 @@ export default function AdminPage() {
                                 <Pencil size={12} />
                               </button>
                               <button onClick={async () => {
-                                if (!confirm(`¿Eliminar "${at.name}"?`)) return;
+                                const res = await swalConfirmDanger(`¿Eliminar "${at.name}"?`); if (!res.isConfirmed) return;
                                 await deleteActivityType(at.id); loadCatalogActivityTypes(); showMsg('Eliminado');
                               }} className="icon-btn flex items-center justify-center rounded-lg hover:bg-red-500/20 text-red-400 shrink-0"
                                 style={{ width: 30, height: 30 }}>
@@ -2042,7 +2055,7 @@ export default function AdminPage() {
                       className="w-full px-3 rounded-xl text-sm outline-none"
                       style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)', height: 40 }}>
                       <option value="">Seleccionar...</option>
-                      {subjects.map(s => <option key={s.id} value={s.id} style={{ color: '#1e0d38', background: '#e9e0f7' }}>{s.name}</option>)}
+                      {subjects.filter(s => s.isActive).map(s => <option key={s.id} value={s.id} style={{ color: '#1e0d38', background: '#e9e0f7' }}>{s.name}</option>)}
                     </select>
                   </div>
                   <div>
@@ -2231,7 +2244,7 @@ export default function AdminPage() {
                             <Pencil size={11} />
                           </button>
                           <button onClick={async () => {
-                            if (!confirm(`¿Eliminar "${u.name}"?`)) return;
+                            const res = await swalConfirmDanger(`¿Eliminar "${u.name}"?`); if (!res.isConfirmed) return;
                             try { await deleteUnit(u.id); loadCatalogUnits(); showMsg('Unidad eliminada'); }
                             catch { showMsg('No se puede eliminar (tiene recursos asociados)', 'err'); }
                           }} className="icon-btn flex items-center justify-center rounded-lg hover:bg-red-500/20 text-red-400 shrink-0"
@@ -2485,42 +2498,30 @@ export default function AdminPage() {
                 )}
               </div>
 
-              {/* ── Asignatura + Unidad ── */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs mb-1.5 block font-medium" style={{ color: 'var(--muted)' }}>Asignatura *</label>
-                  <select value={(editing as any).subjectId || ''} onChange={async e => {
-                    const sid = +e.target.value;
-                    setEditing(prev => ({ ...prev!, subjectId: sid, unitId: undefined }));
-                    if (sid) setModalUnits(await getUnits(sid));
-                    else setModalUnits([]);
-                  }}
-                    className="w-full px-3 rounded-xl text-sm outline-none"
-                    style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)', height: 44 }}>
-                    <option value="">Sin asignatura</option>
-                    {subjects.map(s => <option key={s.id} value={s.id} style={{ color: '#1e0d38', background: '#e9e0f7' }}>{s.name}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="text-xs mb-1.5 block font-medium" style={{ color: 'var(--muted)' }}>Unidad / Objetivo *</label>
-                  <select value={(editing as any).unitId || ''} onChange={e => setEditing(prev => ({ ...prev!, unitId: +e.target.value || undefined }))}
-                    disabled={!modalUnits.length}
-                    className="w-full px-3 rounded-xl text-sm outline-none disabled:opacity-40"
-                    style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)', height: 44 }}>
-                    <option value="">Sin unidad</option>
-                    {modalUnits.map(u => <option key={u.id} value={u.id} style={{ color: '#1e0d38', background: '#e9e0f7' }}>{u.name}</option>)}
-                  </select>
-                </div>
+              {/* ── Asignatura ── */}
+              <div>
+                <label className="text-xs mb-1.5 block font-medium" style={{ color: 'var(--muted)' }}>Asignatura *</label>
+                <select value={(editing as any).subjectId || ''} onChange={async e => {
+                  const sid = +e.target.value;
+                  setEditing(prev => ({ ...prev!, subjectId: sid, unitId: undefined, course: '' }));
+                  if (sid) setModalUnits(await getUnits(sid));
+                  else setModalUnits([]);
+                }}
+                  className="w-full px-3 rounded-xl text-sm outline-none"
+                  style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)', height: 44 }}>
+                  <option value="">Sin asignatura</option>
+                  {subjects.filter(s => s.isActive).map(s => <option key={s.id} value={s.id} style={{ color: '#1e0d38', background: '#e9e0f7' }}>{s.name}</option>)}
+                </select>
               </div>
 
               {/* ── Curso ── */}
-              <div>
+              <div style={{ opacity: (editing as any).subjectId ? 1 : 0.4, pointerEvents: (editing as any).subjectId ? 'auto' : 'none' }}>
                 <label className="text-xs mb-1.5 block font-medium" style={{ color: 'var(--muted)' }}>Curso *</label>
                 {modalCourses.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {sortCourses(modalCourses).map(c => (
                       <button key={c.id} type="button"
-                        onClick={() => setEditing(prev => ({ ...prev!, course: prev?.course === c.name ? '' : c.name }))}
+                        onClick={() => setEditing(prev => ({ ...prev!, course: prev?.course === c.name ? '' : c.name, unitId: undefined }))}
                         className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"
                         style={{
                           background: (editing as any).course === c.name ? 'rgba(245,197,24,0.2)' : 'var(--bg)',
@@ -2534,6 +2535,25 @@ export default function AdminPage() {
                 ) : (
                   <p className="text-xs" style={{ color: 'var(--muted)' }}>Sin cursos — agrégalos en la pestaña Catálogos</p>
                 )}
+              </div>
+
+              {/* ── Unidad / Objetivo ── */}
+              <div style={{ opacity: (editing as any).course ? 1 : 0.4, pointerEvents: (editing as any).course ? 'auto' : 'none' }}>
+                <label className="text-xs mb-1.5 block font-medium" style={{ color: 'var(--muted)' }}>Unidad / Objetivo *</label>
+                {(() => {
+                  const courseUnits = (editing as any).course
+                    ? modalUnits.filter((u: any) => !u.course || u.course === (editing as any).course)
+                    : [];
+                  return (
+                    <select value={(editing as any).unitId || ''} onChange={e => setEditing(prev => ({ ...prev!, unitId: +e.target.value || undefined }))}
+                      disabled={!courseUnits.length}
+                      className="w-full px-3 rounded-xl text-sm outline-none disabled:opacity-40"
+                      style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)', height: 44 }}>
+                      <option value="">Sin unidad</option>
+                      {courseUnits.map((u: any) => <option key={u.id} value={u.id} style={{ color: '#1e0d38', background: '#e9e0f7' }}>{u.name}</option>)}
+                    </select>
+                  );
+                })()}
               </div>
 
               {/* ── Tipo de actividad (multi-select chips) ── */}
@@ -3022,7 +3042,7 @@ export default function AdminPage() {
                   <button
                     disabled={migratingImages || (migrateCount !== null && migrateCount.pending === 0)}
                     onClick={async () => {
-                      if (!confirm('Esto descargará y convertirá todas las imágenes externas a WebP local. Puede tardar varios minutos. ¿Continuar?')) return;
+                      { const r = await swalConfirm('¿Migrar imágenes?', 'Descargará y convertirá todas las imágenes externas a WebP local. Puede tardar varios minutos.', 'Continuar'); if (!r.isConfirmed) return; }
                       setMigratingImages(true);
                       const BATCH = 10;
                       const MAX_RETRIES = 3;
@@ -3131,7 +3151,7 @@ export default function AdminPage() {
                   <button
                     disabled={scrapingMissing || migratingImages || (migrateCount !== null && migrateCount.noImageWithUrl === 0)}
                     onClick={async () => {
-                      if (!confirm('Accederá a la URL de cada recurso sin imagen para extraer su imagen principal. Puede tardar varios minutos. ¿Continuar?')) return;
+                      { const r = await swalConfirm('¿Extraer imágenes faltantes?', 'Accederá a la URL de cada recurso para extraer su imagen. Puede tardar varios minutos.', 'Continuar'); if (!r.isConfirmed) return; }
                       setScrapingMissing(true);
                       const BATCH = 10;
                       const MAX_RETRIES = 3;
@@ -3247,7 +3267,7 @@ export default function AdminPage() {
                     const subjectName = rescrapeSubject
                       ? subjects.find(s => String(s.id) === rescrapeSubject)?.name
                       : 'TODAS las asignaturas';
-                    if (!confirm(`Esto sobreescribirá las imágenes actuales de "${subjectName}" con las obtenidas desde la URL de cada recurso. ¿Continuar?`)) return;
+                    { const r = await swalConfirm('¿Recorregir imágenes?', `Sobreescribirá las imágenes actuales de "${subjectName}" con las obtenidas desde la URL de cada recurso.`, 'Continuar'); if (!r.isConfirmed) return; }
 
                     setRescrapingImages(true);
                     const BATCH = 5;

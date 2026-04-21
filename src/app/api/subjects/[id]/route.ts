@@ -19,8 +19,11 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   const auth = await requireAuth(req);
   if (auth.error) return auth.error;
 
-  const data = await req.json();
-  const subject = await prisma.subject.update({ where: { id: Number(params.id) }, data });
+  const { name, slug, icon, color, order, isActive } = await req.json();
+  const subject = await prisma.subject.update({
+    where: { id: Number(params.id) },
+    data: { name, slug, icon: icon ?? null, color, order, isActive },
+  });
   return ok(subject);
 }
 
@@ -28,9 +31,8 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
   const auth = await requireAuth(_req);
   if (auth.error) return auth.error;
 
-  await prisma.subject.update({
-    where: { id: Number(params.id) },
-    data: { deletedAt: new Date(), isActive: false },
-  });
+  const id = Number(params.id);
+  await prisma.resource.deleteMany({ where: { subjectId: id } });
+  await prisma.subject.delete({ where: { id } });
   return ok({ success: true });
 }

@@ -189,3 +189,30 @@ textarea {
   cursor: not-allowed;
   pointer-events: none;
 }
+
+/* SweetAlert2 — tema PaperFlix */
+.paper-swal-popup {
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 20px !important;
+  font-family: var(--font-inter, system-ui, sans-serif) !important;
+}
+.paper-swal-title {
+  font-size: 1.2rem !important;
+  font-weight: 700 !important;
+  color: #ede6f7 !important;
+}
+.paper-swal-html {
+  font-size: 0.95rem !important;
+  color: #b09dce !important;
+  line-height: 1.6 !important;
+}
+.paper-swal-confirm, .paper-swal-cancel {
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+  min-height: 44px !important;
+  padding: 0 20px !important;
+}
+.swal2-icon {
+  border-color: rgba(255,255,255,0.15) !important;
+}
