@@ -176,7 +176,9 @@ export default function AdminPage() {
     titulo: string; url: string; descripcion?: string;
     tipo_actividad?: string; autor?: string;
     codigo_oa?: string; descripcion_oa?: string;
+    image_url?: string;
     _error?: string;
+    _warning?: string;
   }
   const [showBulk, setShowBulk] = useState(false);
   const [bulkSubject, setBulkSubject] = useState('');
@@ -3603,6 +3605,7 @@ export default function AdminPage() {
                     { col: 'autor', req: false },
                     { col: 'codigo_oa', req: false },
                     { col: 'descripcion_oa', req: false },
+                    { col: 'image_url', req: false },
                   ].map(({ col, req }) => (
                     <span key={col} className="px-2 py-0.5 rounded font-mono text-[11px]"
                       style={{
@@ -3616,15 +3619,28 @@ export default function AdminPage() {
                 </div>
                 <p className="text-[11px]" style={{ color: 'var(--muted)' }}>
                   * Obligatorio · La asignatura, curso y unidad se definen abajo — no hace falta incluirlos en el Excel.
+                  · <strong style={{ color: '#f5c518' }}>image_url</strong>: si incluyes una URL de imagen externa, se descargará y alojará automáticamente.
                 </p>
+                {catalogActivityTypes.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                    <span className="text-[11px] font-semibold" style={{ color: 'var(--muted)' }}>Tipos válidos:</span>
+                    {catalogActivityTypes.filter(t => t.isActive).map(t => (
+                      <span key={t.id} className="px-2 py-0.5 rounded font-mono text-[11px]"
+                        style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)', color: '#34d399' }}>
+                        {t.name}
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <button
                   onClick={async () => {
                     const XLSX = await import('xlsx');
+                    const validTypes = catalogActivityTypes.filter(t => t.isActive).map(t => t.name).join(', ') || 'Tipo 1, Tipo 2';
                     const ws = XLSX.utils.aoa_to_sheet([
-                      ['titulo', 'url', 'descripcion', 'tipo_actividad', 'autor', 'codigo_oa', 'descripcion_oa'],
-                      ['Introducción a las fracciones', 'https://ejemplo.com', 'Descripción opcional', 'Video', 'Autor Ejemplo', 'MA01 OA 01', 'Descripción del objetivo de aprendizaje'],
+                      ['titulo', 'url', 'descripcion', 'tipo_actividad', 'autor', 'codigo_oa', 'descripcion_oa', 'image_url'],
+                      ['Introducción a las fracciones', 'https://ejemplo.com', 'Descripción opcional', validTypes.split(',')[0]?.trim() || '', 'Autor Ejemplo', 'MA01 OA 01', 'Descripción del objetivo de aprendizaje', 'https://ejemplo.com/imagen.jpg'],
                     ]);
-                    ws['!cols'] = [36, 44, 44, 22, 22, 30, 15, 44].map(w => ({ wch: w }));
+                    ws['!cols'] = [36, 44, 44, 22, 22, 14, 44, 44].map(w => ({ wch: w }));
                     const wb = XLSX.utils.book_new();
                     XLSX.utils.book_append_sheet(wb, ws, 'Recursos');
                     XLSX.writeFile(wb, 'plantilla-recursos-paperflix.xlsx');
@@ -3739,7 +3755,8 @@ export default function AdminPage() {
                         const ws = wb.Sheets[wb.SheetNames[0]];
                         const raw: any[] = XLSX.utils.sheet_to_json(ws, { defval: '' });
 
-                        const VALID_COLS = new Set(['titulo', 'url', 'descripcion', 'tipo_actividad', 'autor', 'codigo_oa', 'descripcion_oa']);
+                        const VALID_COLS = new Set(['titulo', 'url', 'descripcion', 'tipo_actividad', 'autor', 'codigo_oa', 'descripcion_oa', 'image_url']);
+                        const validTypeNames = new Set(catalogActivityTypes.filter(t => t.isActive).map(t => t.name.toLowerCase()));
                         const parsed: BulkRow[] = raw.map((r) => {
                           const norm: Record<string, string> = {};
                           for (const k of Object.keys(r)) {
@@ -3754,9 +3771,12 @@ export default function AdminPage() {
                             autor: norm.autor,
                             codigo_oa: norm.codigo_oa,
                             descripcion_oa: norm.descripcion_oa,
+                            image_url: norm.image_url,
                           };
                           if (!row.titulo) row._error = 'Sin título';
                           else if (!row.url) row._error = 'Sin URL';
+                          else if (row.tipo_actividad && validTypeNames.size > 0 && !validTypeNames.has(row.tipo_actividad.toLowerCase()))
+                            row._warning = `Tipo "${row.tipo_actividad}" no está en el catálogo`;
                           return row;
                         });
                         setBulkRows(parsed);
@@ -3781,6 +3801,11 @@ export default function AdminPage() {
                           ({bulkRows.filter(r => r._error).length} con error — se omitirán)
                         </span>
                       )}
+                      {bulkRows.filter(r => !r._error && r._warning).length > 0 && (
+                        <span className="ml-2 text-xs font-normal text-yellow-400">
+                          · {bulkRows.filter(r => !r._error && r._warning).length} con advertencia
+                        </span>
+                      )}
                     </p>
                     <button onClick={() => setBulkRows([])}
                       className="text-xs flex items-center gap-1" style={{ color: 'var(--muted)' }}>
@@ -3788,10 +3813,10 @@ export default function AdminPage() {
                     </button>
                   </div>
                   <div className="rounded-xl overflow-auto max-h-72" style={{ border: '1px solid var(--border)' }}>
-                    <table className="w-full text-xs min-w-[700px]">
+                    <table className="w-full text-xs min-w-[800px]">
                       <thead>
                         <tr style={{ background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}>
-                          {['#', 'Título', 'URL', 'Tipo actividad', 'Autor', 'Cód. OA', 'Estado'].map(h => (
+                          {['#', 'Título', 'URL', 'Tipo actividad', 'Autor', 'Cód. OA', 'Imagen', 'Estado'].map(h => (
                             <th key={h} className="px-3 py-2 text-left font-semibold" style={{ color: 'var(--muted)' }}>{h}</th>
                           ))}
                         </tr>
@@ -3802,17 +3827,22 @@ export default function AdminPage() {
                             className="border-t"
                             style={{
                               borderColor: 'var(--border)',
-                              background: row._error ? 'rgba(239,68,68,0.06)' : i % 2 === 0 ? 'var(--card)' : 'transparent',
+                              background: row._error ? 'rgba(239,68,68,0.06)' : row._warning ? 'rgba(245,197,24,0.04)' : i % 2 === 0 ? 'var(--card)' : 'transparent',
                             }}>
                             <td className="px-3 py-2 font-mono" style={{ color: 'var(--muted)' }}>{i + 1}</td>
-                            <td className="px-3 py-2 max-w-[200px] truncate text-white">{row.titulo || <span style={{ color: 'var(--muted)', fontStyle: 'italic' }}>vacío</span>}</td>
-                            <td className="px-3 py-2 max-w-[160px] truncate" style={{ color: 'var(--muted)' }}>{row.url || '—'}</td>
-                            <td className="px-3 py-2 truncate" style={{ color: 'var(--muted)' }}>{row.tipo_actividad || '—'}</td>
+                            <td className="px-3 py-2 max-w-[180px] truncate text-white">{row.titulo || <span style={{ color: 'var(--muted)', fontStyle: 'italic' }}>vacío</span>}</td>
+                            <td className="px-3 py-2 max-w-[130px] truncate" style={{ color: 'var(--muted)' }}>{row.url || '—'}</td>
+                            <td className="px-3 py-2 truncate" style={{ color: row._warning ? '#f5c518' : 'var(--muted)' }}>{row.tipo_actividad || '—'}</td>
                             <td className="px-3 py-2 truncate" style={{ color: 'var(--muted)' }}>{row.autor || '—'}</td>
                             <td className="px-3 py-2 font-mono" style={{ color: 'var(--accent)' }}>{row.codigo_oa || '—'}</td>
+                            <td className="px-3 py-2 max-w-[100px] truncate" style={{ color: 'var(--muted)' }} title={row.image_url}>
+                              {row.image_url ? <span style={{ color: '#34d399' }}>✓ URL</span> : '—'}
+                            </td>
                             <td className="px-3 py-2">
                               {row._error
                                 ? <span className="flex items-center gap-1 text-red-400"><AlertTriangle size={11} />{row._error}</span>
+                                : row._warning
+                                ? <span className="flex items-center gap-1 text-yellow-400"><AlertTriangle size={11} />{row._warning}</span>
                                 : <span className="flex items-center gap-1 text-emerald-400"><CheckCircle2 size={11} />OK</span>}
                             </td>
                           </tr>
@@ -3880,6 +3910,7 @@ export default function AdminPage() {
                           author: r.autor || undefined,
                           oaCode: r.codigo_oa || undefined,
                           oaDescription: r.descripcion_oa || undefined,
+                          imageUrl: r.image_url || undefined,
                           isActive: true,
                         }));
                         const result = await bulkCreateResources(items);
