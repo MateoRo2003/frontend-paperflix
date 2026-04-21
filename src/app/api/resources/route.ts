@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
   const auth = await requireAuth(req);
   if (auth.error) return auth.error;
 
-  const data = await req.json();
+  const { subject: _s, unit: _u, id: _id, ...data } = await req.json();
   if (!data.title || !data.subjectId) return err('title y subjectId requeridos');
 
   const resource = await prisma.resource.create({ data });

@@ -12,7 +12,8 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   const auth = await requireAuth(req);
   if (auth.error) return auth.error;
 
-  const data = await req.json();
+  // Strip relation objects (subject, unit) that come from the list endpoint's include
+  const { subject: _s, unit: _u, id: _id, ...data } = await req.json();
   const resource = await prisma.resource.update({ where: { id: Number(params.id) }, data });
   return ok(resource);
 }
