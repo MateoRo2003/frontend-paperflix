@@ -672,7 +672,7 @@ export default function AdminPage() {
               if (key === 'catalogs') { loadCatalogCourses(); loadCatalogActivityTypes(); loadCatalogUnits(); }
               if (key === 'stats') loadExtendedStats();
             }}
-            className="flex items-center gap-2 px-4 rounded-xl text-sm font-medium transition-colors shrink-0"
+            className="flex items-center gap-2 px-4 rounded-xl text-sm font-medium transition-all shrink-0 hover:brightness-110 hover:scale-[1.02]"
             style={{
               height: 44,
               background: tab === key ? 'var(--purple)' : 'var(--card)',

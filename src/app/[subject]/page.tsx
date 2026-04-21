@@ -214,7 +214,7 @@ export default function SubjectPage() {
                 <button
                   key={c}
                   onClick={() => { setCourse(prev => prev === c ? '' : c); setPage(1); }}
-                  className="pill-btn shrink-0 rounded-full text-sm font-semibold transition-all"
+                  className="pill-btn shrink-0 rounded-full text-sm font-semibold transition-all hover:brightness-110 hover:scale-[1.03]"
                   style={{
                     height: 36,
                     paddingLeft: 16,
@@ -300,7 +300,7 @@ export default function SubjectPage() {
         </div>
 
         {/* Búsqueda */}
-        <div className="border-t px-4 pb-4" style={{ borderColor: 'var(--border)' }}>
+        <div className="border-t px-4 pt-4 pb-4" style={{ borderColor: 'var(--border)' }}>
           <SearchBar
             onSearch={(q) => { setSearch(q); setPage(1); }}
             placeholder={`Buscar en ${subject?.name || 'esta asignatura'}...`}
