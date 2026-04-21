@@ -3494,20 +3494,31 @@ export default function AdminPage() {
 
               {/* Icono */}
               <div>
-                <label className="text-xs mb-1.5 block font-medium" style={{ color: 'var(--muted)' }}>Icono</label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-medium" style={{ color: 'var(--muted)' }}>Icono</label>
+                  {editingSubject.icon && !editingSubject.icon.startsWith('<') && (
+                    <span className="text-[11px] px-2 py-0.5 rounded-full font-semibold" style={{ background: `${editingSubject.color || '#7c3aed'}22`, color: editingSubject.color || '#c4b5fd' }}>
+                      {SUBJECT_ICONS.find(i => i.name === editingSubject.icon)?.label ?? editingSubject.icon}
+                    </span>
+                  )}
+                  {!editingSubject.icon && (
+                    <span className="text-[11px]" style={{ color: 'var(--muted)' }}>Sin icono seleccionado</span>
+                  )}
+                </div>
                 <div className="grid grid-cols-10 gap-1.5 mb-2">
                   {SUBJECT_ICONS.map(({ name, label }) => (
                     <button
                       key={name}
                       title={label}
                       onClick={() => setEditingSubject(prev => ({ ...prev!, icon: prev?.icon === name ? undefined : name }))}
-                      className="rounded-lg flex items-center justify-center transition-colors"
+                      className="rounded-lg flex items-center justify-center transition-all"
                       style={{
                         width: 36, height: 36,
                         background: editingSubject.icon === name
                           ? `${editingSubject.color || '#7c3aed'}33`
                           : 'var(--bg)',
                         border: `1px solid ${editingSubject.icon === name ? (editingSubject.color || '#7c3aed') : 'var(--border)'}`,
+                        transform: editingSubject.icon === name ? 'scale(1.1)' : 'scale(1)',
                       }}
                     >
                       <SubjectIcon
