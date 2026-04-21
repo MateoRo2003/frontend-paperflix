@@ -400,7 +400,6 @@ export default function AdminPage() {
     if (!(editing as any).subjectId) { showMsg('La asignatura es obligatoria', 'err'); return; }
     if (!(editing as any).course?.trim()) { showMsg('El curso es obligatorio', 'err'); return; }
     if (!(editing as any).unitId) { showMsg('La unidad es obligatoria', 'err'); return; }
-    if (selectedActTypes.length === 0) { showMsg('El tipo de actividad es obligatorio', 'err'); return; }
     if (!(editing as any).author?.trim()) { showMsg('El autor es obligatorio', 'err'); return; }
     const payload = { ...editing, activityType: selectedActTypes.join(',') };
     setSaving(true);
@@ -3775,7 +3774,7 @@ export default function AdminPage() {
                           if (!row.titulo) row._error = 'Sin título';
                           else if (!row.url) row._error = 'Sin URL';
                           else if (row.tipo_actividad && validTypeNames.size > 0 && !validTypeNames.has(row.tipo_actividad.toLowerCase()))
-                            row._error = `Tipo "${row.tipo_actividad}" no está en el catálogo`;
+                            row.tipo_actividad = undefined; // tipo inválido → se ignora, recurso se importa igual
                           return row;
                         });
                         setBulkRows(parsed);
