@@ -234,7 +234,7 @@ export default function HomePage() {
             {searching ? 'Buscando...' : `${searchResults.length} resultado${searchResults.length !== 1 ? 's' : ''}`}
           </h2>
           {searching ? <GridSkeleton count={8} /> : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-7">
+            <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-7">
               {searchResults.map(r => (
                 <ResourceCard key={r.id} resource={r} onClick={() => setSelected(r)} />
               ))}
@@ -253,7 +253,7 @@ export default function HomePage() {
                 <h2 className="text-xl font-bold text-white">Destacados</h2>
               </div>
               {loading ? <GridSkeleton count={4} /> : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-7">
+                <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-7">
                   {featured.slice(0, 4).map(r => (
                     <ResourceCard key={r.id} resource={r} onClick={() => setSelected(r)} />
                   ))}
@@ -297,7 +297,7 @@ export default function HomePage() {
                   </div>
 
                   {/* Grid de 4 recursos */}
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-7">
+                  <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-7">
                     {resources.map(r => (
                       <ResourceCard key={r.id} resource={r} onClick={() => setSelected(r)} />
                     ))}
