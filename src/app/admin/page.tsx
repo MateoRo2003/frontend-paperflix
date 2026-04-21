@@ -80,6 +80,12 @@ function KpiCard({ icon: Icon, label, value, sub, color }: {
 
 const SUBJECT_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4', '#ec4899', '#84cc16'];
 
+function avgViews(views: number, resources: number): string {
+  if (!resources || !views) return '0';
+  const v = views / resources;
+  return v >= 10 ? Math.round(v).toString() : v.toFixed(1);
+}
+
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
@@ -643,7 +649,7 @@ export default function AdminPage() {
         <KpiCard icon={Database} label="Total recursos" value={totalResources.toLocaleString()} color="#7c3aed" />
         <KpiCard icon={Eye} label="Visualizaciones" value={totalViews.toLocaleString()} color="#3b82f6" />
         <KpiCard icon={BookOpen} label="Asignaturas activas" value={activeSubs} color="#10b981" />
-        <KpiCard icon={TrendingUp} label="Promedio vistas/rec" value={totalResources ? Math.round(totalViews / totalResources) : 0} color="#f59e0b" />
+        <KpiCard icon={TrendingUp} label="Promedio vistas/rec" value={avgViews(totalViews, totalResources)} color="#f59e0b" />
       </div>
 
       {/* ── Tabs ───────────────────────────────────────────────────── */}
@@ -1051,7 +1057,7 @@ export default function AdminPage() {
           addKpiBlock(ws1, 4, [
             { label: 'Total recursos', value: totalResources, color: C.purple },
             { label: 'Vistas acumuladas', value: totalViews, color: C.blue },
-            { label: 'Promedio vistas/rec.', value: totalResources ? Math.round(totalViews / totalResources) : 0, color: C.green },
+            { label: 'Promedio vistas/rec.', value: avgViews(totalViews, totalResources), color: C.green },
             { label: 'Asignaturas activas', value: stats.length, color: '7C3AED' },
           ]);
           ws1.getRow(8).height = 14;
@@ -1328,7 +1334,7 @@ export default function AdminPage() {
               {[
                 { label: 'Total recursos', value: totalResources.toLocaleString(), sub: 'en el catálogo', color: '#7c3aed' },
                 { label: 'Total vistas', value: totalViews.toLocaleString(), sub: 'acumuladas', color: '#3b82f6' },
-                { label: 'Promedio vistas', value: totalResources ? Math.round(totalViews / totalResources) : 0, sub: 'por recurso', color: '#10b981' },
+                { label: 'Promedio vistas', value: avgViews(totalViews, totalResources), sub: 'por recurso', color: '#10b981' },
                 { label: 'Asignatura líder', value: topByViews[0]?.name?.split(' ')[0] || '—', sub: `${(topByViews[0]?.views || 0).toLocaleString()} vistas`, color: '#f59e0b' },
               ].map(k => (
                 <div key={k.label} className="rounded-xl p-4 flex items-center gap-3" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
