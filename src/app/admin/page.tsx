@@ -178,7 +178,6 @@ export default function AdminPage() {
     codigo_oa?: string; descripcion_oa?: string;
     image_url?: string;
     _error?: string;
-    _warning?: string;
   }
   const [showBulk, setShowBulk] = useState(false);
   const [bulkSubject, setBulkSubject] = useState('');
@@ -3776,7 +3775,7 @@ export default function AdminPage() {
                           if (!row.titulo) row._error = 'Sin título';
                           else if (!row.url) row._error = 'Sin URL';
                           else if (row.tipo_actividad && validTypeNames.size > 0 && !validTypeNames.has(row.tipo_actividad.toLowerCase()))
-                            row._warning = `Tipo "${row.tipo_actividad}" no está en el catálogo`;
+                            row._error = `Tipo "${row.tipo_actividad}" no está en el catálogo`;
                           return row;
                         });
                         setBulkRows(parsed);
@@ -3801,11 +3800,6 @@ export default function AdminPage() {
                           ({bulkRows.filter(r => r._error).length} con error — se omitirán)
                         </span>
                       )}
-                      {bulkRows.filter(r => !r._error && r._warning).length > 0 && (
-                        <span className="ml-2 text-xs font-normal text-yellow-400">
-                          · {bulkRows.filter(r => !r._error && r._warning).length} con advertencia
-                        </span>
-                      )}
                     </p>
                     <button onClick={() => setBulkRows([])}
                       className="text-xs flex items-center gap-1" style={{ color: 'var(--muted)' }}>
@@ -3827,12 +3821,12 @@ export default function AdminPage() {
                             className="border-t"
                             style={{
                               borderColor: 'var(--border)',
-                              background: row._error ? 'rgba(239,68,68,0.06)' : row._warning ? 'rgba(245,197,24,0.04)' : i % 2 === 0 ? 'var(--card)' : 'transparent',
+                              background: row._error ? 'rgba(239,68,68,0.06)' : i % 2 === 0 ? 'var(--card)' : 'transparent',
                             }}>
                             <td className="px-3 py-2 font-mono" style={{ color: 'var(--muted)' }}>{i + 1}</td>
                             <td className="px-3 py-2 max-w-[180px] truncate text-white">{row.titulo || <span style={{ color: 'var(--muted)', fontStyle: 'italic' }}>vacío</span>}</td>
                             <td className="px-3 py-2 max-w-[130px] truncate" style={{ color: 'var(--muted)' }}>{row.url || '—'}</td>
-                            <td className="px-3 py-2 truncate" style={{ color: row._warning ? '#f5c518' : 'var(--muted)' }}>{row.tipo_actividad || '—'}</td>
+                            <td className="px-3 py-2 truncate" style={{ color: 'var(--muted)' }}>{row.tipo_actividad || '—'}</td>
                             <td className="px-3 py-2 truncate" style={{ color: 'var(--muted)' }}>{row.autor || '—'}</td>
                             <td className="px-3 py-2 font-mono" style={{ color: 'var(--accent)' }}>{row.codigo_oa || '—'}</td>
                             <td className="px-3 py-2 max-w-[100px] truncate" style={{ color: 'var(--muted)' }} title={row.image_url}>
@@ -3841,8 +3835,6 @@ export default function AdminPage() {
                             <td className="px-3 py-2">
                               {row._error
                                 ? <span className="flex items-center gap-1 text-red-400"><AlertTriangle size={11} />{row._error}</span>
-                                : row._warning
-                                ? <span className="flex items-center gap-1 text-yellow-400"><AlertTriangle size={11} />{row._warning}</span>
                                 : <span className="flex items-center gap-1 text-emerald-400"><CheckCircle2 size={11} />OK</span>}
                             </td>
                           </tr>
