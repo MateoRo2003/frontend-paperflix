@@ -6,19 +6,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(true);
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    const saved = localStorage.getItem('sidebar-collapsed');
-    setCollapsed(saved !== null ? saved === 'true' : true);
-    setMounted(true);
-  }, []);
+  useEffect(() => { setMounted(true); }, []);
 
-  function toggle() {
-    setCollapsed(prev => {
-      const next = !prev;
-      localStorage.setItem('sidebar-collapsed', String(next));
-      return next;
-    });
-  }
+  function toggle() { setCollapsed(prev => !prev); }
 
   const w = mounted ? (collapsed ? 72 : 320) : 72;
 
