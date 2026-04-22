@@ -2,18 +2,22 @@ import { NextRequest } from 'next/server';
 import Groq from 'groq-sdk';
 import { requireAuth, ok, err } from '@/lib/auth';
 
-async function fetchPageContent(url: string): Promise<string> {
+async function fetchPageContent(url: string): Promise<{ meta: string; imageUrl: string }> {
   try {
     const res = await fetch(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; PaperFlix/1.0)' },
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      },
       signal: AbortSignal.timeout(8000),
     });
     const html = await res.text();
 
-    const ogTitle = html.match(/<meta[^>]+property="og:title"[^>]+content="([^"]+)"/i)?.[1] || '';
+    const ogTitle = html.match(/<meta[^>]+property="og:title"[^>]+content="([^"]+)"/i)?.[1]
+                 || html.match(/<meta[^>]+content="([^"]+)"[^>]+property="og:title"/i)?.[1] || '';
     const ogDesc  = html.match(/<meta[^>]+property="og:description"[^>]+content="([^"]+)"/i)?.[1]
-                 || html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i)?.[1] || '';
-    const ogImage = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i)?.[1] || '';
+                 || html.match(/<meta[^>]+content="([^"]+)"[^>]+property="og:description"/i)?.[1]
+                 || html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i)?.[1]
+                 || html.match(/<meta[^>]+content="([^"]+)"[^>]+name="description"/i)?.[1] || '';
     const title   = html.match(/<title>([^<]+)<\/title>/i)?.[1] || '';
     const h1      = html.match(/<h1[^>]*>([^<]+)<\/h1>/i)?.[1] || '';
     const bodyText = html
@@ -24,9 +28,51 @@ async function fetchPageContent(url: string): Promise<string> {
       .trim()
       .slice(0, 1200);
 
-    return JSON.stringify({ ogTitle, ogDesc, ogImage, title, h1, bodyText });
+    // Try multiple image sources in priority order
+    let imageUrl =
+      html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i)?.[1] ||
+      html.match(/<meta[^>]+content="([^"]+)"[^>]+property="og:image"/i)?.[1] ||
+      html.match(/<meta[^>]+name="twitter:image"[^>]+content="([^"]+)"/i)?.[1] ||
+      html.match(/<meta[^>]+content="([^"]+)"[^>]+name="twitter:image"/i)?.[1] ||
+      html.match(/<meta[^>]+property="twitter:image"[^>]+content="([^"]+)"/i)?.[1] ||
+      '';
+
+    // If still no image, scan <img> tags for a meaningful one
+    if (!imageUrl) {
+      const imgRegex = /<img[^>]+src=["']([^"']+)["']/gi;
+      let m: RegExpExecArray | null;
+      while ((m = imgRegex.exec(html)) !== null) {
+        const src = m[1];
+        if (
+          src &&
+          !src.includes('pixel') &&
+          !src.includes('track') &&
+          !src.includes('favicon') &&
+          !/\.(gif|ico|svg)$/i.test(src) &&
+          (src.startsWith('http') || src.startsWith('/'))
+        ) {
+          imageUrl = src.startsWith('/')
+            ? `${new URL(url).origin}${src}`
+            : src;
+          break;
+        }
+      }
+    }
+
+    // Last resort: free screenshot thumbnail service
+    if (!imageUrl) {
+      imageUrl = `https://image.thum.io/get/width/800/crop/600/${url}`;
+    }
+
+    return {
+      meta: JSON.stringify({ ogTitle, ogDesc, title, h1, bodyText }),
+      imageUrl,
+    };
   } catch {
-    return '';
+    return {
+      meta: '',
+      imageUrl: `https://image.thum.io/get/width/800/crop/600/${url}`,
+    };
   }
 }
 
@@ -41,9 +87,7 @@ export async function POST(req: NextRequest) {
   const { url } = await req.json();
   if (!url) return err('url requerida');
 
-  const pageRaw = await fetchPageContent(url);
-  let pageData: any = {};
-  try { pageData = JSON.parse(pageRaw); } catch { }
+  const { meta: pageRaw, imageUrl } = await fetchPageContent(url);
 
   const prompt = `Eres un asistente para PaperFlix, plataforma educativa chilena para docentes de básica y media.
 
@@ -91,7 +135,7 @@ Responde SOLO con un JSON válido con estos campos:
       description:            typeof parsed.description === 'string'            ? parsed.description.trim() : '',
       author:                 typeof parsed.author === 'string'                 ? parsed.author.trim()      : '',
       activityTypeSuggestion: VALID_TYPES.includes(parsed.activityTypeSuggestion) ? parsed.activityTypeSuggestion : '',
-      imageUrl:               typeof pageData.ogImage === 'string'              ? pageData.ogImage.trim()   : '',
+      imageUrl,
     });
   } catch (e: any) {
     return err(`Error de IA: ${e?.message || 'desconocido'}`, 500);
