@@ -3,11 +3,12 @@ import { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setCollapsed(localStorage.getItem('sidebar-collapsed') === 'true');
+    const saved = localStorage.getItem('sidebar-collapsed');
+    setCollapsed(saved !== null ? saved === 'true' : true);
     setMounted(true);
   }, []);
 
@@ -19,7 +20,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     });
   }
 
-  const w = mounted ? (collapsed ? 72 : 320) : 320;
+  const w = mounted ? (collapsed ? 72 : 320) : 72;
 
   return (
     <div className="flex min-h-screen">
