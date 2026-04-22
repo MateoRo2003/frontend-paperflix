@@ -236,18 +236,30 @@ export default function AdminPage() {
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoginErr('');
+
+    PaperSwal.fire({
+      title: 'Iniciando sesión…',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => PaperSwal.showLoading(),
+    });
+
     try {
       await signIn(email, password);
+      PaperSwal.close();
     } catch (err: any) {
-      // Distinguir error de red vs credenciales incorrectas
       const status = err?.response?.status;
-      if (status === 401) {
-        setLoginErr('Credenciales incorrectas. Verifica tu email y contraseña.');
+      let msg = '';
+      if (status === 400 || status === 401) {
+        msg = 'Email o contraseña incorrectos. Verifica tus credenciales.';
       } else if (!status) {
-        setLoginErr('No se pudo conectar con el servidor. ¿Está el backend corriendo?');
+        msg = 'No se pudo conectar con el servidor.';
       } else {
-        setLoginErr(`Error del servidor (${status}). Intenta de nuevo.`);
+        msg = `Error del servidor (${status}). Intenta de nuevo.`;
       }
+      PaperSwal.fire({ title: 'Error al iniciar sesión', text: msg, icon: 'error', confirmButtonText: 'Intentar de nuevo' });
+      setLoginErr(msg);
     }
   }
 
