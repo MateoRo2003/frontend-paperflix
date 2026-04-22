@@ -693,7 +693,7 @@ export default function AdminPage() {
   const activeSubs = subjects.filter(s => s.isActive).length;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
 
       {/* ── Header ─────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between gap-4">
@@ -741,7 +741,7 @@ export default function AdminPage() {
       )}
 
       {/* ── KPI Strip ──────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
         <KpiCard icon={Database} label="Total recursos" value={totalResources.toLocaleString()} color="#7c3aed" />
         <KpiCard icon={Eye} label="Visualizaciones" value={totalViews.toLocaleString()} color="#3b82f6" />
         <KpiCard icon={BookOpen} label="Asignaturas activas" value={activeSubs} color="#10b981" />
@@ -2444,7 +2444,7 @@ export default function AdminPage() {
           <div className="fixed inset-0 bg-black/70" />
           <div
             className="relative w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col"
-            style={{ background: 'var(--card)', border: '1px solid var(--border)', maxHeight: '90vh' }}
+            style={{ background: 'var(--card)', border: '1px solid var(--border)', maxHeight: '95dvh' }}
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-5 py-4 border-b shrink-0" style={{ borderColor: 'var(--border)' }}>
@@ -3434,7 +3434,7 @@ export default function AdminPage() {
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" onClick={() => setEditingSlide(null)}>
           <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" />
           <div className="relative w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl"
-            style={{ background: 'var(--card)', border: '1px solid var(--border)', maxHeight: '90vh' }}
+            style={{ background: 'var(--card)', border: '1px solid var(--border)', maxHeight: '95dvh' }}
             onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: 'var(--border)' }}>
               <h3 className="font-bold text-white">{editingSlide.id ? 'Editar Slide' : 'Nuevo Slide'}</h3>
@@ -3729,7 +3729,7 @@ export default function AdminPage() {
               </button>
             </div>
 
-            <div className="p-6 space-y-5">
+            <div className="p-3 sm:p-6 space-y-4 sm:space-y-5">
 
               {/* ── Formato requerido ── */}
               <div className="rounded-xl p-4 space-y-2" style={{ background: 'rgba(245,197,24,0.07)', border: '1px solid rgba(245,197,24,0.2)' }}>

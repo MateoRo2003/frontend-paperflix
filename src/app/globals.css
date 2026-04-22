@@ -28,6 +28,28 @@ html {
   font-size: 18px;
 }
 
+@media (max-width: 767px) {
+  html { font-size: 15px; }
+
+  button, [role="button"] { min-height: 44px; }
+  .icon-btn { min-height: 38px; min-width: 38px; }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="url"],
+  input[type="search"],
+  select,
+  textarea {
+    min-height: 44px;
+    font-size: 15px;
+  }
+
+  .nav-item { min-height: 52px; }
+  .pill-btn { min-height: 40px; padding: 0 14px; font-size: 13px; }
+  .page-btn { min-height: 40px; min-width: 40px; }
+}
+
 body {
   font-family: var(--font-inter, system-ui, sans-serif);
   /* Degradado principal: #3F226A arriba → #1e0d38 abajo */

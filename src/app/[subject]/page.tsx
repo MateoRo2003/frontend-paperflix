@@ -133,7 +133,7 @@ export default function SubjectPage() {
   const unitLabel = isObj ? 'Objetivo' : 'Unidad';
 
   return (
-    <div className="p-6 space-y-5">
+    <div className="p-3 sm:p-6 space-y-4">
 
       {/* ── Header ─────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between gap-4">
@@ -362,7 +362,7 @@ export default function SubjectPage() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-2 sm:gap-4">
           {resources.map(r => (
             <ResourceCard key={r.id} resource={r} onClick={() => setSelected(r)} />
           ))}
@@ -378,20 +378,23 @@ export default function SubjectPage() {
             className="page-btn flex items-center justify-center rounded-xl disabled:opacity-30 hover:bg-white/5 transition-colors"
             style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)' }}
           >
-            <ChevronLeft size={20} />
+            <ChevronLeft size={18} />
           </button>
 
+          {/* Números — en móvil solo muestra 3, en desktop hasta 7 */}
           {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
             const p = Math.max(1, Math.min(page - 3, totalPages - 6)) + i;
+            const showOnMobile = p === page || p === page - 1 || p === page + 1;
             return (
               <button
                 key={p}
                 onClick={() => setPage(p)}
-                className="page-btn rounded-xl text-sm font-semibold transition-colors"
+                className={`page-btn rounded-xl text-sm font-semibold transition-colors ${showOnMobile ? '' : 'hidden sm:flex'}`}
                 style={{
                   background: p === page ? 'var(--purple)' : 'var(--card)',
                   color: p === page ? '#fff' : 'var(--muted)',
                   border: `1px solid ${p === page ? 'rgba(124,58,237,0.5)' : 'var(--border)'}`,
+                  display: showOnMobile ? undefined : undefined,
                 }}
               >
                 {p}
@@ -405,7 +408,7 @@ export default function SubjectPage() {
             className="page-btn flex items-center justify-center rounded-xl disabled:opacity-30 hover:bg-white/5 transition-colors"
             style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)' }}
           >
-            <ChevronRight size={20} />
+            <ChevronRight size={18} />
           </button>
         </div>
       )}

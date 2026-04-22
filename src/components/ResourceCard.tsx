@@ -54,7 +54,7 @@ export default function ResourceCard({ resource, onClick }: { resource: Resource
         {/* Badge tipo */}
         {resource.activityType && (
           <span
-            className="absolute top-3 left-3 text-sm font-bold px-3 py-1.5 rounded-full text-white z-10"
+            className="absolute top-2 left-2 text-[11px] sm:text-sm font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-white z-10"
             style={{ background: badgeColor }}
           >
             {resource.activityType.split(',')[0].trim()}
@@ -70,24 +70,24 @@ export default function ResourceCard({ resource, onClick }: { resource: Resource
       </div>
 
       {/* Info */}
-      <div className="p-6">
-        <h3 className="text-lg font-bold text-white leading-snug line-clamp-2 mb-2">
+      <div className="p-3 sm:p-5">
+        <h3 className="text-sm sm:text-base font-bold text-white leading-snug line-clamp-2 mb-1.5">
           {resource.title}
         </h3>
         {resource.description && (
-          <p className="text-base line-clamp-2 mb-4" style={{ color: 'var(--muted)' }}>
+          <p className="text-xs sm:text-sm line-clamp-2 mb-3" style={{ color: 'var(--muted)' }}>
             {resource.description}
           </p>
         )}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 flex-wrap min-w-0">
+        <div className="flex items-center justify-between gap-1">
+          <div className="flex items-center gap-1.5 flex-wrap min-w-0">
             {resource.author && (
-              <span className="text-sm truncate max-w-[130px]" style={{ color: 'var(--muted)' }}>
+              <span className="text-xs truncate max-w-[90px] sm:max-w-[130px]" style={{ color: 'var(--muted)' }}>
                 {resource.author}
               </span>
             )}
             {resource.course && (
-              <span className="text-sm px-2.5 py-1 rounded shrink-0" style={{ background: 'rgba(124,58,237,0.25)', color: '#c4b5fd' }}>
+              <span className="text-xs px-2 py-0.5 rounded shrink-0" style={{ background: 'rgba(124,58,237,0.25)', color: '#c4b5fd' }}>
                 {resource.course.trim()}
               </span>
             )}
@@ -99,15 +99,15 @@ export default function ResourceCard({ resource, onClick }: { resource: Resource
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
               className="icon-btn shrink-0 flex items-center justify-center rounded-lg transition-colors hover:bg-white/10"
-              style={{ color: 'var(--accent)', width: 44, height: 44 }}
+              style={{ color: 'var(--accent)', width: 36, height: 36 }}
             >
-              <ExternalLink size={20} />
+              <ExternalLink size={16} />
             </a>
           )}
         </div>
         {resource.oaCode && (
-          <div className="mt-3">
-            <span className="text-sm px-2.5 py-1 rounded font-mono" style={{ background: 'rgba(245,197,24,0.15)', color: 'var(--accent)' }}>
+          <div className="mt-2">
+            <span className="text-xs px-2 py-0.5 rounded font-mono" style={{ background: 'rgba(245,197,24,0.15)', color: 'var(--accent)' }}>
               {resource.oaCode}
             </span>
           </div>

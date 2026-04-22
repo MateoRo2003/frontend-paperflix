@@ -76,7 +76,7 @@ export default function SuggestionModal({ subjects, defaultSubjectId, defaultSub
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
       <div
         className="relative w-full max-w-lg rounded-2xl shadow-2xl flex flex-col"
-        style={{ background: 'var(--card)', border: '1px solid var(--border)', maxHeight: '92vh' }}
+        style={{ background: 'var(--card)', border: '1px solid var(--border)', maxHeight: '95dvh' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -170,7 +170,7 @@ export default function SuggestionModal({ subjects, defaultSubjectId, defaultSub
               </div>
 
               {/* Asignatura + Curso */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-semibold mb-1.5 block" style={{ color: 'var(--muted)' }}>Asignatura</label>
                   <select

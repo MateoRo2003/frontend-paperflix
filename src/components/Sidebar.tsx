@@ -29,9 +29,11 @@ const ICON_MAP: Record<string, React.ElementType> = {
 interface SidebarProps {
   collapsed: boolean;
   onToggle: () => void;
+  mobileOpen?: boolean;
+  isMobile?: boolean;
 }
 
-export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
+export default function Sidebar({ collapsed, onToggle, mobileOpen = false, isMobile = false }: SidebarProps) {
   const path = usePathname();
   const [subjects, setSubjects]       = useState<Subject[]>([]);
   const [statsMap, setStatsMap]       = useState<Record<string, number>>({});
@@ -59,17 +61,19 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
   useEffect(() => { fetchAll(); }, [fetchAll]);
   useDataSync(fetchAll);
 
-  const w = collapsed ? 72 : 320;
+  const w = isMobile ? 280 : (collapsed ? 72 : 320);
 
   return (
     <aside
-      className="fixed top-0 left-0 h-screen flex flex-col z-30"
+      className="fixed top-0 left-0 h-screen flex flex-col"
       style={{
         width: w,
         background: 'var(--sidebar)',
         borderRight: '1px solid var(--border)',
-        transition: 'width 0.25s ease',
+        transition: isMobile ? 'transform 0.25s ease' : 'width 0.25s ease',
+        transform: isMobile ? (mobileOpen ? 'translateX(0)' : 'translateX(-100%)') : 'none',
         overflow: 'hidden',
+        zIndex: isMobile ? 40 : 30,
       }}
     >
       {/* Logo + toggle */}

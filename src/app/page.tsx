@@ -105,13 +105,13 @@ export default function HomePage() {
   }
 
   return (
-    <div className="p-8 space-y-10">
+    <div className="p-4 sm:p-6 md:p-8 space-y-6 md:space-y-10">
 
       {/* ── Hero Banner ────────────────────────────────────────────── */}
       {(loading || hero) && (
         <div
           className="relative w-full rounded-2xl overflow-hidden select-none"
-          style={{ height: 460 }}
+          style={{ height: 'clamp(200px, 45vw, 460px)' }}
         >
           {hero ? (
             <>
@@ -135,9 +135,9 @@ export default function HomePage() {
               <div className="hero-overlay absolute inset-0" />
 
               <div
-                className="relative z-10 px-10 pb-10 flex flex-col justify-end h-full cursor-pointer"
+                className="relative z-10 px-5 pb-6 md:px-10 md:pb-10 flex flex-col justify-end h-full cursor-pointer"
                 onClick={handleHeroClick}
-                style={{ paddingTop: 40 }}
+                style={{ paddingTop: 32 }}
               >
                 {!heroIsSlide && (hero as Resource).subject && (
                   <span
@@ -148,7 +148,7 @@ export default function HomePage() {
                   </span>
                 )}
 
-                <h1 className="text-3xl sm:text-5xl font-extrabold text-white mb-3 max-w-2xl leading-tight" style={{ textShadow: '0 2px 16px rgba(0,0,0,0.5)' }}>
+                <h1 className="text-lg sm:text-3xl md:text-5xl font-extrabold text-white mb-2 md:mb-3 max-w-2xl leading-tight" style={{ textShadow: '0 2px 16px rgba(0,0,0,0.5)' }}>
                   {hero.title}
                 </h1>
 
@@ -234,7 +234,7 @@ export default function HomePage() {
             {searching ? 'Buscando...' : `${searchResults.length} resultado${searchResults.length !== 1 ? 's' : ''}`}
           </h2>
           {searching ? <GridSkeleton count={8} /> : (
-            <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-7">
+            <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 md:gap-5">
               {searchResults.map(r => (
                 <ResourceCard key={r.id} resource={r} onClick={() => setSelected(r)} />
               ))}
@@ -253,7 +253,7 @@ export default function HomePage() {
                 <h2 className="text-xl font-bold text-white">Destacados</h2>
               </div>
               {loading ? <GridSkeleton count={4} /> : (
-                <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-7">
+                <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 md:gap-5">
                   {featured.slice(0, 4).map(r => (
                     <ResourceCard key={r.id} resource={r} onClick={() => setSelected(r)} />
                   ))}
@@ -297,7 +297,7 @@ export default function HomePage() {
                   </div>
 
                   {/* Grid de 4 recursos */}
-                  <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-7">
+                  <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 md:gap-5">
                     {resources.map(r => (
                       <ResourceCard key={r.id} resource={r} onClick={() => setSelected(r)} />
                     ))}
