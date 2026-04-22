@@ -492,7 +492,15 @@ export default function AdminPage() {
     });
     if (!res.isConfirmed) return;
 
-    showMsg('⏳ Analizando con IA…');
+    PaperSwal.fire({
+      title: '✨ Creando recurso con IA…',
+      html: 'Analizando el recurso y completando los campos.<br>Esto puede tardar unos segundos.',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => PaperSwal.showLoading(),
+    });
+
     try {
       const ai = await aiFillResource({ url: sug.linkUrl });
       await createResource({
@@ -507,13 +515,24 @@ export default function AdminPage() {
         isActive:     true,
       });
       await approveSuggestion(sug.id);
-      showMsg('✅ Recurso creado y sugerencia aprobada', 'ok');
       loadSuggestions(suggestionFilter || undefined);
       refreshPendingCount();
       loadResources();
       broadcastDataChange();
+      PaperSwal.fire({
+        title: '✅ Recurso creado',
+        html: `El recurso <b>${sug.title}</b> fue creado y la sugerencia marcada como aprobada.`,
+        icon: 'success',
+        confirmButtonText: 'Listo',
+        confirmButtonColor: '#10b981',
+      });
     } catch (e: any) {
-      showMsg('Error al crear recurso: ' + (e?.response?.data?.message || e.message), 'err');
+      PaperSwal.fire({
+        title: 'Error',
+        text: 'No se pudo crear el recurso: ' + (e?.response?.data?.message || e.message),
+        icon: 'error',
+        confirmButtonText: 'Cerrar',
+      });
     }
   }
 
