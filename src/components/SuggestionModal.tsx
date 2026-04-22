@@ -75,12 +75,12 @@ export default function SuggestionModal({ subjects, defaultSubjectId, defaultSub
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
       <div
-        className="relative w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl"
+        className="relative w-full max-w-lg rounded-2xl shadow-2xl flex flex-col"
         style={{ background: 'var(--card)', border: '1px solid var(--border)', maxHeight: '92vh' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: 'var(--border)' }}>
+        <div className="flex items-center justify-between px-5 py-4 border-b shrink-0" style={{ borderColor: 'var(--border)' }}>
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(245,197,24,0.15)' }}>
               <Lightbulb size={16} style={{ color: 'var(--accent)' }} />
@@ -121,8 +121,8 @@ export default function SuggestionModal({ subjects, defaultSubjectId, defaultSub
           </div>
         ) : (
           /* ─── Formulario ─────────────────────────────────────── */
-          <form onSubmit={handleSubmit}>
-            <div className="overflow-y-auto px-5 py-4 space-y-4" style={{ maxHeight: 'calc(92vh - 130px)' }}>
+          <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0">
+            <div className="overflow-y-auto flex-1 px-5 py-4 space-y-4">
 
               {/* Título */}
               <div>
@@ -258,7 +258,7 @@ export default function SuggestionModal({ subjects, defaultSubjectId, defaultSub
             </div>
 
             {/* Footer */}
-            <div className="px-5 py-4 border-t flex justify-end gap-3" style={{ borderColor: 'var(--border)' }}>
+            <div className="px-5 py-4 border-t shrink-0 flex justify-end gap-3" style={{ borderColor: 'var(--border)' }}>
               <button
                 type="button"
                 onClick={onClose}
