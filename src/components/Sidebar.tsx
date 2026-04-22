@@ -93,7 +93,7 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
         )}
         {collapsed && (
           /* eslint-disable-next-line @next/next/no-img-element */
-          <img src="/favicon.webp" alt="PaperFlix" style={{ width: 40, height: 40, objectFit: 'contain' }} />
+          <img src="/image.png" alt="PaperFlix" style={{ width: 40, height: 40, objectFit: 'contain' }} />
         )}
         {!collapsed && (
           <button
