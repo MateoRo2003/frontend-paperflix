@@ -59,20 +59,12 @@ async function fetchPageContent(url: string): Promise<{ meta: string; imageUrl: 
       }
     }
 
-    // Last resort: free screenshot thumbnail service
-    if (!imageUrl) {
-      imageUrl = `https://image.thum.io/get/width/800/crop/600/${url}`;
-    }
-
     return {
       meta: JSON.stringify({ ogTitle, ogDesc, title, h1, bodyText }),
       imageUrl,
     };
   } catch {
-    return {
-      meta: '',
-      imageUrl: `https://image.thum.io/get/width/800/crop/600/${url}`,
-    };
+    return { meta: '', imageUrl: '' };
   }
 }
 
