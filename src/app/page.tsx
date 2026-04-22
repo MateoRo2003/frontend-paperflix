@@ -111,7 +111,7 @@ export default function HomePage() {
       {(loading || hero) && (
         <div
           className="relative w-full rounded-2xl overflow-hidden select-none"
-          style={{ height: 'clamp(200px, 45vw, 460px)' }}
+          style={{ height: 'clamp(240px, 56vw, 460px)' }}
         >
           {hero ? (
             <>
@@ -153,14 +153,14 @@ export default function HomePage() {
                 </h1>
 
                 {(heroIsSlide ? (hero as Slide).subtitle : (hero as Resource).description) && (
-                  <p className="text-sm sm:text-base max-w-lg line-clamp-2 mb-5" style={{ color: 'rgba(226,217,243,0.8)' }}>
+                  <p className="hidden sm:block text-sm sm:text-base max-w-lg line-clamp-2 mb-4" style={{ color: 'rgba(226,217,243,0.8)' }}>
                     {heroIsSlide ? (hero as Slide).subtitle : (hero as Resource).description}
                   </p>
                 )}
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <span
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all hover:opacity-90"
+                    className="inline-flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold text-xs sm:text-sm transition-all hover:opacity-90"
                     style={{ background: 'var(--accent)', color: '#1e0d38' }}
                   >
                     {heroIsSlide ? ((hero as Slide).buttonText || 'Ver más') : 'Ver recurso'}
@@ -177,32 +177,32 @@ export default function HomePage() {
                 <>
                   <button
                     onClick={(e) => { e.stopPropagation(); goHero((heroIdx - 1 + heroItems.length) % heroItems.length); }}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/55 backdrop-blur-sm transition-all"
-                    style={{ width: 48, height: 48, color: 'white', border: '1px solid rgba(255,255,255,0.15)' }}
+                    className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-sm transition-all"
+                    style={{ width: 36, height: 36, color: 'white', border: '1px solid rgba(255,255,255,0.15)' }}
                   >
-                    <ChevronLeft size={22} />
+                    <ChevronLeft size={18} />
                   </button>
                   <button
                     onClick={(e) => { e.stopPropagation(); goHero((heroIdx + 1) % heroItems.length); }}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/55 backdrop-blur-sm transition-all"
-                    style={{ width: 48, height: 48, color: 'white', border: '1px solid rgba(255,255,255,0.15)' }}
+                    className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-sm transition-all"
+                    style={{ width: 36, height: 36, color: 'white', border: '1px solid rgba(255,255,255,0.15)' }}
                   >
-                    <ChevronRight size={22} />
+                    <ChevronRight size={18} />
                   </button>
                 </>
               )}
 
               {heroItems.length > 1 && (
-                <div className="absolute bottom-0 left-0 right-0 z-20 px-10 pb-5">
-                  <div className="flex justify-center gap-2 mb-3">
+                <div className="absolute bottom-0 left-0 right-0 z-20 px-4 sm:px-10 pb-3 sm:pb-5">
+                  <div className="flex justify-center gap-1.5 mb-2">
                     {heroItems.map((_item, i) => (
                       <button
                         key={i}
                         onClick={(e) => { e.stopPropagation(); goHero(i); }}
                         className="rounded-full transition-all duration-300"
                         style={{
-                          width:  i === heroIdx ? 28 : 8,
-                          height: 8,
+                          width:  i === heroIdx ? 20 : 6,
+                          height: 6,
                           background: i === heroIdx ? 'var(--accent)' : 'rgba(255,255,255,0.3)',
                         }}
                       />

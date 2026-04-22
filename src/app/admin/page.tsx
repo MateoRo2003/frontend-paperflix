@@ -2749,8 +2749,8 @@ export default function AdminPage() {
           TAB: CARRUSEL
       ══════════════════════════════════════════════════════════════ */}
       {tab === 'carousel' && (
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="flex items-center justify-between gap-3">
             <div>
               <h2 className="text-base font-bold text-white">Slides del Carrusel</h2>
               <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>
@@ -2759,14 +2759,14 @@ export default function AdminPage() {
             </div>
             <button
               onClick={() => setEditingSlide({ title: '', subtitle: '', imageUrl: '', linkUrl: '', buttonText: 'Ver recurso', isActive: true })}
-              className="flex items-center gap-2 px-5 rounded-xl text-sm font-bold"
+              className="flex items-center gap-2 px-3 sm:px-5 rounded-xl text-sm font-bold shrink-0"
               style={{ background: 'var(--accent)', color: '#1e0d38', height: 44 }}
             >
-              <Plus size={16} /> Nuevo Slide
+              <Plus size={16} /> <span className="hidden sm:inline">Nuevo Slide</span><span className="sm:hidden">Nuevo</span>
             </button>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* ── Slide list ── */}
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-white">Lista de Slides</h3>
@@ -3438,10 +3438,10 @@ export default function AdminPage() {
       {editingSlide !== null && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" onClick={() => setEditingSlide(null)}>
           <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" />
-          <div className="relative w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl"
+          <div className="relative w-full max-w-lg rounded-2xl shadow-2xl flex flex-col"
             style={{ background: 'var(--card)', border: '1px solid var(--border)', maxHeight: '95dvh' }}
             onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: 'var(--border)' }}>
+            <div className="flex items-center justify-between px-5 py-4 border-b shrink-0" style={{ borderColor: 'var(--border)' }}>
               <h3 className="font-bold text-white">{editingSlide.id ? 'Editar Slide' : 'Nuevo Slide'}</h3>
               <button onClick={() => setEditingSlide(null)}
                 className="icon-btn flex items-center justify-center rounded-xl hover:bg-white/10"
@@ -3450,7 +3450,7 @@ export default function AdminPage() {
               </button>
             </div>
 
-            <div className="overflow-y-auto p-5 space-y-4" style={{ maxHeight: 'calc(90vh - 130px)' }}>
+            <div className="overflow-y-auto flex-1 p-4 sm:p-5 space-y-4">
               <div>
                 <label className="text-xs mb-1.5 block font-medium" style={{ color: 'var(--muted)' }}>Título *</label>
                 <input value={editingSlide.title || ''} onChange={e => setEditingSlide(prev => ({ ...prev!, title: e.target.value }))}
@@ -3528,7 +3528,7 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <div className="px-5 py-4 border-t flex justify-end gap-3" style={{ borderColor: 'var(--border)' }}>
+            <div className="px-5 py-4 border-t shrink-0 flex justify-end gap-3" style={{ borderColor: 'var(--border)' }}>
               <button onClick={() => setEditingSlide(null)} className="px-5 rounded-xl text-sm font-medium"
                 style={{ color: 'var(--muted)', height: 44 }}>
                 Cancelar
