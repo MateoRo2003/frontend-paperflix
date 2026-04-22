@@ -13,6 +13,7 @@ async function fetchPageContent(url: string): Promise<string> {
     const ogTitle = html.match(/<meta[^>]+property="og:title"[^>]+content="([^"]+)"/i)?.[1] || '';
     const ogDesc  = html.match(/<meta[^>]+property="og:description"[^>]+content="([^"]+)"/i)?.[1]
                  || html.match(/<meta[^>]+name="description"[^>]+content="([^"]+)"/i)?.[1] || '';
+    const ogImage = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i)?.[1] || '';
     const title   = html.match(/<title>([^<]+)<\/title>/i)?.[1] || '';
     const h1      = html.match(/<h1[^>]*>([^<]+)<\/h1>/i)?.[1] || '';
     const bodyText = html
@@ -23,13 +24,9 @@ async function fetchPageContent(url: string): Promise<string> {
       .trim()
       .slice(0, 1500);
 
-    return [
-      ogTitle  ? `og:title: ${ogTitle}` : '',
-      title    ? `title: ${title}` : '',
-      h1       ? `h1: ${h1}` : '',
-      ogDesc   ? `description meta: ${ogDesc}` : '',
-      bodyText ? `page text: ${bodyText}` : '',
-    ].filter(Boolean).join('\n');
+    return JSON.stringify({
+      ogTitle, ogDesc, ogImage, title, h1, bodyText,
+    });
   } catch {
     return '';
   }
@@ -43,32 +40,34 @@ export async function POST(req: NextRequest) {
     return err('GEMINI_API_KEY no configurada en el servidor', 500);
   }
 
-  const { url, title, description, author } = await req.json();
+  const { url } = await req.json();
   if (!url) return err('url requerida');
 
-  const pageContent = await fetchPageContent(url);
+  const pageRaw = await fetchPageContent(url);
+  let pageData: any = {};
+  try { pageData = JSON.parse(pageRaw); } catch { }
 
-  const prompt = `Eres un asistente para PaperFlix, una plataforma educativa chilena para docentes de educación básica y media.
+  const prompt = `Eres un asistente para PaperFlix, plataforma educativa chilena para docentes de básica y media.
 
-Analiza el siguiente recurso educativo y genera metadata en español para catalogarlo.
+Analiza este recurso educativo y genera metadata en español.
 
 URL: ${url}
-${pageContent ? `\nContenido extraído de la página:\n${pageContent}` : ''}
-${title ? `\nTítulo actual: ${title}` : ''}
-${description ? `\nDescripción actual: ${description}` : ''}
-${author ? `\nAutor actual: ${author}` : ''}
+Datos extraídos de la página:
+${pageRaw || '(no se pudo acceder a la página)'}
+
+Tipos de actividad disponibles: "Introductoria", "De desarrollo", "De cierre", "Herramienta"
 
 Genera un JSON con exactamente estos campos:
-- "title": Título conciso y descriptivo del recurso educativo en español (máx 80 caracteres).
-- "description": Descripción de 1-2 oraciones en español para docentes. Qué aprenden los estudiantes y cómo se usa (máx 220 caracteres).
-- "author": Nombre de la plataforma o creador (ej: "Wordwall", "Khan Academy", "Educarchile").
+- "title": Título conciso del recurso en español (máx 80 caracteres). Si el og:title está en español y es bueno, úsalo mejorado.
+- "description": 1-2 oraciones en español para docentes: qué aprenden los alumnos y cómo se usa (máx 220 caracteres).
+- "author": Nombre de la plataforma/creador (ej: "Wordwall", "Khan Academy", "Educarchile", "Phet Colorado"). Extráelo del dominio.
+- "activityTypeSuggestion": Uno de los tipos de actividad disponibles que mejor se ajuste al recurso, o "" si no estás seguro.
 
-Responde SOLO con el JSON válido, sin markdown ni explicaciones adicionales.`;
+Responde SOLO con el JSON válido, sin markdown ni texto adicional.`;
 
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-
     const result = await model.generateContent(prompt);
     const text = result.response.text();
 
@@ -76,10 +75,14 @@ Responde SOLO con el JSON válido, sin markdown ni explicaciones adicionales.`;
     if (!jsonMatch) return err('La IA no devolvió un JSON válido');
 
     const parsed = JSON.parse(jsonMatch[0]);
+    const VALID_TYPES = ['Introductoria', 'De desarrollo', 'De cierre', 'Herramienta'];
+
     return ok({
-      title:       typeof parsed.title === 'string'       ? parsed.title.trim()       : '',
-      description: typeof parsed.description === 'string' ? parsed.description.trim() : '',
-      author:      typeof parsed.author === 'string'      ? parsed.author.trim()      : '',
+      title:                  typeof parsed.title === 'string'                  ? parsed.title.trim()                  : '',
+      description:            typeof parsed.description === 'string'            ? parsed.description.trim()            : '',
+      author:                 typeof parsed.author === 'string'                 ? parsed.author.trim()                 : '',
+      activityTypeSuggestion: VALID_TYPES.includes(parsed.activityTypeSuggestion) ? parsed.activityTypeSuggestion      : '',
+      imageUrl:               typeof pageData.ogImage === 'string'              ? pageData.ogImage.trim()              : '',
     });
   } catch (e: any) {
     return err(`Error de IA: ${e?.message || 'desconocido'}`, 500);

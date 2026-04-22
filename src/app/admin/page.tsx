@@ -113,8 +113,8 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState<Partial<Resource> | null>(null);
   const [saving, setSaving] = useState(false);
-  const [scraping, setScraping] = useState(false);
   const [aiFilling, setAiFilling] = useState(false);
+  const [aiActivitySuggestion, setAiActivitySuggestion] = useState('');
   const [scrapeFields, setScrapeFields] = useState<Set<string>>(new Set());
 
   // Subjects tab
@@ -370,6 +370,7 @@ export default function AdminPage() {
   async function openResourceModal(resource: Partial<Resource>) {
     setEditing(resource);
     setScrapeFields(new Set());
+    setAiActivitySuggestion('');
     const existing = (resource as any).activityType || '';
     setSelectedActTypes(existing ? existing.split(',').map((t: string) => t.trim()).filter(Boolean) : []);
 
@@ -2393,79 +2394,41 @@ export default function AdminPage() {
                   />
                   <button
                     type="button"
-                    disabled={scraping || !(editing as any)?.linkUrl?.trim()}
-                    onClick={async () => {
-                      const url = (editing as any).linkUrl?.trim();
-                      if (!url) return;
-                      setScraping(true);
-                      setScrapeFields(new Set());
-                      try {
-                        const data = await scrapeResourceUrl(url);
-                        const filled = new Set<string>();
-                        // Detect author from URL domain
-                        let detectedAuthor = '';
-                        try {
-                          const host = new URL(url).hostname.toLowerCase();
-                          if (host.includes('wordwall')) detectedAuthor = 'wordwall';
-                          else if (host.includes('educaplay')) detectedAuthor = 'educaplay';
-                          else detectedAuthor = host.replace(/^www\./, '').split('.')[0];
-                        } catch { }
-                        setEditing(prev => {
-                          const next = { ...prev! };
-                          if (data.title && !prev?.title) { next.title = data.title; filled.add('title'); }
-                          if (data.description && !prev?.description) { next.description = data.description; filled.add('description'); }
-                          if (data.imageUrl && !prev?.imageUrl) { next.imageUrl = data.imageUrl; filled.add('imageUrl'); }
-                          if (detectedAuthor && !(prev as any)?.author) { (next as any).author = detectedAuthor; filled.add('author'); }
-                          return next;
-                        });
-                        setScrapeFields(filled);
-                        if (!data.imageUrl) showMsg('Sin imagen automática — súbela manualmente', 'err');
-                        else showMsg('Imagen descargada y guardada localmente');
-                      } catch { showMsg('No se pudo obtener info de la URL', 'err'); }
-                      finally { setScraping(false); }
-                    }}
-                    className="flex items-center gap-2 px-4 rounded-xl text-sm font-semibold shrink-0 disabled:opacity-40"
-                    style={{ height: 44, background: 'rgba(124,58,237,0.2)', border: '1px solid rgba(124,58,237,0.4)', color: '#c4b5fd', whiteSpace: 'nowrap' }}
-                  >
-                    {scraping ? <><Loader2 size={14} className="animate-spin" /> Obteniendo…</> : <><Sparkles size={14} /> Auto-rellenar</>}
-                  </button>
-                  <button
-                    type="button"
-                    disabled={aiFilling || scraping || !(editing as any)?.linkUrl?.trim()}
+                    disabled={aiFilling || !(editing as any)?.linkUrl?.trim()}
                     onClick={async () => {
                       const url = (editing as any).linkUrl?.trim();
                       if (!url) return;
                       setAiFilling(true);
+                      setScrapeFields(new Set());
+                      setAiActivitySuggestion('');
                       try {
-                        const data = await aiFillResource({
-                          url,
-                          title: (editing as any).title,
-                          description: (editing as any).description,
-                          author: (editing as any).author,
-                        });
-                        const filled = new Set<string>(Array.from(scrapeFields));
+                        const data = await aiFillResource({ url });
+                        const filled = new Set<string>();
                         setEditing(prev => {
                           const next = { ...prev! };
-                          if (data.title) { (next as any).title = data.title; filled.add('title'); }
+                          if (data.title)       { (next as any).title       = data.title;       filled.add('title'); }
                           if (data.description) { (next as any).description = data.description; filled.add('description'); }
-                          if (data.author && !(prev as any)?.author) { (next as any).author = data.author; filled.add('author'); }
+                          if (data.author)      { (next as any).author      = data.author;      filled.add('author'); }
+                          if (data.imageUrl && !(prev as any)?.imageUrl) { (next as any).imageUrl = data.imageUrl; filled.add('imageUrl'); }
                           return next;
                         });
                         setScrapeFields(filled);
-                        showMsg('✨ Campos mejorados con IA');
+                        if (data.activityTypeSuggestion) setAiActivitySuggestion(data.activityTypeSuggestion);
+                        showMsg('✨ Campos completados con IA');
                       } catch (e: any) {
-                        const msg = e?.response?.data?.message || 'Error al usar la IA';
-                        showMsg(msg, 'err');
+                        showMsg(e?.response?.data?.message || 'Error al usar la IA', 'err');
                       } finally { setAiFilling(false); }
                     }}
-                    className="flex items-center gap-1.5 px-4 rounded-xl text-sm font-semibold shrink-0 disabled:opacity-40"
-                    style={{ height: 44, background: 'rgba(245,197,24,0.12)', border: '1px solid rgba(245,197,24,0.35)', color: 'var(--accent)', whiteSpace: 'nowrap' }}
-                    title="Usar IA para generar título, descripción y autor educativo"
+                    className="flex items-center gap-2 px-4 rounded-xl text-sm font-semibold shrink-0 disabled:opacity-40"
+                    style={{ height: 44, background: 'rgba(245,197,24,0.12)', border: '1px solid rgba(245,197,24,0.4)', color: 'var(--accent)', whiteSpace: 'nowrap' }}
+                    title="Rellena título, descripción, autor e imagen usando IA"
                   >
-                    {aiFilling ? <><Loader2 size={14} className="animate-spin" /> IA…</> : <>✨ IA</>}
+                    {aiFilling ? <><Loader2 size={14} className="animate-spin" /> Analizando…</> : <>✨ Rellenar con IA</>}
                   </button>
                 </div>
-                {!editing?.id && <p className="text-[11px] mt-1.5" style={{ color: 'var(--muted)' }}>Pega la URL, usa <b style={{ color: '#c4b5fd' }}>Auto-rellenar</b> para extraer datos o <b style={{ color: 'var(--accent)' }}>✨ IA</b> para generar descripción educativa.</p>}
+                <p className="text-[11px] mt-1.5" style={{ color: 'var(--muted)' }}>
+                  Pega la URL y pulsa <b style={{ color: 'var(--accent)' }}>✨ Rellenar con IA</b> para completar título, descripción, autor e imagen automáticamente.
+                </p>
               </div>
 
               {/* ── Título ── */}
@@ -2595,24 +2558,41 @@ export default function AdminPage() {
 
               {/* ── Tipo de actividad (multi-select chips) ── */}
               <div>
-                <label className="text-xs mb-1.5 block font-medium" style={{ color: 'var(--muted)' }}>
+                <label className="text-xs mb-1.5 flex items-center gap-2 font-medium" style={{ color: 'var(--muted)' }}>
                   Tipo de actividad
-                  {selectedActTypes.length > 0 && <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: 'rgba(124,58,237,0.2)', color: '#c4b5fd' }}>{selectedActTypes.length} seleccionado{selectedActTypes.length > 1 ? 's' : ''}</span>}
+                  {selectedActTypes.length > 0 && <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: 'rgba(124,58,237,0.2)', color: '#c4b5fd' }}>{selectedActTypes.length} seleccionado{selectedActTypes.length > 1 ? 's' : ''}</span>}
                 </label>
+                {aiActivitySuggestion && (
+                  <div className="flex items-center gap-2 mb-2 px-3 py-2 rounded-xl" style={{ background: 'rgba(245,197,24,0.08)', border: '1px solid rgba(245,197,24,0.25)' }}>
+                    <span style={{ color: 'var(--accent)', fontSize: 13 }}>✨</span>
+                    <span className="text-xs" style={{ color: 'var(--muted)' }}>IA sugiere:</span>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedActTypes(prev => prev.includes(aiActivitySuggestion) ? prev : [...prev, aiActivitySuggestion])}
+                      className="text-xs font-semibold px-2.5 py-1 rounded-lg transition-all hover:brightness-110"
+                      style={{ background: 'rgba(245,197,24,0.15)', color: 'var(--accent)', border: '1px solid rgba(245,197,24,0.3)' }}
+                    >
+                      {aiActivitySuggestion}
+                    </button>
+                    <span className="text-[10px] ml-auto" style={{ color: 'var(--muted)' }}>clic para aplicar</span>
+                  </div>
+                )}
                 {modalActivityTypes.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {modalActivityTypes.map(at => {
                       const active = selectedActTypes.includes(at.name);
+                      const isSuggested = aiActivitySuggestion === at.name && !active;
                       return (
                         <button key={at.id} type="button"
                           onClick={() => setSelectedActTypes(prev => active ? prev.filter(x => x !== at.name) : [...prev, at.name])}
                           className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"
                           style={{
-                            background: active ? 'rgba(124,58,237,0.2)' : 'var(--bg)',
-                            border: `1px solid ${active ? 'rgba(124,58,237,0.5)' : 'var(--border)'}`,
-                            color: active ? '#c4b5fd' : 'var(--muted)',
+                            background: active ? 'rgba(124,58,237,0.2)' : isSuggested ? 'rgba(245,197,24,0.08)' : 'var(--bg)',
+                            border: `1px solid ${active ? 'rgba(124,58,237,0.5)' : isSuggested ? 'rgba(245,197,24,0.35)' : 'var(--border)'}`,
+                            color: active ? '#c4b5fd' : isSuggested ? 'var(--accent)' : 'var(--muted)',
                           }}>
                           {at.name}
+                          {isSuggested && <span className="ml-1" style={{ fontSize: 10 }}>✨</span>}
                         </button>
                       );
                     })}
