@@ -696,30 +696,35 @@ export default function AdminPage() {
     <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
 
       {/* ── Header ─────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-xl font-bold text-white">Panel de Administración</h1>
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <div className="min-w-0">
+          <h1 className="text-lg sm:text-xl font-bold text-white">Panel de Administración</h1>
           <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>Bienvenido, {admin.name}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 shrink-0">
           <button
             onClick={() => { setShowBulk(true); setBulkRows([]); setBulkResult(null); }}
-            className="flex items-center gap-2 px-4 rounded-xl text-sm font-semibold"
+            className="flex items-center gap-2 px-3 sm:px-4 rounded-xl text-sm font-semibold"
             style={{ height: 44, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)', color: '#34d399' }}
+            title="Carga masiva"
           >
-            <FileSpreadsheet size={15} /> Carga masiva
+            <FileSpreadsheet size={15} />
+            <span className="hidden sm:inline">Carga masiva</span>
           </button>
           <button
             onClick={() => openResourceModal({})}
-            className="flex items-center gap-2 px-5 rounded-xl text-sm font-bold"
+            className="flex items-center gap-2 px-3 sm:px-5 rounded-xl text-sm font-bold"
             style={{ background: 'var(--accent)', color: '#1e0d38', height: 44 }}
+            title="Nuevo Recurso"
           >
-            <Plus size={16} /> Nuevo Recurso
+            <Plus size={16} />
+            <span className="hidden xs:inline sm:inline">Nuevo Recurso</span>
           </button>
           <button
             onClick={signOut}
-            className="flex items-center justify-center rounded-xl px-3"
-            style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--muted)', height: 44, minWidth: 44 }}
+            className="flex items-center justify-center rounded-xl"
+            style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--muted)', height: 44, width: 44 }}
+            title="Cerrar sesión"
           >
             <LogOut size={16} />
           </button>
