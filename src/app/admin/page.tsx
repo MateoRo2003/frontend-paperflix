@@ -29,7 +29,7 @@ import {
   Sparkles, Loader2, FileSpreadsheet, AlertTriangle, CheckCircle2,
 } from 'lucide-react';
 import { SubjectIcon, SUBJECT_ICONS, normalizeIconName } from '@/components/SubjectIcon';
-import { swalConfirm, swalConfirmDanger } from '@/lib/swal';
+import PaperSwal, { swalConfirm, swalConfirmDanger } from '@/lib/swal';
 
 // ─── Local types ──────────────────────────────────────────────────────────────
 
@@ -197,6 +197,8 @@ export default function AdminPage() {
   const [bulkRows, setBulkRows] = useState<BulkRow[]>([]);
   const [bulkImporting, setBulkImporting] = useState(false);
   const [bulkResult, setBulkResult] = useState<{ created: number; errors: { row: number; message: string }[] } | null>(null);
+  const [bulkAiFilling, setBulkAiFilling] = useState(false);
+  const [bulkAiProgress, setBulkAiProgress] = useState<{ current: number; total: number } | null>(null);
 
   // Config tab
   const [showViews, setShowViews] = useState(false);
@@ -461,13 +463,58 @@ export default function AdminPage() {
 
   // ── Suggestions handlers ────────────────────────────────────────────────────
 
-  async function handleApproveSuggestion(id: number) {
+  async function handleApproveSuggestion(sug: Suggestion) {
+    if (!sug.linkUrl) {
+      const res = await swalConfirm(
+        '¿Aprobar sin URL?',
+        'Esta sugerencia no tiene URL, no se podrá crear un recurso automáticamente.',
+        'Aprobar igual'
+      );
+      if (!res.isConfirmed) return;
+      try {
+        await approveSuggestion(sug.id);
+        showMsg('Sugerencia aprobada');
+        loadSuggestions(suggestionFilter || undefined);
+        refreshPendingCount();
+      } catch { showMsg('Error al aprobar', 'err'); }
+      return;
+    }
+
+    const res = await PaperSwal.fire({
+      title: '✨ Aprobar y crear recurso',
+      html: `La IA analizará <b>${sug.linkUrl}</b> y completará los campos del recurso automáticamente.<br><br>Se creará un nuevo recurso en la plataforma.`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: '✨ Crear recurso con IA',
+      confirmButtonColor: '#10b981',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true,
+    });
+    if (!res.isConfirmed) return;
+
+    showMsg('⏳ Analizando con IA…');
     try {
-      await approveSuggestion(id);
-      showMsg('Sugerencia aprobada');
+      const ai = await aiFillResource({ url: sug.linkUrl });
+      await createResource({
+        title:        sug.title        || ai.title        || '',
+        linkUrl:      sug.linkUrl,
+        description:  ai.description   || sug.description || '',
+        author:       ai.author        || '',
+        activityType: sug.activityType || ai.activityTypeSuggestion || '',
+        imageUrl:     ai.imageUrl      || '',
+        subjectId:    sug.subjectId    || undefined,
+        course:       sug.course       || '',
+        isActive:     true,
+      });
+      await approveSuggestion(sug.id);
+      showMsg('✅ Recurso creado y sugerencia aprobada', 'ok');
       loadSuggestions(suggestionFilter || undefined);
       refreshPendingCount();
-    } catch { showMsg('Error al aprobar', 'err'); }
+      loadResources();
+      broadcastDataChange();
+    } catch (e: any) {
+      showMsg('Error al crear recurso: ' + (e?.response?.data?.message || e.message), 'err');
+    }
   }
 
   async function handleRejectSuggestion(id: number) {
@@ -1747,7 +1794,7 @@ export default function AdminPage() {
                       {s.status === 'pending' && (
                         <>
                           <button
-                            onClick={() => handleApproveSuggestion(s.id)}
+                            onClick={() => handleApproveSuggestion(s)}
                             className="icon-btn flex items-center justify-center rounded-lg transition-colors hover:bg-emerald-500/20 text-emerald-400"
                             style={{ width: 36, height: 36 }}
                             title="Aprobar"
@@ -3858,7 +3905,7 @@ export default function AdminPage() {
               {/* ── Preview table ── */}
               {bulkRows.length > 0 && !bulkResult && (
                 <div>
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
                     <p className="text-sm font-semibold text-white">
                       Vista previa — {bulkRows.length} filas
                       {bulkRows.filter(r => r._error).length > 0 && (
@@ -3867,10 +3914,49 @@ export default function AdminPage() {
                         </span>
                       )}
                     </p>
-                    <button onClick={() => setBulkRows([])}
-                      className="text-xs flex items-center gap-1" style={{ color: 'var(--muted)' }}>
-                      <X size={12} /> Limpiar
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        disabled={bulkAiFilling || bulkImporting}
+                        onClick={async () => {
+                          const toFill = bulkRows.filter(r => !r._error && r.url);
+                          if (!toFill.length) return;
+                          setBulkAiFilling(true);
+                          setBulkAiProgress({ current: 0, total: toFill.length });
+                          const updated = [...bulkRows];
+                          let done = 0;
+                          for (const row of toFill) {
+                            const idx = updated.indexOf(row);
+                            try {
+                              const ai = await aiFillResource({ url: row.url });
+                              updated[idx] = {
+                                ...updated[idx],
+                                titulo:        updated[idx].titulo        || ai.title        || updated[idx].titulo,
+                                descripcion:   updated[idx].descripcion   || ai.description  || '',
+                                autor:         updated[idx].autor         || ai.author        || '',
+                                tipo_actividad:updated[idx].tipo_actividad|| ai.activityTypeSuggestion || '',
+                                image_url:     updated[idx].image_url     || ai.imageUrl      || '',
+                              };
+                            } catch { /* skip row on error */ }
+                            done++;
+                            setBulkAiProgress({ current: done, total: toFill.length });
+                          }
+                          setBulkRows(updated);
+                          setBulkAiFilling(false);
+                          setBulkAiProgress(null);
+                          showMsg(`✨ IA completó ${toFill.length} filas`, 'ok');
+                        }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-40"
+                        style={{ background: 'rgba(245,197,24,0.12)', border: '1px solid rgba(245,197,24,0.35)', color: 'var(--accent)' }}
+                      >
+                        {bulkAiFilling
+                          ? <><Loader2 size={12} className="animate-spin" /> {bulkAiProgress?.current}/{bulkAiProgress?.total}</>
+                          : <>✨ Enriquecer con IA</>}
+                      </button>
+                      <button onClick={() => setBulkRows([])}
+                        className="text-xs flex items-center gap-1" style={{ color: 'var(--muted)' }}>
+                        <X size={12} /> Limpiar
+                      </button>
+                    </div>
                   </div>
                   <div className="rounded-xl overflow-auto max-h-72" style={{ border: '1px solid var(--border)' }}>
                     <table className="w-full text-xs min-w-[800px]">
@@ -3951,7 +4037,7 @@ export default function AdminPage() {
                     Cancelar
                   </button>
                   <button
-                    disabled={bulkImporting || !bulkSubject || !bulkCourse || !bulkUnit || bulkRows.filter(r => !r._error).length === 0}
+                    disabled={bulkImporting || bulkAiFilling || !bulkSubject || !bulkCourse || !bulkUnit || bulkRows.filter(r => !r._error).length === 0}
                     onClick={async () => {
                       if (!bulkSubject) return;
                       setBulkImporting(true);
