@@ -17,6 +17,7 @@ import {
   getUnits, createUnit, updateUnit, deleteUnit, reorderUnits,
   getCourses, createCourse, updateCourse, deleteCourse,
   getActivityTypes, createActivityType, updateActivityType, deleteActivityType,
+  aiFillResource,
 } from '@/lib/api';
 import { Resource, Subject, SubjectStat, Suggestion, Slide, Unit } from '@/types';
 import {
@@ -113,6 +114,7 @@ export default function AdminPage() {
   const [editing, setEditing] = useState<Partial<Resource> | null>(null);
   const [saving, setSaving] = useState(false);
   const [scraping, setScraping] = useState(false);
+  const [aiFilling, setAiFilling] = useState(false);
   const [scrapeFields, setScrapeFields] = useState<Set<string>>(new Set());
 
   // Subjects tab
@@ -2427,8 +2429,43 @@ export default function AdminPage() {
                   >
                     {scraping ? <><Loader2 size={14} className="animate-spin" /> Obteniendo…</> : <><Sparkles size={14} /> Auto-rellenar</>}
                   </button>
+                  <button
+                    type="button"
+                    disabled={aiFilling || scraping || !(editing as any)?.linkUrl?.trim()}
+                    onClick={async () => {
+                      const url = (editing as any).linkUrl?.trim();
+                      if (!url) return;
+                      setAiFilling(true);
+                      try {
+                        const data = await aiFillResource({
+                          url,
+                          title: (editing as any).title,
+                          description: (editing as any).description,
+                          author: (editing as any).author,
+                        });
+                        const filled = new Set<string>(Array.from(scrapeFields));
+                        setEditing(prev => {
+                          const next = { ...prev! };
+                          if (data.title) { (next as any).title = data.title; filled.add('title'); }
+                          if (data.description) { (next as any).description = data.description; filled.add('description'); }
+                          if (data.author && !(prev as any)?.author) { (next as any).author = data.author; filled.add('author'); }
+                          return next;
+                        });
+                        setScrapeFields(filled);
+                        showMsg('✨ Campos mejorados con IA');
+                      } catch (e: any) {
+                        const msg = e?.response?.data?.message || 'Error al usar la IA';
+                        showMsg(msg, 'err');
+                      } finally { setAiFilling(false); }
+                    }}
+                    className="flex items-center gap-1.5 px-4 rounded-xl text-sm font-semibold shrink-0 disabled:opacity-40"
+                    style={{ height: 44, background: 'rgba(245,197,24,0.12)', border: '1px solid rgba(245,197,24,0.35)', color: 'var(--accent)', whiteSpace: 'nowrap' }}
+                    title="Usar IA para generar título, descripción y autor educativo"
+                  >
+                    {aiFilling ? <><Loader2 size={14} className="animate-spin" /> IA…</> : <>✨ IA</>}
+                  </button>
                 </div>
-                {!editing?.id && <p className="text-[11px] mt-1.5" style={{ color: 'var(--muted)' }}>Pega la URL y pulsa "Auto-rellenar" para completar el formulario automáticamente.</p>}
+                {!editing?.id && <p className="text-[11px] mt-1.5" style={{ color: 'var(--muted)' }}>Pega la URL, usa <b style={{ color: '#c4b5fd' }}>Auto-rellenar</b> para extraer datos o <b style={{ color: 'var(--accent)' }}>✨ IA</b> para generar descripción educativa.</p>}
               </div>
 
               {/* ── Título ── */}

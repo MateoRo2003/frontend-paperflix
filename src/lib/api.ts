@@ -60,6 +60,9 @@ export const getResourceFilters = (subjectId: number, course?: string) =>
 export const scrapeResourceUrl = (url: string) =>
   api.get('/resources/scrape', { params: { url } }).then(r => r.data) as
   Promise<{ title: string; description: string; imageUrl: string }>;
+export const aiFillResource = (data: { url: string; title?: string; description?: string; author?: string }) =>
+  api.post('/resources/ai-fill', data).then(r => r.data) as
+  Promise<{ title: string; description: string; author: string }>;
 export const createResource  = (data: any)               => api.post('/resources', data).then(r => r.data);
 export const bulkCreateResources  = (items: any[])       => api.post('/resources/bulk', { items }).then(r => r.data) as Promise<{ created: number; errors: { row: number; message: string }[] }>;
 export const countImageMigration      = ()                          => api.get('/resources/migrate-images/count').then(r => r.data) as Promise<{ total: number; pending: number; alreadyWebp: number; noImage: number; noImageWithUrl: number }>;
