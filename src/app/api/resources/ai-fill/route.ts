@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import Groq from 'groq-sdk';
 import { requireAuth, ok, err } from '@/lib/auth';
 
 async function fetchPageContent(url: string): Promise<string> {
@@ -22,11 +22,9 @@ async function fetchPageContent(url: string): Promise<string> {
       .replace(/<[^>]+>/g, ' ')
       .replace(/\s+/g, ' ')
       .trim()
-      .slice(0, 1500);
+      .slice(0, 1200);
 
-    return JSON.stringify({
-      ogTitle, ogDesc, ogImage, title, h1, bodyText,
-    });
+    return JSON.stringify({ ogTitle, ogDesc, ogImage, title, h1, bodyText });
   } catch {
     return '';
   }
@@ -36,8 +34,8 @@ export async function POST(req: NextRequest) {
   const auth = await requireAuth(req);
   if (auth.error) return auth.error;
 
-  if (!process.env.GEMINI_API_KEY) {
-    return err('GEMINI_API_KEY no configurada en el servidor', 500);
+  if (!process.env.GROQ_API_KEY) {
+    return err('GROQ_API_KEY no configurada en el servidor', 500);
   }
 
   const { url } = await req.json();
@@ -57,20 +55,31 @@ ${pageRaw || '(no se pudo acceder a la página)'}
 
 Tipos de actividad disponibles: "Introductoria", "De desarrollo", "De cierre", "Herramienta"
 
-Genera un JSON con exactamente estos campos:
-- "title": Título conciso del recurso en español (máx 80 caracteres). Si el og:title está en español y es bueno, úsalo mejorado.
-- "description": 1-2 oraciones en español para docentes: qué aprenden los alumnos y cómo se usa (máx 220 caracteres).
-- "author": Nombre de la plataforma/creador (ej: "Wordwall", "Khan Academy", "Educarchile", "Phet Colorado"). Extráelo del dominio.
-- "activityTypeSuggestion": Uno de los tipos de actividad disponibles que mejor se ajuste al recurso, o "" si no estás seguro.
-
-Responde SOLO con el JSON válido, sin markdown ni texto adicional.`;
+Responde SOLO con un JSON válido con estos campos:
+{
+  "title": "Título conciso del recurso en español (máx 80 caracteres)",
+  "description": "1-2 oraciones para docentes: qué aprenden los alumnos y cómo se usa (máx 220 caracteres)",
+  "author": "Nombre de la plataforma/creador (ej: Wordwall, Khan Academy, Educarchile)",
+  "activityTypeSuggestion": "Uno de los tipos disponibles o cadena vacía si no estás seguro"
+}`;
 
   try {
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
+    const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+    const completion = await groq.chat.completions.create({
+      model: 'llama-3.3-70b-versatile',
+      messages: [
+        {
+          role: 'system',
+          content: 'Eres un asistente especializado en catalogar recursos educativos. Respondes siempre con JSON válido y nada más.',
+        },
+        { role: 'user', content: prompt },
+      ],
+      temperature: 0.3,
+      max_tokens: 400,
+      response_format: { type: 'json_object' },
+    });
 
+    const text = completion.choices[0]?.message?.content || '';
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) return err('La IA no devolvió un JSON válido');
 
@@ -78,11 +87,11 @@ Responde SOLO con el JSON válido, sin markdown ni texto adicional.`;
     const VALID_TYPES = ['Introductoria', 'De desarrollo', 'De cierre', 'Herramienta'];
 
     return ok({
-      title:                  typeof parsed.title === 'string'                  ? parsed.title.trim()                  : '',
-      description:            typeof parsed.description === 'string'            ? parsed.description.trim()            : '',
-      author:                 typeof parsed.author === 'string'                 ? parsed.author.trim()                 : '',
-      activityTypeSuggestion: VALID_TYPES.includes(parsed.activityTypeSuggestion) ? parsed.activityTypeSuggestion      : '',
-      imageUrl:               typeof pageData.ogImage === 'string'              ? pageData.ogImage.trim()              : '',
+      title:                  typeof parsed.title === 'string'                  ? parsed.title.trim()       : '',
+      description:            typeof parsed.description === 'string'            ? parsed.description.trim() : '',
+      author:                 typeof parsed.author === 'string'                 ? parsed.author.trim()      : '',
+      activityTypeSuggestion: VALID_TYPES.includes(parsed.activityTypeSuggestion) ? parsed.activityTypeSuggestion : '',
+      imageUrl:               typeof pageData.ogImage === 'string'              ? pageData.ogImage.trim()   : '',
     });
   } catch (e: any) {
     return err(`Error de IA: ${e?.message || 'desconocido'}`, 500);
