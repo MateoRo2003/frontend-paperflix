@@ -177,17 +177,17 @@ export default function HomePage() {
                 <>
                   <button
                     onClick={(e) => { e.stopPropagation(); goHero((heroIdx - 1 + heroItems.length) % heroItems.length); }}
-                    className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-sm transition-all"
-                    style={{ width: 36, height: 36, color: 'white', border: '1px solid rgba(255,255,255,0.15)' }}
+                    className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-sm transition-all w-9 h-9 md:w-14 md:h-14"
+                    style={{ color: 'white', border: '1px solid rgba(255,255,255,0.15)' }}
                   >
-                    <ChevronLeft size={18} />
+                    <ChevronLeft className="w-4 h-4 md:w-6 md:h-6" />
                   </button>
                   <button
                     onClick={(e) => { e.stopPropagation(); goHero((heroIdx + 1) % heroItems.length); }}
-                    className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-sm transition-all"
-                    style={{ width: 36, height: 36, color: 'white', border: '1px solid rgba(255,255,255,0.15)' }}
+                    className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-sm transition-all w-9 h-9 md:w-14 md:h-14"
+                    style={{ color: 'white', border: '1px solid rgba(255,255,255,0.15)' }}
                   >
-                    <ChevronRight size={18} />
+                    <ChevronRight className="w-4 h-4 md:w-6 md:h-6" />
                   </button>
                 </>
               )}
@@ -201,8 +201,8 @@ export default function HomePage() {
                         onClick={(e) => { e.stopPropagation(); goHero(i); }}
                         className="rounded-full transition-all duration-300"
                         style={{
-                          width:  i === heroIdx ? 20 : 6,
-                          height: 6,
+                          width:  i === heroIdx ? 'clamp(12px, 4vw, 28px)' : 'clamp(4px, 1.5vw, 8px)',
+                          height: 'clamp(4px, 1.2vw, 8px)',
                           background: i === heroIdx ? 'var(--accent)' : 'rgba(255,255,255,0.3)',
                         }}
                       />
