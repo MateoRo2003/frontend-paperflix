@@ -92,12 +92,8 @@ export default function Sidebar({ collapsed, onToggle }: SidebarProps) {
           />
         )}
         {collapsed && (
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center font-extrabold text-lg"
-            style={{ background: 'rgba(124,58,237,0.25)', color: '#c4b5fd' }}
-          >
-            P
-          </div>
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img src="/favicon.webp" alt="PaperFlix" style={{ width: 40, height: 40, objectFit: 'contain' }} />
         )}
         {!collapsed && (
           <button
