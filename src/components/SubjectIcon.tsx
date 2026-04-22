@@ -4,6 +4,30 @@ import {
   Monitor, Lightbulb, Layers, Star, Award, Heart, type LucideIcon,
 } from 'lucide-react';
 
+// Maps legacy icon names (stored in DB) → current SUBJECT_ICONS name
+export const LEGACY_ICON_MAP: Record<string, string> = {
+  sqrt:         'Calculator',
+  flask:        'FlaskConical',
+  globe:        'Globe',
+  microscope:   'Microscope',
+  atom:         'Atom',
+  compass:      'Compass',
+  map:          'Map',
+  dumbbell:     'Dumbbell',
+  palette:      'Palette',
+  music:        'Music',
+  languages:    'Languages',
+  code:         'Code',
+  film:         'Film',
+  monitor:      'Monitor',
+  lightbulb:    'Lightbulb',
+  layers:       'Layers',
+  star:         'Star',
+  award:        'Award',
+  heart:        'Heart',
+  book:         'BookOpen',
+};
+
 export const SUBJECT_ICONS: { name: string; label: string; Icon: LucideIcon }[] = [
   { name: 'BookOpen',     label: 'Libro',        Icon: BookOpen },
   { name: 'Calculator',   label: 'Calculadora',  Icon: Calculator },
@@ -34,6 +58,11 @@ interface Props {
   fallback?: string;
 }
 
+export function normalizeIconName(icon?: string | null): string | null | undefined {
+  if (!icon) return icon;
+  return LEGACY_ICON_MAP[icon] ?? icon;
+}
+
 export function SubjectIcon({ icon, color, size = 20, fallback }: Props) {
   if (icon?.trim().startsWith('<')) {
     return (
@@ -43,7 +72,8 @@ export function SubjectIcon({ icon, color, size = 20, fallback }: Props) {
       />
     );
   }
-  const found = SUBJECT_ICONS.find(i => i.name === icon);
+  const normalized = normalizeIconName(icon);
+  const found = SUBJECT_ICONS.find(i => i.name === normalized);
   if (found) return <found.Icon size={size} color={color} />;
   if (fallback) return <span style={{ color }}>{fallback}</span>;
   return null;

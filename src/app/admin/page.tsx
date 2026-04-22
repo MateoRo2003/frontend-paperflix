@@ -28,7 +28,7 @@ import {
   Image as ImageIcon, Upload, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Monitor,
   Sparkles, Loader2, FileSpreadsheet, AlertTriangle, CheckCircle2,
 } from 'lucide-react';
-import { SubjectIcon, SUBJECT_ICONS } from '@/components/SubjectIcon';
+import { SubjectIcon, SUBJECT_ICONS, normalizeIconName } from '@/components/SubjectIcon';
 import { swalConfirm, swalConfirmDanger } from '@/lib/swal';
 
 // ─── Local types ──────────────────────────────────────────────────────────────
@@ -1624,7 +1624,7 @@ export default function AdminPage() {
 
                   <div className="flex gap-1 shrink-0">
                     <button
-                      onClick={() => setEditingSubject(s)}
+                      onClick={() => setEditingSubject({ ...s, icon: normalizeIconName(s.icon) ?? s.icon })}
                       className="icon-btn flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
                       style={{ color: 'var(--muted)', width: 36, height: 36 }}
                     >
