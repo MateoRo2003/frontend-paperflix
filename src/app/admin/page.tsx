@@ -115,6 +115,7 @@ export default function AdminPage() {
   const [saving, setSaving] = useState(false);
   const [aiFilling, setAiFilling] = useState(false);
   const [aiActivitySuggestion, setAiActivitySuggestion] = useState('');
+  const [aiFillNoImage, setAiFillNoImage] = useState(false);
   const [scrapeFields, setScrapeFields] = useState<Set<string>>(new Set());
 
   // Subjects tab
@@ -371,6 +372,7 @@ export default function AdminPage() {
     setEditing(resource);
     setScrapeFields(new Set());
     setAiActivitySuggestion('');
+    setAiFillNoImage(false);
     const existing = (resource as any).activityType || '';
     setSelectedActTypes(existing ? existing.split(',').map((t: string) => t.trim()).filter(Boolean) : []);
 
@@ -2401,10 +2403,13 @@ export default function AdminPage() {
                       setAiFilling(true);
                       setScrapeFields(new Set());
                       setAiActivitySuggestion('');
+                      setAiFillNoImage(false);
                       try {
                         const data = await aiFillResource({ url });
                         const filled = new Set<string>();
+                        let hadImage = false;
                         setEditing(prev => {
+                          hadImage = !!(prev as any)?.imageUrl;
                           const next = { ...prev! };
                           if (data.title)       { (next as any).title       = data.title;       filled.add('title'); }
                           if (data.description) { (next as any).description = data.description; filled.add('description'); }
@@ -2414,6 +2419,7 @@ export default function AdminPage() {
                         });
                         setScrapeFields(filled);
                         if (data.activityTypeSuggestion) setAiActivitySuggestion(data.activityTypeSuggestion);
+                        if (!data.imageUrl && !hadImage) setAiFillNoImage(true);
                         showMsg('✨ Campos completados con IA');
                       } catch (e: any) {
                         showMsg(e?.response?.data?.message || 'Error al usar la IA', 'err');
@@ -2459,6 +2465,13 @@ export default function AdminPage() {
                   Imagen preview
                   {scrapeFields.has('imageUrl') && <span className="text-[10px] px-1.5 py-0.5 rounded-full font-bold" style={{ background: 'rgba(124,58,237,0.2)', color: '#c4b5fd' }}>auto</span>}
                 </label>
+                {aiFillNoImage && !(editing as any).imageUrl && (
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl mb-2 text-xs"
+                    style={{ background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.3)', color: '#fbbf24' }}>
+                    <span>⚠️</span>
+                    <span>La IA no pudo capturar la imagen del sitio. Súbela manualmente.</span>
+                  </div>
+                )}
                 {(editing as any).imageUrl ? (
                   <div className="flex gap-3 items-start">
                     <div className="rounded-xl overflow-hidden shrink-0 relative" style={{ width: 120, height: 72, background: 'var(--bg)' }}>

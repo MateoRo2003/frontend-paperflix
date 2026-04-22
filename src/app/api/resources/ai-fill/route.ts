@@ -89,14 +89,23 @@ URL: ${url}
 Datos extraídos de la página:
 ${pageRaw || '(no se pudo acceder a la página)'}
 
-Tipos de actividad disponibles: "Introductoria", "De desarrollo", "De cierre", "Herramienta"
+Tipos de actividad (elige SIEMPRE uno):
+- "Introductoria": presenta un tema nuevo, activa conocimientos previos
+- "De desarrollo": practica, profundiza o ejercita contenidos ya vistos
+- "De cierre": evalúa, consolida o resume lo aprendido
+- "Herramienta": utilidad o plataforma de uso general (ej: creador de quizzes, editor, generador)
 
-Responde SOLO con un JSON válido con estos campos:
+Reglas para description:
+- Escribe SOLO sobre el contenido educativo: qué aprenden o practican los alumnos
+- NO menciones cookies, JavaScript, requisitos técnicos ni características del sitio web
+- Máximo 220 caracteres, 1-2 oraciones dirigidas al docente
+
+Responde SOLO con un JSON válido:
 {
   "title": "Título conciso del recurso en español (máx 80 caracteres)",
-  "description": "1-2 oraciones para docentes: qué aprenden los alumnos y cómo se usa (máx 220 caracteres)",
-  "author": "Nombre de la plataforma/creador (ej: Wordwall, Khan Academy, Educarchile)",
-  "activityTypeSuggestion": "Uno de los tipos disponibles o cadena vacía si no estás seguro"
+  "description": "1-2 oraciones para docentes sobre el contenido educativo (máx 220 caracteres)",
+  "author": "Nombre de la plataforma o creador (ej: Wordwall, Khan Academy, Educarchile, Árbol ABC)",
+  "activityTypeSuggestion": "Uno de: Introductoria | De desarrollo | De cierre | Herramienta"
 }`;
 
   try {

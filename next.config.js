@@ -13,8 +13,7 @@ const CSP = [
   `script-src 'self' 'unsafe-inline' https://vercel.live${isDev ? " 'unsafe-eval'" : ''}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
-  // Fonts served locally via next/font — no external font CDN needed
-  "font-src 'self'",
+  "font-src 'self' https://vercel.live",
   // All API calls go through /api/* (Next.js rewrite) → same origin
   "connect-src 'self' https://*.supabase.co",
   // Never embed external content in iframes — key for institutional filters
