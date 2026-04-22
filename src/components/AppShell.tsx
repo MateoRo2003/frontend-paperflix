@@ -33,7 +33,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           className="px-8 py-5 text-sm text-center"
           style={{ color: 'var(--muted)', borderTop: '1px solid var(--border)' }}
         >
-          © {new Date().getFullYear()} Paperlux. Todos los derechos reservados.
+          © {new Date().getFullYear()} PaperFlix. Todos los derechos reservados.
         </footer>
       </main>
     </div>
