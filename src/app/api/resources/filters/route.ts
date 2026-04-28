@@ -17,11 +17,23 @@ export async function GET(req: NextRequest) {
   const unitWhere: Record<string, unknown> = { subjectId: Number(subjectId) };
   if (course) unitWhere.course = course;
 
-  const [courses, units, activityTypes] = await Promise.all([
+  const [courses, rawUnits, activityTypes] = await Promise.all([
     prisma.resource.findMany({ where: { subjectId: Number(subjectId), isActive: true }, select: { course: true }, distinct: ['course'] }),
     prisma.unit.findMany({ where: unitWhere, select: { id: true, name: true }, orderBy: { order: 'asc' } }),
     prisma.resource.findMany({ where, select: { activityType: true }, distinct: ['activityType'] }),
   ]);
+
+  // Enrich units with oaDescription from their resources
+  const unitIds = rawUnits.map(u => u.id);
+  const oaRows = unitIds.length > 0
+    ? await prisma.resource.findMany({
+        where: { unitId: { in: unitIds }, oaDescription: { not: null }, isActive: true },
+        select: { unitId: true, oaDescription: true },
+        distinct: ['unitId'],
+      })
+    : [];
+  const oaMap = new Map(oaRows.map(r => [r.unitId, r.oaDescription]));
+  const units = rawUnits.map(u => ({ ...u, oaDescription: oaMap.get(u.id) ?? null }));
 
   // Split comma-separated combinations and collect individual unique types
   const actTypeSet = new Set<string>();

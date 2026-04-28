@@ -56,7 +56,7 @@ export const trackView       = (id: number)              => api.post(`/resources
 export const getStats        = (from?: string, to?: string) => api.get('/resources/stats', { params: { ...(from ? { from } : {}), ...(to ? { to } : {}) } }).then(r => r.data);
 export const getResourceFilters = (subjectId: number, course?: string) =>
   api.get('/resources/filters', { params: { subjectId, ...(course ? { course } : {}) } }).then(r => r.data) as
-  Promise<{ courses: string[]; units: { id: number; name: string }[]; activityTypes: string[] }>;
+  Promise<{ courses: string[]; units: { id: number; name: string; oaDescription?: string | null }[]; activityTypes: string[] }>;
 export const scrapeResourceUrl = (url: string) =>
   api.get('/resources/scrape', { params: { url } }).then(r => r.data) as
   Promise<{ title: string; description: string; imageUrl: string }>;

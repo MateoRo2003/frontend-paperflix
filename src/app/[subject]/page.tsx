@@ -38,7 +38,7 @@ export default function SubjectPage() {
 
   // ── Filter options (from API) ──────────────────────────────────
   const [availCourses, setAvailCourses]         = useState<string[]>([]);
-  const [availUnits, setAvailUnits]             = useState<{ id: number; name: string }[]>([]);
+  const [availUnits, setAvailUnits]             = useState<{ id: number; name: string; oaDescription?: string | null }[]>([]);
   const [availActTypes, setAvailActTypes]       = useState<string[]>([]);
   const [filtersLoading, setFiltersLoading]     = useState(false);
 
@@ -244,52 +244,65 @@ export default function SubjectPage() {
               {filtersLoading && <span className="text-[10px] ml-1" style={{ color: 'var(--muted)' }}>cargando…</span>}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {/* Unidad / Objetivo */}
-              <div className="relative">
-                <label className="text-xs mb-1 block font-medium" style={{ color: 'var(--muted)' }}>{unitLabel}</label>
+            <div className="grid grid-cols-1 gap-2" style={{ gridTemplateColumns: '1fr' }}>
+              <div className="grid gap-2" style={{ gridTemplateColumns: '2fr 1fr' }}>
+                {/* Unidad / Objetivo */}
                 <div className="relative">
-                  <select
-                    value={unitId ?? ''}
-                    onChange={(e) => { setUnitId(e.target.value ? +e.target.value : undefined); setPage(1); }}
-                    className="w-full pl-3 pr-9 rounded-xl outline-none appearance-none"
-                    style={{
-                      background: unitId ? 'rgba(124,58,237,0.15)' : 'var(--bg)',
-                      border: `1px solid ${unitId ? 'rgba(124,58,237,0.45)' : 'var(--border)'}`,
-                      color: unitId ? '#c4b5fd' : 'var(--muted)',
-                      height: 42,
-                      minHeight: 42,
-                    }}
-                  >
-                    <option value="" style={{ color: '#1e0d38', background: '#e9e0f7' }}>{isObj ? 'Todos los objetivos' : 'Todas las unidades'}</option>
-                    {availUnits.map(u => <option key={u.id} value={u.id} style={{ color: '#1e0d38', background: '#e9e0f7' }}>{u.name}</option>)}
-                  </select>
-                  <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--muted)' }} />
+                  <label className="text-xs mb-1 block font-medium" style={{ color: 'var(--muted)' }}>{unitLabel}</label>
+                  <div className="relative">
+                    <select
+                      value={unitId ?? ''}
+                      onChange={(e) => { setUnitId(e.target.value ? +e.target.value : undefined); setPage(1); }}
+                      className="w-full pl-3 pr-9 rounded-xl outline-none appearance-none"
+                      style={{
+                        background: unitId ? 'rgba(124,58,237,0.15)' : 'var(--bg)',
+                        border: `1px solid ${unitId ? 'rgba(124,58,237,0.45)' : 'var(--border)'}`,
+                        color: unitId ? '#c4b5fd' : 'var(--muted)',
+                        height: 42,
+                        minHeight: 42,
+                      }}
+                    >
+                      <option value="" style={{ color: '#1e0d38', background: '#e9e0f7' }}>{isObj ? 'Todos los objetivos' : 'Todas las unidades'}</option>
+                      {availUnits.map(u => <option key={u.id} value={u.id} style={{ color: '#1e0d38', background: '#e9e0f7' }}>{u.name}</option>)}
+                    </select>
+                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--muted)' }} />
+                  </div>
+                </div>
+
+                {/* Tipo de actividad */}
+                <div className="relative">
+                  <label className="text-xs mb-1 block font-medium" style={{ color: 'var(--muted)' }}>Tipo de actividad</label>
+                  <div className="relative">
+                    <select
+                      value={activityType}
+                      onChange={(e) => { setActivityType(e.target.value); setPage(1); }}
+                      className="w-full pl-3 pr-9 rounded-xl outline-none appearance-none"
+                      style={{
+                        background: activityType ? 'rgba(124,58,237,0.15)' : 'var(--bg)',
+                        border: `1px solid ${activityType ? 'rgba(124,58,237,0.45)' : 'var(--border)'}`,
+                        color: activityType ? '#c4b5fd' : 'var(--muted)',
+                        height: 42,
+                        minHeight: 42,
+                      }}
+                    >
+                      <option value="" style={{ color: '#1e0d38', background: '#e9e0f7' }}>Todos los tipos</option>
+                      {availActTypes.map(t => <option key={t} value={t} style={{ color: '#1e0d38', background: '#e9e0f7' }}>{t}</option>)}
+                    </select>
+                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--muted)' }} />
+                  </div>
                 </div>
               </div>
 
-              {/* Tipo de actividad */}
-              <div className="relative">
-                <label className="text-xs mb-1 block font-medium" style={{ color: 'var(--muted)' }}>Tipo de actividad</label>
-                <div className="relative">
-                  <select
-                    value={activityType}
-                    onChange={(e) => { setActivityType(e.target.value); setPage(1); }}
-                    className="w-full pl-3 pr-9 rounded-xl outline-none appearance-none"
-                    style={{
-                      background: activityType ? 'rgba(124,58,237,0.15)' : 'var(--bg)',
-                      border: `1px solid ${activityType ? 'rgba(124,58,237,0.45)' : 'var(--border)'}`,
-                      color: activityType ? '#c4b5fd' : 'var(--muted)',
-                      height: 42,
-                      minHeight: 42,
-                    }}
-                  >
-                    <option value="" style={{ color: '#1e0d38', background: '#e9e0f7' }}>Todos los tipos</option>
-                    {availActTypes.map(t => <option key={t} value={t} style={{ color: '#1e0d38', background: '#e9e0f7' }}>{t}</option>)}
-                  </select>
-                  <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--muted)' }} />
-                </div>
-              </div>
+              {/* OA Description — aparece al seleccionar una unidad/objetivo */}
+              {unitId && (() => {
+                const selectedUnit = availUnits.find(u => u.id === unitId);
+                return selectedUnit?.oaDescription ? (
+                  <div className="rounded-lg px-3 py-2" style={{ background: 'rgba(124,58,237,0.10)' }}>
+                    <p className="text-xs font-semibold mb-0.5" style={{ color: '#c4b5fd' }}>Objetivo de Aprendizaje</p>
+                    <p className="text-xs leading-snug" style={{ color: 'var(--muted)' }}>{selectedUnit.oaDescription}</p>
+                  </div>
+                ) : null;
+              })()}
             </div>
           </div>
         )}
