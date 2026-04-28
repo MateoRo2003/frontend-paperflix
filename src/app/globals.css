@@ -102,10 +102,11 @@ body {
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
 }
+/* 4 cards que llenan el ancho disponible: (100% - 3 gaps de 16px) / 4 */
 .subject-row > * {
   scroll-snap-align: start;
-  flex: 0 0 280px;
-  min-width: 0;
+  flex: 0 0 calc(25% - 12px);
+  min-width: 240px;
 }
 
 /* Hero banner gradient */
