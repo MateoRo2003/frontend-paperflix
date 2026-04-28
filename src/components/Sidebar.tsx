@@ -82,7 +82,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, isMob
         style={{
           borderColor: 'var(--border)',
           height: 76,
-          padding: collapsed ? '0 12px' : '0 20px',
+          padding: collapsed ? '0' : '0 20px',
           justifyContent: collapsed ? 'center' : 'space-between',
           transition: 'padding 0.25s ease',
         }}
