@@ -212,6 +212,9 @@ interface NavItemProps {
 }
 
 function NavItem({ label, href, icon: Icon, active, enabled, color, collapsed }: NavItemProps) {
+  const [hovered, setHovered] = useState(false);
+  const showColor = color && (active || hovered);
+
   if (collapsed) {
     const style: React.CSSProperties = {
       width: 60,
@@ -221,9 +224,9 @@ function NavItem({ label, href, icon: Icon, active, enabled, color, collapsed }:
       alignItems: 'center',
       justifyContent: 'center',
       borderRadius: 12,
-      transition: 'background 0.15s',
-      ...(active && color ? { borderLeft: `3px solid ${color}`, background: 'rgba(124,58,237,0.2)' } : {}),
-      ...(active && !color ? { background: 'rgba(124,58,237,0.2)' } : {}),
+      transition: 'background 0.15s, border-color 0.15s',
+      ...(showColor ? { borderLeft: `3px solid ${color}`, background: `${color}28` } : {}),
+      ...(!showColor && active ? { background: 'rgba(124,58,237,0.2)' } : {}),
     };
 
     if (!enabled) {
@@ -238,19 +241,17 @@ function NavItem({ label, href, icon: Icon, active, enabled, color, collapsed }:
       <Link
         href={href}
         title={label}
-        className={`block mb-1 hover:bg-white/8 ${active ? 'text-white' : 'text-[var(--muted)] hover:text-white'}`}
-        style={style}
+        className="block mb-1"
+        style={{ ...style, color: showColor ? color : undefined }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
       >
-        <Icon
-          size={26}
-          strokeWidth={active ? 2.5 : 2}
-          style={active && color ? { color } : undefined}
-        />
+        <Icon size={26} strokeWidth={active || hovered ? 2.5 : 2} />
       </Link>
     );
   }
 
-  const base = 'flex items-center gap-4 px-5 rounded-xl text-xl font-medium transition-colors';
+  const base = 'flex items-center gap-4 px-5 rounded-xl text-xl font-medium';
 
   if (!enabled) {
     return (
@@ -274,18 +275,21 @@ function NavItem({ label, href, icon: Icon, active, enabled, color, collapsed }:
   return (
     <Link
       href={href}
-      className={`nav-item ${base} ${
-        active ? 'active text-white' : 'text-[var(--muted)] hover:text-white hover:bg-white/5'
-      }`}
+      className={`nav-item ${base} ${active ? 'active text-white' : ''}`}
       style={{
         height: 72,
-        ...(active && color ? { borderLeft: `3px solid ${color}` } : {}),
+        transition: 'background 0.15s, border-color 0.15s, color 0.15s',
+        borderLeft: showColor ? `3px solid ${color}` : active ? undefined : undefined,
+        background: hovered && !active && color ? `${color}18` : undefined,
+        color: hovered && !active ? (color || 'white') : undefined,
       }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       <Icon
         size={28}
-        strokeWidth={active ? 2.5 : 2}
-        style={active && color ? { color } : undefined}
+        strokeWidth={active || hovered ? 2.5 : 2}
+        style={showColor ? { color } : undefined}
       />
       <span className="flex-1 truncate">{label}</span>
     </Link>
