@@ -65,7 +65,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, isMob
           borderColor: 'var(--border)',
           height: 76,
           padding: collapsed ? '0' : '0 20px',
-          justifyContent: collapsed ? 'center' : 'space-between',
+          justifyContent: 'center',
           transition: 'padding 0.25s ease',
         }}
       >
@@ -80,16 +80,6 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, isMob
         {collapsed && (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img src="/image.png" alt="PaperFlix" style={{ width: 46, height: 46, objectFit: 'contain' }} />
-        )}
-        {!collapsed && (
-          <button
-            onClick={onToggle}
-            title="Colapsar sidebar"
-            className="rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors shrink-0"
-            style={{ width: 40, height: 40, color: 'var(--muted)' }}
-          >
-            <ChevronLeft size={22} />
-          </button>
         )}
       </div>
 
@@ -135,19 +125,17 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, isMob
         )}
       </nav>
 
-      {/* Expand button (collapsed only) */}
-      {collapsed && (
-        <div className="shrink-0 flex justify-center pb-3">
-          <button
-            onClick={onToggle}
-            title="Expandir sidebar"
-            className="rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors"
-            style={{ width: 60, height: 48, color: 'var(--muted)' }}
-          >
-            <ChevronRight size={22} />
-          </button>
-        </div>
-      )}
+      {/* Toggle button — siempre abajo */}
+      <div className="shrink-0 flex justify-center pb-3">
+        <button
+          onClick={onToggle}
+          title={collapsed ? 'Expandir sidebar' : 'Colapsar sidebar'}
+          className="rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors"
+          style={{ width: 60, height: 48, color: 'var(--muted)' }}
+        >
+          {collapsed ? <ChevronRight size={22} /> : <ChevronLeft size={22} />}
+        </button>
+      </div>
     </aside>
   );
 }
