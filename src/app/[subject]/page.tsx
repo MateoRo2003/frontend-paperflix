@@ -320,7 +320,7 @@ export default function SubjectPage() {
 
       {/* ── Grid de Recursos ────────────────────────────────────────── */}
       {loading ? (
-        <GridSkeleton count={20} />
+        <GridSkeleton count={8} />
       ) : resources.length === 0 ? (
         <div className="py-16 text-center" style={{ color: 'var(--muted)' }}>
           <p className="text-4xl mb-3">📭</p>
