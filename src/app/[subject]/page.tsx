@@ -316,36 +316,7 @@ export default function SubjectPage() {
         </div>
       </div>
 
-      {/* ── Tabs de Unidades (sólo cuando hay curso seleccionado y unidades) ── */}
-      {courseSelected && availUnits.length > 0 && (
-        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-          <button
-            onClick={() => { setUnitId(undefined); setPage(1); }}
-            className="pill-btn shrink-0 rounded-full text-xs font-medium transition-colors"
-            style={{
-              background: !unitId ? 'var(--purple)' : 'var(--card)',
-              color: !unitId ? '#fff' : 'var(--muted)',
-              border: '1px solid var(--border)',
-            }}
-          >
-            {isObj ? 'Todos' : 'Todas'}
-          </button>
-          {availUnits.slice(0, 12).map(u => (
-            <button
-              key={u.id}
-              onClick={() => { setUnitId(u.id); setPage(1); }}
-              className="pill-btn shrink-0 rounded-full text-xs font-medium transition-colors"
-              style={{
-                background: unitId === u.id ? 'var(--purple)' : 'var(--card)',
-                color: unitId === u.id ? '#fff' : 'var(--muted)',
-                border: `1px solid ${unitId === u.id ? 'rgba(124,58,237,0.5)' : 'var(--border)'}`,
-              }}
-            >
-              {u.name.length > 22 ? u.name.slice(0, 22) + '…' : u.name}
-            </button>
-          ))}
-        </div>
-      )}
+
 
       {/* ── Grid de Recursos ────────────────────────────────────────── */}
       {loading ? (
