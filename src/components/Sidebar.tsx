@@ -97,16 +97,16 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, isMob
         )}
         {collapsed && (
           /* eslint-disable-next-line @next/next/no-img-element */
-          <img src="/image.png" alt="PaperFlix" style={{ width: 40, height: 40, objectFit: 'contain' }} />
+          <img src="/image.png" alt="PaperFlix" style={{ width: 46, height: 46, objectFit: 'contain' }} />
         )}
         {!collapsed && (
           <button
             onClick={onToggle}
             title="Colapsar sidebar"
             className="rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors shrink-0"
-            style={{ width: 36, height: 36, color: 'var(--muted)' }}
+            style={{ width: 40, height: 40, color: 'var(--muted)' }}
           >
-            <ChevronLeft size={18} />
+            <ChevronLeft size={22} />
           </button>
         )}
       </div>
@@ -169,30 +169,30 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, isMob
               title="Admin"
               className="nav-item flex items-center justify-center rounded-xl transition-colors"
               style={{
-                width: 52, height: 52,
+                width: 60, height: 60,
                 background: path.startsWith('/admin') ? 'rgba(124,58,237,0.25)' : 'transparent',
                 color: path.startsWith('/admin') ? '#fff' : 'var(--muted)',
               }}
             >
-              <ShieldCheck size={22} strokeWidth={path.startsWith('/admin') ? 2.5 : 2} />
+              <ShieldCheck size={28} strokeWidth={path.startsWith('/admin') ? 2.5 : 2} />
             </Link>
             <button
               onClick={onToggle}
               title="Expandir sidebar"
               className="rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors"
-              style={{ width: 52, height: 44, color: 'var(--muted)' }}
+              style={{ width: 60, height: 48, color: 'var(--muted)' }}
             >
-              <ChevronRight size={18} />
+              <ChevronRight size={22} />
             </button>
           </div>
         ) : (
           <Link
             href="/admin"
-            className={`nav-item flex items-center gap-3 px-5 rounded-xl text-lg font-medium transition-colors ${
+            className={`nav-item flex items-center gap-3 px-5 rounded-xl text-xl font-medium transition-colors ${
               path.startsWith('/admin') ? 'active text-white' : 'text-[var(--muted)] hover:text-white hover:bg-white/5'
             }`}
           >
-            <ShieldCheck size={26} strokeWidth={path.startsWith('/admin') ? 2.5 : 2} />
+            <ShieldCheck size={30} strokeWidth={path.startsWith('/admin') ? 2.5 : 2} />
             <span>Admin</span>
           </Link>
         )}
@@ -214,8 +214,8 @@ interface NavItemProps {
 function NavItem({ label, href, icon: Icon, active, enabled, color, collapsed }: NavItemProps) {
   if (collapsed) {
     const style: React.CSSProperties = {
-      width: 52,
-      height: 52,
+      width: 60,
+      height: 60,
       margin: '0 auto',
       display: 'flex',
       alignItems: 'center',
@@ -229,7 +229,7 @@ function NavItem({ label, href, icon: Icon, active, enabled, color, collapsed }:
     if (!enabled) {
       return (
         <div title={label} style={{ ...style, opacity: 0.3, cursor: 'not-allowed', marginBottom: 4 }}>
-          <Icon size={22} strokeWidth={2} />
+          <Icon size={26} strokeWidth={2} />
         </div>
       );
     }
@@ -242,7 +242,7 @@ function NavItem({ label, href, icon: Icon, active, enabled, color, collapsed }:
         style={style}
       >
         <Icon
-          size={22}
+          size={26}
           strokeWidth={active ? 2.5 : 2}
           style={active && color ? { color } : undefined}
         />
@@ -250,16 +250,16 @@ function NavItem({ label, href, icon: Icon, active, enabled, color, collapsed }:
     );
   }
 
-  const base = 'flex items-center gap-4 px-5 rounded-xl text-lg font-medium transition-colors';
+  const base = 'flex items-center gap-4 px-5 rounded-xl text-xl font-medium transition-colors';
 
   if (!enabled) {
     return (
       <div
         className={`${base} subject-disabled`}
-        style={{ height: 64, cursor: 'not-allowed' }}
+        style={{ height: 72, cursor: 'not-allowed' }}
         title="Sin recursos disponibles"
       >
-        <Icon size={24} strokeWidth={2} style={{ opacity: 0.5 }} />
+        <Icon size={28} strokeWidth={2} style={{ opacity: 0.5 }} />
         <span className="flex-1 truncate">{label}</span>
         <span
           className="text-sm px-2 py-0.5 rounded-full shrink-0"
@@ -278,12 +278,12 @@ function NavItem({ label, href, icon: Icon, active, enabled, color, collapsed }:
         active ? 'active text-white' : 'text-[var(--muted)] hover:text-white hover:bg-white/5'
       }`}
       style={{
-        height: 64,
+        height: 72,
         ...(active && color ? { borderLeft: `3px solid ${color}` } : {}),
       }}
     >
       <Icon
-        size={24}
+        size={28}
         strokeWidth={active ? 2.5 : 2}
         style={active && color ? { color } : undefined}
       />

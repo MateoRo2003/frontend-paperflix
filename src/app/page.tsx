@@ -105,13 +105,13 @@ export default function HomePage() {
   }
 
   return (
-    <div className="p-4 sm:p-6 md:p-8 space-y-6 md:space-y-10">
+    <div className="p-4 sm:p-5 md:p-6 space-y-4 md:space-y-6">
 
       {/* ── Hero Banner ────────────────────────────────────────────── */}
       {(loading || hero) && (
         <div
           className="relative w-full rounded-2xl overflow-hidden select-none"
-          style={{ height: 'clamp(240px, 56vw, 460px)' }}
+          style={{ height: 'clamp(200px, 36vw, 320px)' }}
         >
           {hero ? (
             <>
@@ -230,7 +230,7 @@ export default function HomePage() {
       {/* ── Search Results ──────────────────────────────────────────── */}
       {searchResults !== null && (
         <section>
-          <h2 className="text-xl font-bold text-white mb-5">
+          <h2 className="text-2xl font-bold text-white mb-3">
             {searching ? 'Buscando...' : `${searchResults.length} resultado${searchResults.length !== 1 ? 's' : ''}`}
           </h2>
           {searching ? <GridSkeleton count={8} /> : (
@@ -249,11 +249,11 @@ export default function HomePage() {
           {/* Destacados — fila rápida mientras cargan las filas por asignatura */}
           {featured.length > 0 && rowsLoading && (
             <section>
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="text-xl font-bold text-white">Destacados</h2>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-2xl font-bold text-white">Destacados</h2>
               </div>
               {loading ? <GridSkeleton count={4} /> : (
-                <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 md:gap-5">
+                <div className="subject-row">
                   {featured.slice(0, 4).map(r => (
                     <ResourceCard key={r.id} resource={r} onClick={() => setSelected(r)} />
                   ))}
@@ -274,16 +274,15 @@ export default function HomePage() {
             : subjectRows.map(({ subject, resources }) => (
                 <section key={subject.id}>
                   {/* Encabezado de fila */}
-                  <div className="flex items-center justify-between mb-5">
+                  <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      {/* Pastilla de color de la asignatura */}
                       <span
-                        className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-sm font-bold shrink-0"
+                        className="inline-flex items-center justify-center w-10 h-10 rounded-lg font-bold shrink-0"
                         style={{ background: `${subject.color}22`, color: subject.color }}
                       >
-                        <SubjectIcon icon={subject.icon} color={subject.color} size={18} fallback={subject.name.charAt(0)} />
+                        <SubjectIcon icon={subject.icon} color={subject.color} size={22} fallback={subject.name.charAt(0)} />
                       </span>
-                      <h2 className="text-xl font-bold text-white">{subject.name}</h2>
+                      <h2 className="text-2xl font-bold text-white">{subject.name}</h2>
                     </div>
 
                     <Link
@@ -296,8 +295,8 @@ export default function HomePage() {
                     </Link>
                   </div>
 
-                  {/* Grid de 4 recursos */}
-                  <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 md:gap-5">
+                  {/* Fila horizontal estilo Netflix */}
+                  <div className="subject-row">
                     {resources.map(r => (
                       <ResourceCard key={r.id} resource={r} onClick={() => setSelected(r)} />
                     ))}
