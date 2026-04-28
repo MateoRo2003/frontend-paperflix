@@ -135,7 +135,7 @@ export default function HomePage() {
               <div className="hero-overlay absolute inset-0" />
 
               <div
-                className="relative z-10 px-5 pb-6 md:px-10 md:pb-10 flex flex-col justify-end h-full cursor-pointer"
+                className="relative z-10 pl-14 pr-5 pb-6 md:pl-24 md:pr-20 md:pb-8 flex flex-col justify-end h-full cursor-pointer"
                 onClick={handleHeroClick}
                 style={{ paddingTop: 32 }}
               >
