@@ -95,7 +95,7 @@ export default function SubjectPage() {
         course: course || undefined,
         search: search || undefined,
         page,
-        limit: 4,
+        limit: 6,
       });
       setResources(res.data);
       setTotal(res.total);
