@@ -63,7 +63,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         )}
 
-        <div className="flex-1">{children}</div>
+        <div className="flex-1 flex flex-col">{children}</div>
 
         <footer
           className="px-6 py-4 text-sm text-center"

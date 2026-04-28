@@ -16,7 +16,7 @@ export default function SearchBar({ onSearch, placeholder = 'Buscar recursos...'
   }, [onSearch]);
 
   return (
-    <div className="relative w-full max-w-2xl">
+    <div className="relative w-full">
       <Search size={22} className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: 'var(--muted)' }} />
       <input
         type="text"

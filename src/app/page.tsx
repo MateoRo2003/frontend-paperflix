@@ -105,7 +105,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="p-4 sm:p-5 md:p-6 space-y-4 md:space-y-6">
+    <div className="flex flex-col flex-1 p-4 sm:p-5 md:p-6 gap-4 md:gap-5">
 
       {/* ── Hero Banner ────────────────────────────────────────────── */}
       {(loading || hero) && (
@@ -245,7 +245,7 @@ export default function HomePage() {
 
       {/* ── Grid de asignaturas ──────────────────────────────────────── */}
       {searchResults === null && (
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="flex-1 grid grid-cols-2 xl:grid-cols-4 gap-4" style={{ gridAutoRows: '1fr', minHeight: 0 }}>
           {rowsLoading && subjectRows.length === 0
             ? [...Array(8)].map((_, i) => (
                 <div key={i} className="skeleton rounded-2xl" style={{ height: 210 }} />
@@ -262,7 +262,7 @@ export default function HomePage() {
                 return (
                   <div
                     key={subject.id}
-                    className="rounded-2xl overflow-hidden cursor-pointer group"
+                    className="rounded-2xl overflow-hidden cursor-pointer group flex flex-col h-full"
                     style={{
                       background: 'var(--card)',
                       border: '1px solid var(--border)',
@@ -296,7 +296,7 @@ export default function HomePage() {
                       </Link>
                     </div>
 
-                    <div className="relative w-full" style={{ aspectRatio: '16/9', background: 'var(--sidebar)' }}>
+                    <div className="relative flex-1 min-h-0" style={{ background: 'var(--sidebar)' }}>
                       {imgSrc ? (
                         <img
                           src={imgSrc}
