@@ -148,7 +148,7 @@ export default function HomePage() {
                   </span>
                 )}
 
-                <h1 className="text-lg sm:text-3xl md:text-5xl font-extrabold text-white mb-2 md:mb-3 max-w-2xl leading-tight" style={{ textShadow: '0 2px 16px rgba(0,0,0,0.5)' }}>
+                <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-white mb-2 md:mb-3 max-w-2xl leading-tight" style={{ textShadow: '0 2px 16px rgba(0,0,0,0.5)' }}>
                   {hero.title}
                 </h1>
 
@@ -288,11 +288,11 @@ export default function HomePage() {
 
                     <Link
                       href={`/${subject.slug}`}
-                      className="flex items-center gap-1 text-sm font-medium transition-colors hover:opacity-80 group"
+                      className="flex items-center gap-1 text-base font-semibold transition-colors hover:opacity-80 group"
                       style={{ color: 'var(--accent)' }}
                     >
                       Ver todos
-                      <ChevronRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
+                      <ChevronRight size={18} className="group-hover:translate-x-0.5 transition-transform" />
                     </Link>
                   </div>
 

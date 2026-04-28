@@ -13,7 +13,7 @@
   --accent:    #F5C518;
   --purple:    #9b59e8;
   --text:      #ede6f7;
-  --muted:     #b09dce;
+  --muted:     #cdc0e8;
   --border:    rgba(255,255,255,0.10);
 
   /* Pen/stylus input — targets generosos para proyector + lápiz */
@@ -59,10 +59,11 @@ body {
   min-height: 100vh;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
+/* Scrollbar — gruesa y clickeable para proyectores */
+::-webkit-scrollbar { width: 12px; height: 12px; }
 ::-webkit-scrollbar-track { background: var(--sidebar); }
-::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 6px; border: 2px solid var(--sidebar); }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
 /* Card hover lift */
 .resource-card {

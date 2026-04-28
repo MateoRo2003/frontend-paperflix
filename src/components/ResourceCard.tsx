@@ -54,7 +54,7 @@ export default function ResourceCard({ resource, onClick }: { resource: Resource
         {/* Badge tipo */}
         {resource.activityType && (
           <span
-            className="absolute top-2 left-2 text-[11px] sm:text-sm font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-white z-10"
+            className="absolute top-2 left-2 text-xs sm:text-sm font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-white z-10"
             style={{ background: badgeColor }}
           >
             {resource.activityType.split(',')[0].trim()}
@@ -71,11 +71,11 @@ export default function ResourceCard({ resource, onClick }: { resource: Resource
 
       {/* Info */}
       <div className="p-3 sm:p-5">
-        <h3 className="text-sm sm:text-base font-bold text-white leading-snug line-clamp-2 mb-1.5">
+        <h3 className="text-base sm:text-lg font-bold text-white leading-snug line-clamp-2 mb-1.5">
           {resource.title}
         </h3>
         {resource.description && (
-          <p className="text-xs sm:text-sm line-clamp-2 mb-3" style={{ color: 'var(--muted)' }}>
+          <p className="text-sm line-clamp-2 mb-3" style={{ color: 'var(--muted)' }}>
             {resource.description}
           </p>
         )}
@@ -101,7 +101,7 @@ export default function ResourceCard({ resource, onClick }: { resource: Resource
               className="icon-btn shrink-0 flex items-center justify-center rounded-lg transition-colors hover:bg-white/10"
               style={{ color: 'var(--accent)', width: 36, height: 36 }}
             >
-              <ExternalLink size={16} />
+              <ExternalLink size={20} />
             </a>
           )}
         </div>
