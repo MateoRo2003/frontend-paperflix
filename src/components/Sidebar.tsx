@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { getSubjects, getStats } from '@/lib/api';
 import { Subject } from '@/types';
 import { useDataSync } from '@/hooks/useDataSync';
-import { Home, ShieldCheck, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home, ChevronLeft, ChevronRight } from 'lucide-react';
 import { SubjectIcon } from '@/components/SubjectIcon';
 
 interface SidebarProps {
@@ -135,49 +135,19 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, isMob
         )}
       </nav>
 
-      {/* Admin link + expand button */}
-      <div
-        className="border-t shrink-0"
-        style={{
-          borderColor: 'var(--border)',
-          padding: collapsed ? '12px 8px' : '12px 10px',
-        }}
-      >
-        {collapsed ? (
-          <div className="flex flex-col gap-2 items-center">
-            <Link
-              href="/admin"
-              title="Admin"
-              className="nav-item flex items-center justify-center rounded-xl transition-colors"
-              style={{
-                width: 60, height: 60,
-                background: path.startsWith('/admin') ? 'rgba(124,58,237,0.25)' : 'transparent',
-                color: path.startsWith('/admin') ? '#fff' : 'var(--muted)',
-              }}
-            >
-              <ShieldCheck size={28} strokeWidth={path.startsWith('/admin') ? 2.5 : 2} />
-            </Link>
-            <button
-              onClick={onToggle}
-              title="Expandir sidebar"
-              className="rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors"
-              style={{ width: 60, height: 48, color: 'var(--muted)' }}
-            >
-              <ChevronRight size={22} />
-            </button>
-          </div>
-        ) : (
-          <Link
-            href="/admin"
-            className={`nav-item flex items-center gap-3 px-5 rounded-xl text-xl font-medium transition-colors ${
-              path.startsWith('/admin') ? 'active text-white' : 'text-[var(--muted)] hover:text-white hover:bg-white/5'
-            }`}
+      {/* Expand button (collapsed only) */}
+      {collapsed && (
+        <div className="shrink-0 flex justify-center pb-3">
+          <button
+            onClick={onToggle}
+            title="Expandir sidebar"
+            className="rounded-xl flex items-center justify-center hover:bg-white/10 transition-colors"
+            style={{ width: 60, height: 48, color: 'var(--muted)' }}
           >
-            <ShieldCheck size={30} strokeWidth={path.startsWith('/admin') ? 2.5 : 2} />
-            <span>Admin</span>
-          </Link>
-        )}
-      </div>
+            <ChevronRight size={22} />
+          </button>
+        </div>
+      )}
     </aside>
   );
 }
