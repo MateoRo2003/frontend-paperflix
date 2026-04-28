@@ -272,13 +272,14 @@ export default function HomePage() {
                     className="rounded-2xl overflow-hidden cursor-pointer group"
                     style={{
                       background: 'var(--card)',
-                      border: `1px solid ${subject.color}50`,
+                      border: '1px solid var(--border)',
+                      borderLeft: `3px solid ${subject.color}`,
                       transition: 'transform 0.18s ease, box-shadow 0.18s ease',
                     }}
                     onClick={() => setSelected(top)}
                     onMouseEnter={e => {
                       (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-3px)';
-                      (e.currentTarget as HTMLDivElement).style.boxShadow = `0 12px 32px ${subject.color}30`;
+                      (e.currentTarget as HTMLDivElement).style.boxShadow = '0 12px 32px rgba(0,0,0,0.35)';
                     }}
                     onMouseLeave={e => {
                       (e.currentTarget as HTMLDivElement).style.transform = '';
@@ -288,7 +289,7 @@ export default function HomePage() {
                     {/* Cabecera de asignatura */}
                     <div
                       className="flex items-center justify-between px-3 py-2"
-                      style={{ background: `${subject.color}20`, borderBottom: `1px solid ${subject.color}30` }}
+                      style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid var(--border)' }}
                     >
                       <div className="flex items-center gap-2 min-w-0">
                         <SubjectIcon icon={subject.icon} color={subject.color} size={18} fallback={subject.name.charAt(0)} />
@@ -298,7 +299,7 @@ export default function HomePage() {
                         href={`/${subject.slug}`}
                         onClick={e => e.stopPropagation()}
                         className="flex items-center gap-0.5 text-sm font-semibold shrink-0 hover:opacity-75 transition-opacity ml-2"
-                        style={{ color: subject.color }}
+                        style={{ color: 'var(--accent)' }}
                       >
                         Ver todos <ChevronRight size={14} />
                       </Link>
@@ -315,7 +316,7 @@ export default function HomePage() {
                           onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center" style={{ background: `${subject.color}15` }}>
+                        <div className="w-full h-full flex items-center justify-center" style={{ background: 'var(--sidebar)' }}>
                           <SubjectIcon icon={subject.icon} color={subject.color} size={44} fallback={subject.name.charAt(0)} />
                         </div>
                       )}
