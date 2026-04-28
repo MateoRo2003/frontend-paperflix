@@ -350,30 +350,31 @@ export default function SubjectPage() {
 
       {/* ── Paginación ──────────────────────────────────────────────── */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 pt-2">
+        <div className="flex items-center justify-center gap-3 pt-2">
           <button
             disabled={page === 1}
             onClick={() => setPage(p => p - 1)}
-            className="page-btn flex items-center justify-center rounded-xl disabled:opacity-30 hover:bg-white/5 transition-colors"
-            style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)' }}
+            className="flex items-center justify-center rounded-xl disabled:opacity-30 hover:bg-white/5 transition-colors"
+            style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', width: 48, height: 48, minHeight: 48 }}
           >
             <ChevronLeft size={18} />
           </button>
 
-          {/* Números — en móvil solo muestra 3, en desktop hasta 7 */}
-          {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
-            const p = Math.max(1, Math.min(page - 3, totalPages - 6)) + i;
-            const showOnMobile = p === page || p === page - 1 || p === page + 1;
+          {/* Números — máximo 5 visibles */}
+          {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+            const p = Math.max(1, Math.min(page - 2, totalPages - 4)) + i;
             return (
               <button
                 key={p}
                 onClick={() => setPage(p)}
-                className={`page-btn rounded-xl text-sm font-semibold transition-colors ${showOnMobile ? '' : 'hidden sm:flex'}`}
+                className="flex items-center justify-center rounded-xl text-sm font-semibold transition-colors"
                 style={{
+                  width: 48,
+                  height: 48,
+                  minHeight: 48,
                   background: p === page ? 'var(--purple)' : 'var(--card)',
                   color: p === page ? '#fff' : 'var(--muted)',
                   border: `1px solid ${p === page ? 'rgba(124,58,237,0.5)' : 'var(--border)'}`,
-                  display: showOnMobile ? undefined : undefined,
                 }}
               >
                 {p}
@@ -384,8 +385,8 @@ export default function SubjectPage() {
           <button
             disabled={page === totalPages}
             onClick={() => setPage(p => p + 1)}
-            className="page-btn flex items-center justify-center rounded-xl disabled:opacity-30 hover:bg-white/5 transition-colors"
-            style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)' }}
+            className="flex items-center justify-center rounded-xl disabled:opacity-30 hover:bg-white/5 transition-colors"
+            style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', width: 48, height: 48, minHeight: 48 }}
           >
             <ChevronRight size={18} />
           </button>
