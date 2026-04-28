@@ -5,26 +5,8 @@ import { usePathname } from 'next/navigation';
 import { getSubjects, getStats } from '@/lib/api';
 import { Subject } from '@/types';
 import { useDataSync } from '@/hooks/useDataSync';
-import {
-  Home, Calculator, BookOpen, FlaskConical, Globe,
-  Map, Music, Palette, Code2, Wrench, ShieldCheck, HelpCircle,
-  ChevronLeft, ChevronRight,
-} from 'lucide-react';
-
-const ICON_MAP: Record<string, React.ElementType> = {
-  matematicas:            Calculator,
-  lenguaje:               BookOpen,
-  ciencias:               FlaskConical,
-  'ciencias-naturales':   FlaskConical,
-  historia:               Map,
-  'historia-y-geografia': Map,
-  ingles:                 Globe,
-  musica:                 Music,
-  artes:                  Palette,
-  tecnologia:             Code2,
-  herramientas:           Wrench,
-  'super-herramientas':   Wrench,
-};
+import { Home, ShieldCheck, ChevronLeft, ChevronRight } from 'lucide-react';
+import { SubjectIcon } from '@/components/SubjectIcon';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -134,7 +116,6 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, isMob
           </div>
         ) : (
           subjects.map((s) => {
-            const Icon = ICON_MAP[s.slug] || HelpCircle;
             const count = statsMap[s.slug] ?? 0;
             const enabled = !statsLoaded || count > 0;
             const active  = path === `/${s.slug}` || path.startsWith(`/${s.slug}/`);
@@ -143,7 +124,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, isMob
                 key={s.id}
                 label={s.name}
                 href={`/${s.slug}`}
-                icon={Icon}
+                iconString={s.icon}
                 active={active}
                 enabled={enabled}
                 color={s.color}
@@ -204,16 +185,25 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, isMob
 interface NavItemProps {
   label: string;
   href: string;
-  icon: React.ElementType;
+  icon?: React.ElementType;
+  iconString?: string;
   active: boolean;
   enabled: boolean;
   color?: string;
   collapsed: boolean;
 }
 
-function NavItem({ label, href, icon: Icon, active, enabled, color, collapsed }: NavItemProps) {
+function NavItem({ label, href, icon: Icon, iconString, active, enabled, color, collapsed }: NavItemProps) {
   const [hovered, setHovered] = useState(false);
   const showColor = color && (active || hovered);
+
+  const renderIcon = (size: number, sw: number) => {
+    if (iconString) {
+      return <SubjectIcon icon={iconString} color={showColor ? color! : 'currentColor'} size={size} />;
+    }
+    if (Icon) return <Icon size={size} strokeWidth={sw} style={showColor ? { color } : undefined} />;
+    return null;
+  };
 
   if (collapsed) {
     const style: React.CSSProperties = {
@@ -232,7 +222,7 @@ function NavItem({ label, href, icon: Icon, active, enabled, color, collapsed }:
     if (!enabled) {
       return (
         <div title={label} style={{ ...style, opacity: 0.3, cursor: 'not-allowed', marginBottom: 4 }}>
-          <Icon size={26} strokeWidth={2} />
+          {renderIcon(26, 2)}
         </div>
       );
     }
@@ -246,7 +236,7 @@ function NavItem({ label, href, icon: Icon, active, enabled, color, collapsed }:
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        <Icon size={26} strokeWidth={active || hovered ? 2.5 : 2} />
+        {renderIcon(26, active || hovered ? 2.5 : 2)}
       </Link>
     );
   }
@@ -260,7 +250,7 @@ function NavItem({ label, href, icon: Icon, active, enabled, color, collapsed }:
         style={{ height: 72, cursor: 'not-allowed' }}
         title="Sin recursos disponibles"
       >
-        <Icon size={28} strokeWidth={2} style={{ opacity: 0.5 }} />
+        <span style={{ opacity: 0.5 }}>{renderIcon(28, 2)}</span>
         <span className="flex-1 truncate">{label}</span>
         <span
           className="text-sm px-2 py-0.5 rounded-full shrink-0"
@@ -279,18 +269,14 @@ function NavItem({ label, href, icon: Icon, active, enabled, color, collapsed }:
       style={{
         height: 72,
         transition: 'background 0.15s, border-color 0.15s, color 0.15s',
-        borderLeft: showColor ? `3px solid ${color}` : active ? undefined : undefined,
+        borderLeft: showColor ? `3px solid ${color}` : undefined,
         background: hovered && !active && color ? `${color}18` : undefined,
         color: hovered && !active ? (color || 'white') : undefined,
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <Icon
-        size={28}
-        strokeWidth={active || hovered ? 2.5 : 2}
-        style={showColor ? { color } : undefined}
-      />
+      {renderIcon(28, active || hovered ? 2.5 : 2)}
       <span className="flex-1 truncate">{label}</span>
     </Link>
   );
