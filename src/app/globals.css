@@ -65,6 +65,10 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 6px; border: 2px solid var(--sidebar); }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
+/* Sidebar nav: scroll oculto — funciona si hay muchas asignaturas pero no muestra barra */
+.sidebar-nav { scrollbar-width: none; -ms-overflow-style: none; }
+.sidebar-nav::-webkit-scrollbar { display: none; }
+
 /* Card hover lift */
 .resource-card {
   transition: transform 0.2s ease, box-shadow 0.2s ease;

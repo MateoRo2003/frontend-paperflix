@@ -94,7 +94,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, isMob
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto overflow-x-hidden py-3" style={{ padding: collapsed ? '12px 8px' : '12px 10px' }}>
+      <nav className="sidebar-nav flex-1 overflow-y-auto overflow-x-hidden py-3" style={{ padding: collapsed ? '12px 8px' : '12px 10px' }}>
         <NavItem
           label="Principal"
           href="/"
@@ -209,8 +209,8 @@ function NavItem({ label, href, icon: Icon, iconString, active, enabled, color, 
 
   if (collapsed) {
     const style: React.CSSProperties = {
-      width: 60,
-      height: 60,
+      width: 52,
+      height: 52,
       margin: '0 auto',
       display: 'flex',
       alignItems: 'center',
@@ -249,10 +249,10 @@ function NavItem({ label, href, icon: Icon, iconString, active, enabled, color, 
     return (
       <div
         className={`${base} subject-disabled`}
-        style={{ height: 72, cursor: 'not-allowed' }}
+        style={{ height: 60, cursor: 'not-allowed' }}
         title="Sin recursos disponibles"
       >
-        <span style={{ opacity: 0.5 }}>{renderIcon(28, 2)}</span>
+        <span style={{ opacity: 0.5 }}>{renderIcon(24, 2)}</span>
         <span className="flex-1 truncate">{label}</span>
         <span
           className="text-sm px-2 py-0.5 rounded-full shrink-0"
@@ -269,7 +269,7 @@ function NavItem({ label, href, icon: Icon, iconString, active, enabled, color, 
       href={href}
       className={`nav-item ${base} ${active ? 'active text-white' : 'text-[var(--muted)]'}`}
       style={{
-        height: 72,
+        height: 60,
         transition: 'background 0.15s, border-color 0.15s, color 0.15s',
         borderLeft: showColor ? `3px solid ${color}` : undefined,
         background: hovered && !active && color ? `${color}18` : undefined,
@@ -278,7 +278,7 @@ function NavItem({ label, href, icon: Icon, iconString, active, enabled, color, 
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {renderIcon(28, active || hovered ? 2.5 : 2)}
+      {renderIcon(24, active || hovered ? 2.5 : 2)}
       <span className="flex-1 truncate">{label}</span>
     </Link>
   );
