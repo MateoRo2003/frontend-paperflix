@@ -112,7 +112,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, isMob
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-3" style={{ padding: collapsed ? '12px 8px' : '12px 10px' }}>
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden py-3" style={{ padding: collapsed ? '12px 8px' : '12px 10px' }}>
         <NavItem
           label="Principal"
           href="/"
