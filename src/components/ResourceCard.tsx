@@ -29,7 +29,7 @@ export default function ResourceCard({ resource, onClick }: { resource: Resource
 
   return (
     <div
-      className="resource-card rounded-2xl overflow-hidden cursor-pointer"
+      className="resource-card rounded-2xl overflow-hidden cursor-pointer flex flex-col h-full"
       style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
       onClick={onClick}
     >
@@ -70,16 +70,14 @@ export default function ResourceCard({ resource, onClick }: { resource: Resource
       </div>
 
       {/* Info */}
-      <div className="p-3 sm:p-5">
+      <div className="p-3 sm:p-5 flex flex-col flex-1">
         <h3 className="text-base sm:text-lg font-bold text-white leading-snug line-clamp-2 mb-1.5">
           {resource.title}
         </h3>
-        {resource.description && (
-          <p className="text-sm line-clamp-2 mb-3" style={{ color: 'var(--muted)' }}>
-            {resource.description}
-          </p>
-        )}
-        <div className="flex items-center justify-between gap-1">
+        <p className="text-sm line-clamp-2 mb-3" style={{ color: 'var(--muted)', minHeight: '2.5em' }}>
+          {resource.description || '\u00A0'}
+        </p>
+        <div className="mt-auto flex items-center justify-between gap-1">
           <div className="flex items-center gap-1.5 flex-wrap min-w-0">
             {resource.author && (
               <span className="text-xs truncate max-w-[90px] sm:max-w-[130px]" style={{ color: 'var(--muted)' }}>
