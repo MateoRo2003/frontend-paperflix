@@ -197,11 +197,13 @@ function NavItem({ label, href, icon: Icon, iconString, active, enabled, color, 
   const [hovered, setHovered] = useState(false);
   const showColor = color && (active || hovered);
 
+  const iconColor = showColor ? color! : 'var(--muted)';
+
   const renderIcon = (size: number, sw: number) => {
     if (iconString) {
-      return <SubjectIcon icon={iconString} color={showColor ? color! : 'currentColor'} size={size} />;
+      return <SubjectIcon icon={iconString} color={iconColor} size={size} fallback={label.charAt(0)} />;
     }
-    if (Icon) return <Icon size={size} strokeWidth={sw} style={showColor ? { color } : undefined} />;
+    if (Icon) return <Icon size={size} strokeWidth={sw} color={iconColor} />;
     return null;
   };
 
@@ -265,7 +267,7 @@ function NavItem({ label, href, icon: Icon, iconString, active, enabled, color, 
   return (
     <Link
       href={href}
-      className={`nav-item ${base} ${active ? 'active text-white' : ''}`}
+      className={`nav-item ${base} ${active ? 'active text-white' : 'text-[var(--muted)]'}`}
       style={{
         height: 72,
         transition: 'background 0.15s, border-color 0.15s, color 0.15s',
