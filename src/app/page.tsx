@@ -266,7 +266,6 @@ export default function HomePage() {
                     style={{
                       background: 'var(--card)',
                       border: '1px solid var(--border)',
-                      borderLeft: `3px solid ${subject.color}`,
                       transition: 'transform 0.18s ease, box-shadow 0.18s ease',
                     }}
                     onClick={() => setSelected(top)}
