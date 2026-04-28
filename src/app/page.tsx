@@ -12,12 +12,6 @@ import { SubjectIcon } from '@/components/SubjectIcon';
 import Link from 'next/link';
 import { useDataSync } from '@/hooks/useDataSync';
 
-const ACTIVITY_COLORS: Record<string, string> = {
-  'Introductoria': '#3b82f6',
-  'De desarrollo': '#10b981',
-  'De cierre':     '#f59e0b',
-  'Herramienta':   '#8b5cf6',
-};
 
 function isProxiable(url: string): boolean {
   try { return new URL(url).protocol === 'https:'; }
@@ -61,13 +55,7 @@ export default function HomePage() {
             }
           })
         );
-        // Solo asignaturas con recursos, en orden aleatorio
-        const withResources = rows.filter(r => r.resources.length > 0);
-        for (let i = withResources.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [withResources[i], withResources[j]] = [withResources[j], withResources[i]];
-        }
-        setSubjectRows(withResources);
+        setSubjectRows(rows.filter(r => r.resources.length > 0));
         setRowsLoading(false);
       })
       .catch(() => setLoading(false));
@@ -123,7 +111,7 @@ export default function HomePage() {
       {(loading || hero) && (
         <div
           className="relative w-full rounded-2xl overflow-hidden select-none"
-          style={{ height: 'clamp(280px, 46vw, 460px)' }}
+          style={{ height: 'clamp(240px, 42vw, 400px)' }}
         >
           {hero ? (
             <>
@@ -255,100 +243,61 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* ── Grid de asignaturas ──────────────────────────────────────── */}
+      {/* ── Filas por Asignatura (estilo Netflix) ───────────────────── */}
       {searchResults === null && (
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+        <>
+          {featured.length > 0 && rowsLoading && (
+            <section>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-2xl font-bold text-white">Destacados</h2>
+              </div>
+              {loading ? <GridSkeleton count={4} /> : (
+                <div className="subject-row">
+                  {featured.slice(0, 4).map(r => (
+                    <ResourceCard key={r.id} resource={r} onClick={() => setSelected(r)} />
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
+
           {rowsLoading && subjectRows.length === 0
-            ? [...Array(8)].map((_, i) => (
-                <div key={i} className="skeleton rounded-2xl" style={{ height: 210 }} />
+            ? [...Array(3)].map((_, i) => (
+                <section key={i}>
+                  <div className="skeleton rounded-lg mb-5" style={{ width: 180, height: 28 }} />
+                  <GridSkeleton count={4} />
+                </section>
               ))
-            : subjectRows.map(({ subject, resources }) => {
-                const top = resources[0];
-                if (!top) return null;
-                const imgSrc = top.imageUrl
-                  ? (isProxiable(top.imageUrl) ? top.imageUrl : top.imageUrl)
-                  : null;
-                const badgeColor = top.activityType
-                  ? ACTIVITY_COLORS[top.activityType.split(',')[0].trim()] ?? '#6b7280'
-                  : null;
-                return (
-                  <div
-                    key={subject.id}
-                    className="rounded-2xl overflow-hidden cursor-pointer group"
-                    style={{
-                      background: 'var(--card)',
-                      border: '1px solid var(--border)',
-                      borderLeft: `3px solid ${subject.color}`,
-                      transition: 'transform 0.18s ease, box-shadow 0.18s ease',
-                    }}
-                    onClick={() => setSelected(top)}
-                    onMouseEnter={e => {
-                      (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-3px)';
-                      (e.currentTarget as HTMLDivElement).style.boxShadow = '0 12px 32px rgba(0,0,0,0.35)';
-                    }}
-                    onMouseLeave={e => {
-                      (e.currentTarget as HTMLDivElement).style.transform = '';
-                      (e.currentTarget as HTMLDivElement).style.boxShadow = '';
-                    }}
-                  >
-                    {/* Cabecera de asignatura */}
-                    <div
-                      className="flex items-center justify-between px-3 py-2"
-                      style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid var(--border)' }}
+            : subjectRows.map(({ subject, resources }) => (
+                <section key={subject.id}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <span
+                        className="inline-flex items-center justify-center w-10 h-10 rounded-lg font-bold shrink-0"
+                        style={{ background: `${subject.color}22`, color: subject.color }}
+                      >
+                        <SubjectIcon icon={subject.icon} color={subject.color} size={22} fallback={subject.name.charAt(0)} />
+                      </span>
+                      <h2 className="text-2xl font-bold text-white">{subject.name}</h2>
+                    </div>
+                    <Link
+                      href={`/${subject.slug}`}
+                      className="flex items-center gap-1 text-base font-semibold transition-colors hover:opacity-80 group"
+                      style={{ color: 'var(--accent)' }}
                     >
-                      <div className="flex items-center gap-2 min-w-0">
-                        <SubjectIcon icon={subject.icon} color={subject.color} size={18} fallback={subject.name.charAt(0)} />
-                        <span className="font-bold text-base text-white truncate">{subject.name}</span>
-                      </div>
-                      <Link
-                        href={`/${subject.slug}`}
-                        onClick={e => e.stopPropagation()}
-                        className="flex items-center gap-0.5 text-sm font-semibold shrink-0 hover:opacity-75 transition-opacity ml-2"
-                        style={{ color: 'var(--accent)' }}
-                      >
-                        Ver todos <ChevronRight size={14} />
-                      </Link>
-                    </div>
-
-                    {/* Imagen del recurso destacado */}
-                    <div className="relative w-full" style={{ aspectRatio: '16/9', background: 'var(--sidebar)' }}>
-                      {imgSrc ? (
-                        <img
-                          src={imgSrc}
-                          alt={top.title}
-                          loading="lazy"
-                          className="w-full h-full object-cover"
-                          onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center" style={{ background: 'var(--sidebar)' }}>
-                          <SubjectIcon icon={subject.icon} color={subject.color} size={44} fallback={subject.name.charAt(0)} />
-                        </div>
-                      )}
-
-                      {/* Badge tipo actividad */}
-                      {badgeColor && top.activityType && (
-                        <span
-                          className="absolute top-2 left-2 text-xs font-bold px-2 py-0.5 rounded-full text-white"
-                          style={{ background: badgeColor }}
-                        >
-                          {top.activityType.split(',')[0].trim()}
-                        </span>
-                      )}
-
-                      {/* Título sobre gradiente */}
-                      <div
-                        className="absolute inset-x-0 bottom-0 px-3 py-2"
-                        style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%)' }}
-                      >
-                        <p className="text-white font-semibold text-sm leading-snug line-clamp-2">{top.title}</p>
-                      </div>
-                    </div>
+                      Ver todos
+                      <ChevronRight size={18} className="group-hover:translate-x-0.5 transition-transform" />
+                    </Link>
                   </div>
-                );
-              })
+                  <div className="subject-row">
+                    {resources.map(r => (
+                      <ResourceCard key={r.id} resource={r} onClick={() => setSelected(r)} />
+                    ))}
+                  </div>
+                </section>
+              ))
           }
-        </div>
+        </>
       )}
 
       {selected && <ResourceModal resource={selected} onClose={() => setSelected(null)} />}
