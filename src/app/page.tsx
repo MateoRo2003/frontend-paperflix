@@ -61,8 +61,13 @@ export default function HomePage() {
             }
           })
         );
-        // Only show subjects that actually have resources
-        setSubjectRows(rows.filter(r => r.resources.length > 0));
+        // Solo asignaturas con recursos, en orden aleatorio
+        const withResources = rows.filter(r => r.resources.length > 0);
+        for (let i = withResources.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [withResources[i], withResources[j]] = [withResources[j], withResources[i]];
+        }
+        setSubjectRows(withResources);
         setRowsLoading(false);
       })
       .catch(() => setLoading(false));
@@ -118,7 +123,7 @@ export default function HomePage() {
       {(loading || hero) && (
         <div
           className="relative w-full rounded-2xl overflow-hidden select-none"
-          style={{ height: 'clamp(240px, 42vw, 400px)' }}
+          style={{ height: 'clamp(280px, 46vw, 460px)' }}
         >
           {hero ? (
             <>
