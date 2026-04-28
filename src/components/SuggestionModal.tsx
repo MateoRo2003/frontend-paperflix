@@ -1,8 +1,8 @@
 'use client';
 import { createPortal } from 'react-dom';
 import { useState, useEffect } from 'react';
-import { X, Send, CheckCircle, Lightbulb } from 'lucide-react';
-import { createSuggestion } from '@/lib/api';
+import { X, Send, CheckCircle, Lightbulb, Loader2 } from 'lucide-react';
+import { createSuggestion, aiFillResource } from '@/lib/api';
 import { Subject } from '@/types';
 
 const ACTIVITY_TYPES = ['Introductoria', 'De desarrollo', 'De cierre', 'Herramienta'];
@@ -27,9 +27,36 @@ export default function SuggestionModal({ subjects, defaultSubjectId, defaultSub
     teacherName:  '',
     notes:        '',
   });
-  const [saving, setSaving]   = useState(false);
-  const [sent, setSent]       = useState(false);
-  const [error, setError]     = useState('');
+  const [saving, setSaving]           = useState(false);
+  const [sent, setSent]               = useState(false);
+  const [error, setError]             = useState('');
+  const [aiFilling, setAiFilling]     = useState(false);
+  const [aiFields, setAiFields]       = useState<Set<string>>(new Set());
+  const [aiActSuggestion, setAiActSuggestion] = useState('');
+
+  async function handleAiFill() {
+    const url = form.linkUrl.trim();
+    if (!url) return;
+    setAiFilling(true);
+    setAiFields(new Set());
+    setAiActSuggestion('');
+    try {
+      const data = await aiFillResource({ url });
+      const filled = new Set<string>();
+      setForm(prev => {
+        const next = { ...prev };
+        if (data.title)       { next.title       = data.title;       filled.add('title'); }
+        if (data.description) { next.description = data.description; filled.add('description'); }
+        return next;
+      });
+      setAiFields(filled);
+      if (data.activityTypeSuggestion) setAiActSuggestion(data.activityTypeSuggestion);
+    } catch {
+      setError('No se pudo analizar con IA. Intenta de nuevo.');
+    } finally {
+      setAiFilling(false);
+    }
+  }
 
   function set(key: string, value: string) {
     setForm(f => ({ ...f, [key]: value }));
@@ -126,8 +153,9 @@ export default function SuggestionModal({ subjects, defaultSubjectId, defaultSub
 
               {/* Título */}
               <div>
-                <label className="text-xs font-semibold mb-1.5 block" style={{ color: 'var(--muted)' }}>
+                <label className="text-xs font-semibold mb-1.5 flex items-center gap-2" style={{ color: 'var(--muted)' }}>
                   Título del recurso *
+                  {aiFields.has('title') && <span className="text-[10px] px-1.5 py-0.5 rounded-full font-bold" style={{ background: 'rgba(124,58,237,0.2)', color: '#c4b5fd' }}>auto</span>}
                 </label>
                 <input
                   type="text"
@@ -135,29 +163,45 @@ export default function SuggestionModal({ subjects, defaultSubjectId, defaultSub
                   onChange={e => set('title', e.target.value)}
                   placeholder="ej: Video sobre fracciones – Khan Academy"
                   className="w-full px-4 rounded-xl text-sm outline-none"
-                  style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)', height: 48 }}
+                  style={{ background: 'var(--bg)', border: `1px solid ${aiFields.has('title') ? 'rgba(124,58,237,0.5)' : 'var(--border)'}`, color: 'var(--text)', height: 48 }}
                 />
               </div>
 
-              {/* URL */}
+              {/* URL + AI fill */}
               <div>
                 <label className="text-xs font-semibold mb-1.5 block" style={{ color: 'var(--muted)' }}>
                   URL del recurso *
                 </label>
-                <input
-                  type="url"
-                  value={form.linkUrl}
-                  onChange={e => set('linkUrl', e.target.value)}
-                  placeholder="https://..."
-                  className="w-full px-4 rounded-xl text-sm outline-none"
-                  style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)', height: 48 }}
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    value={form.linkUrl}
+                    onChange={e => set('linkUrl', e.target.value)}
+                    placeholder="https://..."
+                    className="flex-1 px-4 rounded-xl text-sm outline-none"
+                    style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)', height: 48 }}
+                  />
+                  <button
+                    type="button"
+                    disabled={aiFilling || !form.linkUrl.trim()}
+                    onClick={handleAiFill}
+                    className="flex items-center gap-1.5 px-3 rounded-xl text-xs font-semibold shrink-0 disabled:opacity-40 transition-all"
+                    style={{ height: 48, background: 'rgba(245,197,24,0.12)', border: '1px solid rgba(245,197,24,0.4)', color: 'var(--accent)', whiteSpace: 'nowrap' }}
+                    title="Rellena título y descripción usando IA"
+                  >
+                    {aiFilling ? <><Loader2 size={13} className="animate-spin" /> Analizando…</> : <>✨ IA</>}
+                  </button>
+                </div>
+                <p className="text-[10px] mt-1" style={{ color: 'var(--muted)' }}>
+                  Pega la URL y pulsa <b style={{ color: 'var(--accent)' }}>✨ IA</b> para completar título y descripción automáticamente.
+                </p>
               </div>
 
               {/* Descripción */}
               <div>
-                <label className="text-xs font-semibold mb-1.5 block" style={{ color: 'var(--muted)' }}>
+                <label className="text-xs font-semibold mb-1.5 flex items-center gap-2" style={{ color: 'var(--muted)' }}>
                   Descripción breve
+                  {aiFields.has('description') && <span className="text-[10px] px-1.5 py-0.5 rounded-full font-bold" style={{ background: 'rgba(124,58,237,0.2)', color: '#c4b5fd' }}>auto</span>}
                 </label>
                 <textarea
                   value={form.description}
@@ -165,7 +209,7 @@ export default function SuggestionModal({ subjects, defaultSubjectId, defaultSub
                   rows={2}
                   placeholder="¿De qué trata este recurso? ¿Para qué lo usarías?"
                   className="w-full px-4 py-3 rounded-xl text-sm outline-none resize-none"
-                  style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
+                  style={{ background: 'var(--bg)', border: `1px solid ${aiFields.has('description') ? 'rgba(124,58,237,0.5)' : 'var(--border)'}`, color: 'var(--text)' }}
                 />
               </div>
 
@@ -200,23 +244,42 @@ export default function SuggestionModal({ subjects, defaultSubjectId, defaultSub
               {/* Tipo de actividad */}
               <div>
                 <label className="text-xs font-semibold mb-1.5 block" style={{ color: 'var(--muted)' }}>Tipo de actividad</label>
-                <div className="flex flex-wrap gap-2">
-                  {ACTIVITY_TYPES.map(t => (
+                {aiActSuggestion && (
+                  <div className="flex items-center gap-2 mb-2 px-3 py-2 rounded-xl" style={{ background: 'rgba(245,197,24,0.08)', border: '1px solid rgba(245,197,24,0.25)' }}>
+                    <span style={{ color: 'var(--accent)', fontSize: 13 }}>✨</span>
+                    <span className="text-xs" style={{ color: 'var(--muted)' }}>IA sugiere:</span>
                     <button
-                      key={t}
                       type="button"
-                      onClick={() => set('activityType', form.activityType === t ? '' : t)}
-                      className="px-3 rounded-full text-xs font-medium transition-colors"
-                      style={{
-                        height: 36,
-                        background: form.activityType === t ? 'var(--purple)' : 'var(--bg)',
-                        border: `1px solid ${form.activityType === t ? 'rgba(124,58,237,0.5)' : 'var(--border)'}`,
-                        color: form.activityType === t ? '#fff' : 'var(--muted)',
-                      }}
+                      onClick={() => set('activityType', aiActSuggestion)}
+                      className="text-xs font-semibold px-2.5 py-1 rounded-lg transition-all hover:brightness-110"
+                      style={{ background: 'rgba(245,197,24,0.15)', color: 'var(--accent)', border: '1px solid rgba(245,197,24,0.3)' }}
                     >
-                      {t}
+                      {aiActSuggestion}
                     </button>
-                  ))}
+                    <span className="text-[10px] ml-auto" style={{ color: 'var(--muted)' }}>clic para aplicar</span>
+                  </div>
+                )}
+                <div className="flex flex-wrap gap-2">
+                  {ACTIVITY_TYPES.map(t => {
+                    const isSuggested = aiActSuggestion === t && form.activityType !== t;
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => set('activityType', form.activityType === t ? '' : t)}
+                        className="px-3 rounded-full text-xs font-medium transition-colors"
+                        style={{
+                          height: 36,
+                          background: form.activityType === t ? 'var(--purple)' : isSuggested ? 'rgba(245,197,24,0.08)' : 'var(--bg)',
+                          border: `1px solid ${form.activityType === t ? 'rgba(124,58,237,0.5)' : isSuggested ? 'rgba(245,197,24,0.35)' : 'var(--border)'}`,
+                          color: form.activityType === t ? '#fff' : isSuggested ? 'var(--accent)' : 'var(--muted)',
+                        }}
+                      >
+                        {t}
+                        {isSuggested && <span className="ml-1" style={{ fontSize: 10 }}>✨</span>}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
