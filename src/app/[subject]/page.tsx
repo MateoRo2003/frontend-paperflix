@@ -174,7 +174,7 @@ export default function SubjectPage() {
                 color: '#f87171',
               }}
             >
-              <X size={14} /> Limpiar
+              <X size={14} /> Limpiar filtro
             </button>
           )}
         </div>
