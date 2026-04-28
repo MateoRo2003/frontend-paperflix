@@ -60,9 +60,8 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, isMob
     >
       {/* Logo + toggle */}
       <div
-        className="flex items-center border-b shrink-0"
+        className="flex items-center shrink-0"
         style={{
-          borderColor: 'var(--border)',
           height: 76,
           padding: collapsed ? '0' : '0 20px',
           justifyContent: 'center',
