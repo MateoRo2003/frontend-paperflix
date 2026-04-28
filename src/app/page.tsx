@@ -111,7 +111,7 @@ export default function HomePage() {
       {(loading || hero) && (
         <div
           className="relative w-full rounded-2xl overflow-hidden select-none"
-          style={{ height: 'clamp(240px, 42vw, 400px)' }}
+          style={{ height: 'clamp(200px, 36vw, 320px)' }}
         >
           {hero ? (
             <>
