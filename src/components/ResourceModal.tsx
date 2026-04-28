@@ -65,7 +65,7 @@ export default function ResourceModal({ resource, onClose }: { resource: Resourc
         <div>
           {/* Hero image — compacta */}
           {hasImage && (
-            <div className="relative w-full" style={{ paddingBottom: '18%', background: 'var(--sidebar)' }}>
+            <div className="relative w-full" style={{ paddingBottom: '24%', background: 'var(--sidebar)' }}>
               {useNextImg ? (
                 <Image src={imgSrc!} alt={resource.title} fill sizes="(max-width: 768px) 100vw, 768px" className="object-cover" priority />
               ) : (
