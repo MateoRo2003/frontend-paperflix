@@ -26,6 +26,22 @@ export async function GET(req: NextRequest) {
     { description: { contains: search, mode: 'insensitive' } },
   ];
 
+  const random = p.get('random') === 'true';
+
+  if (random) {
+    const pool = await prisma.resource.findMany({
+      where,
+      take: 100,
+      include: { subject: { select: { id: true, name: true } } },
+    });
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    const data = pool.slice(0, limit);
+    return ok({ data, total: pool.length, page: 1, limit, totalPages: 1, pages: 1 });
+  }
+
   const [data, total] = await Promise.all([
     prisma.resource.findMany({
       where,

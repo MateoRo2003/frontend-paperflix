@@ -48,7 +48,7 @@ export default function HomePage() {
         const rows = await Promise.all(
           subjects.map(async (subject) => {
             try {
-              const res = await getResources({ subjectId: subject.id, limit: 4, page: 1 });
+              const res = await getResources({ subjectId: subject.id, limit: 4, page: 1, random: true });
               return { subject, resources: res.data };
             } catch {
               return { subject, resources: [] };
