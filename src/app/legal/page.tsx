@@ -1,10 +1,7 @@
 'use client';
 
-import AppShell from '@/components/AppShell';
-
 export default function LegalPage() {
   return (
-    <AppShell>
       <div className="flex-1 px-6 py-10 max-w-3xl mx-auto w-full">
         <h1 className="text-2xl font-bold text-white mb-2">Información Legal</h1>
         <p className="text-sm mb-8" style={{ color: 'var(--muted)' }}>
@@ -85,6 +82,5 @@ export default function LegalPage() {
           </div>
         </section>
       </div>
-    </AppShell>
   );
 }
