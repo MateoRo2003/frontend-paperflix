@@ -211,12 +211,6 @@ function NavItem({ label, href, icon: Icon, iconString, active, enabled, color, 
       >
         <span style={{ opacity: 0.5 }}>{renderIcon(24, 2)}</span>
         <span className="flex-1 leading-snug">{label}</span>
-        <span
-          className="text-sm px-2 py-0.5 rounded-full shrink-0"
-          style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--muted)' }}
-        >
-          0
-        </span>
       </div>
     );
   }
