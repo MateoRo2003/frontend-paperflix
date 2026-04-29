@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import Groq from 'groq-sdk';
-import { requireAuth, ok, err } from '@/lib/auth';
+import { ok, err } from '@/lib/auth';
 
 async function fetchPageContent(url: string): Promise<{ meta: string; imageUrl: string }> {
   try {
@@ -69,8 +69,6 @@ async function fetchPageContent(url: string): Promise<{ meta: string; imageUrl: 
 }
 
 export async function POST(req: NextRequest) {
-  const auth = await requireAuth(req);
-  if (auth.error) return auth.error;
 
   if (!process.env.GROQ_API_KEY) {
     return err('GROQ_API_KEY no configurada en el servidor', 500);
