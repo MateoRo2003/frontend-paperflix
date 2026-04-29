@@ -18,7 +18,15 @@ function sortCourses(courses: string[]): string[] {
 export async function GET() {
   const units = await prisma.unit.findMany({
     orderBy: [{ subject: { name: 'asc' } }, { course: 'asc' }, { order: 'asc' }],
-    include: { subject: { select: { id: true, name: true, slug: true } } },
+    include: {
+      subject: { select: { id: true, name: true, slug: true } },
+      resources: {
+        where: { oaDescription: { not: null } },
+        select: { id: true, oaDescription: true },
+        take: 1,
+        orderBy: { id: 'asc' },
+      },
+    },
   });
 
   const subjectMap = new Map<number, { subjectId: number; subjectName: string; coursesMap: Map<string, any[]> }>();
@@ -44,6 +52,8 @@ export async function GET() {
       name: u.name,
       code: u.code,
       order: u.order,
+      oaDescription: u.resources[0]?.oaDescription ?? null,
+      oaDescriptionResourceId: u.resources[0]?.id ?? null,
     });
   }
 

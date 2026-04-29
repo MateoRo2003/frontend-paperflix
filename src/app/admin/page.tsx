@@ -149,12 +149,13 @@ export default function AdminPage() {
   const [derivedCourses, setDerivedCourses] = useState<string[]>([]);
   const [derivedActTypes, setDerivedActTypes] = useState<string[]>([]);
   // Units structured by subject → course (from resources)
-  const [unitsByCourse, setUnitsByCourse] = useState<{ subjectId: number; subjectName: string; courses: { course: string; units: { id: number; name: string; code: string; order: number }[] }[] }[]>([]);
+  const [unitsByCourse, setUnitsByCourse] = useState<{ subjectId: number; subjectName: string; courses: { course: string; units: { id: number; name: string; code: string | null; order: number; oaDescription?: string | null; oaDescriptionResourceId?: number | null }[] }[] }[]>([]);
   // Accordion open state: subjectId and "subjectId:course" keys
   const [openSubjects, setOpenSubjects] = useState<Set<string>>(new Set());
   const [newCourseName, setNewCourseName] = useState('');
   const [newActivityTypeName, setNewActivityTypeName] = useState('');
   const [newUnit, setNewUnit] = useState({ name: '', subjectId: 0, code: '', course: '', oaDescription: '', order: 0 });
+  const [editUnitModal, setEditUnitModal] = useState<{ id: number; name: string; code: string; oaDescription: string; oaDescriptionResourceId: number | null; subjectId: number } | null>(null);
   const [savingCatalog, setSavingCatalog] = useState(false);
   // Drag-and-drop state for units reorder
   const [dragUnitId, setDragUnitId] = useState<number | null>(null);
@@ -2221,7 +2222,7 @@ export default function AdminPage() {
                     </div>
                   </div>
                   <div className="col-span-2">
-                    <label className="text-xs mb-1 block" style={{ color: 'var(--muted)' }}>Descripción OA</label>
+                    <label className="text-xs mb-1 block" style={{ color: 'var(--muted)' }}>Descripción OA <span className="opacity-50">(opcional)</span></label>
                     <textarea value={newUnit.oaDescription} placeholder="Descripción del objetivo de aprendizaje…"
                       onChange={e => setNewUnit(prev => ({ ...prev, oaDescription: e.target.value }))}
                       rows={2}
@@ -2246,8 +2247,7 @@ export default function AdminPage() {
                   .map(u => ({ ...u, code: u.code ?? '' }));
 
                 // Inline unit row renderer (shared between course groups and unassigned)
-                const renderUnitRow = (u: { id: number; name: string; code: string; order: number }, idx: number, groupUnits: { id: number; name: string; code: string; order: number }[]) => {
-                  const isEditing = editingCatalog?.type === 'unit' && editingCatalog.id === u.id;
+                const renderUnitRow = (u: { id: number; name: string; code: string | null; order: number; oaDescription?: string | null; oaDescriptionResourceId?: number | null }, idx: number, groupUnits: { id: number; name: string; code: string | null; order: number; oaDescription?: string | null; oaDescriptionResourceId?: number | null }[]) => {
                   const isDragging = dragUnitId === u.id;
                   const isOver = dragOverId === u.id;
 
@@ -2275,7 +2275,7 @@ export default function AdminPage() {
 
                   return (
                     <div key={u.id}
-                      draggable={!isEditing}
+                      draggable
                       onDragStart={() => { setDragUnitId(u.id); setDragOverId(null); }}
                       onDragEnd={() => { setDragUnitId(null); setDragOverId(null); }}
                       onDragOver={e => { e.preventDefault(); if (dragUnitId !== u.id) setDragOverId(u.id); }}
@@ -2285,49 +2285,12 @@ export default function AdminPage() {
                       style={{
                         borderColor: 'var(--border)',
                         opacity: isDragging ? 0.4 : 1,
-                        background: isOver ? 'rgba(124,58,237,0.12)' : isEditing ? 'rgba(124,58,237,0.06)' : undefined,
+                        background: isOver ? 'rgba(124,58,237,0.12)' : undefined,
                         borderTop: isOver ? '2px solid rgba(124,58,237,0.5)' : undefined,
-                        cursor: isEditing ? 'default' : 'grab',
+                        cursor: 'grab',
                       }}>
-                      {isEditing ? (
-                        <div className="flex items-center gap-2 pl-8 pr-4 py-2">
-                          <span className="text-[11px] font-mono w-5 text-center shrink-0" style={{ color: 'var(--muted)' }}>{idx + 1}</span>
-                          <input autoFocus value={editingCatalog.name}
-                            onChange={e => setEditingCatalog(prev => prev ? { ...prev, name: e.target.value } : null)}
-                            onKeyDown={async e => {
-                              if (e.key === 'Escape') { setEditingCatalog(null); return; }
-                              if (e.key === 'Enter' && editingCatalog.name.trim()) {
-                                setSavingCatalog(true);
-                                try {
-                                  await updateUnit(u.id, { name: editingCatalog.name.trim(), code: editingCatalog.code || undefined });
-                                  setEditingCatalog(null); await loadCatalogUnits(); showMsg('Unidad actualizada');
-                                } catch { showMsg('Error', 'err'); } finally { setSavingCatalog(false); }
-                              }
-                            }}
-                            placeholder="Nombre"
-                            className="flex-1 px-2 rounded-lg text-sm outline-none"
-                            style={{ background: 'var(--bg)', border: '1px solid rgba(124,58,237,0.5)', color: 'var(--text)', height: 32 }} />
-                          <input value={editingCatalog.code ?? ''}
-                            onChange={e => setEditingCatalog(prev => prev ? { ...prev, code: e.target.value } : null)}
-                            placeholder="Código"
-                            className="px-2 rounded-lg text-xs outline-none font-mono"
-                            style={{ width: 72, background: 'var(--bg)', border: '1px solid rgba(124,58,237,0.4)', color: '#c4b5fd', height: 32 }} />
-                          <button onClick={async () => {
-                            if (!editingCatalog.name.trim()) return;
-                            setSavingCatalog(true);
-                            try {
-                              await updateUnit(u.id, { name: editingCatalog.name.trim(), code: editingCatalog.code || undefined });
-                              setEditingCatalog(null); await loadCatalogUnits(); showMsg('Unidad actualizada');
-                            } catch { showMsg('Error', 'err'); } finally { setSavingCatalog(false); }
-                          }} style={{ width: 28, height: 28, background: 'rgba(124,58,237,0.2)', color: '#c4b5fd', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <Check size={12} />
-                          </button>
-                          <button onClick={() => setEditingCatalog(null)} style={{ width: 28, height: 28, color: 'var(--muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <X size={12} />
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-3 pl-8 pr-4 py-2">
+                      <div className="flex flex-col pl-8 pr-4 py-2 gap-0.5">
+                          <div className="flex items-center gap-3">
                           <span className="shrink-0 flex flex-col gap-[3px] opacity-30 hover:opacity-70 transition-opacity" style={{ cursor: 'grab' }}>
                             {[0, 1, 2].map(i => <span key={i} className="block rounded-full" style={{ width: 12, height: 2, background: 'var(--muted)' }} />)}
                           </span>
@@ -2342,7 +2305,7 @@ export default function AdminPage() {
                               {u.code}
                             </span>
                           )}
-                          <button onClick={() => setEditingCatalog({ type: 'unit', id: u.id, name: u.name, code: u.code || '', order: u.order })}
+                          <button onClick={() => setEditUnitModal({ id: u.id, name: u.name, code: u.code || '', oaDescription: u.oaDescription || '', oaDescriptionResourceId: u.oaDescriptionResourceId ?? null, subjectId: s.subjectId })}
                             className="icon-btn flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors shrink-0"
                             style={{ color: 'var(--muted)', width: 26, height: 26 }}>
                             <Pencil size={11} />
@@ -2355,8 +2318,13 @@ export default function AdminPage() {
                             style={{ width: 26, height: 26 }}>
                             <Trash2 size={11} />
                           </button>
-                        </div>
-                      )}
+                          </div>
+                          {u.oaDescription && (
+                            <p className="text-xs pl-9 pr-2 pb-1 leading-relaxed" style={{ color: 'var(--muted)' }}>
+                              {u.oaDescription}
+                            </p>
+                          )}
+                      </div>
                     </div>
                   );
                 };
@@ -3769,6 +3737,83 @@ export default function AdminPage() {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* ── Edit Unit Modal ── */}
+      {editUnitModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" onClick={() => setEditUnitModal(null)}>
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" />
+          <div className="relative w-full max-w-md rounded-2xl shadow-2xl flex flex-col"
+            style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+            onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-5 py-4 border-b shrink-0" style={{ borderColor: 'var(--border)' }}>
+              <h3 className="font-bold text-white">Editar Unidad / Objetivo</h3>
+              <button onClick={() => setEditUnitModal(null)}
+                className="icon-btn flex items-center justify-center rounded-xl hover:bg-white/10"
+                style={{ color: 'var(--muted)', width: 40, height: 40 }}>
+                <X size={18} />
+              </button>
+            </div>
+            <div className="p-5 space-y-3">
+              <div className="flex gap-3">
+                <div className="flex-1">
+                  <label className="text-xs mb-1 block" style={{ color: 'var(--muted)' }}>Nombre *</label>
+                  <input autoFocus type="text" value={editUnitModal.name}
+                    onChange={e => setEditUnitModal(prev => prev ? { ...prev, name: e.target.value } : null)}
+                    className="w-full px-3 rounded-xl text-sm outline-none"
+                    style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)', height: 40 }} />
+                </div>
+                <div style={{ width: 90 }}>
+                  <label className="text-xs mb-1 block" style={{ color: 'var(--muted)' }}>Código</label>
+                  <input type="text" value={editUnitModal.code}
+                    onChange={e => setEditUnitModal(prev => prev ? { ...prev, code: e.target.value } : null)}
+                    className="w-full px-3 rounded-xl text-sm outline-none font-mono"
+                    style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: '#c4b5fd', height: 40 }} />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs mb-1 block" style={{ color: 'var(--muted)' }}>
+                  Descripción OA <span className="opacity-50">(opcional)</span>
+                </label>
+                <textarea value={editUnitModal.oaDescription}
+                  onChange={e => setEditUnitModal(prev => prev ? { ...prev, oaDescription: e.target.value } : null)}
+                  placeholder="Descripción del objetivo de aprendizaje…"
+                  rows={4}
+                  className="w-full px-3 py-2 rounded-xl text-sm outline-none resize-none"
+                  style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }} />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 px-5 pb-5">
+              <button onClick={() => setEditUnitModal(null)}
+                className="px-4 rounded-xl text-sm"
+                style={{ background: 'var(--bg)', color: 'var(--muted)', height: 38 }}>
+                Cancelar
+              </button>
+              <button disabled={savingCatalog || !editUnitModal.name.trim()}
+                onClick={async () => {
+                  if (!editUnitModal.name.trim()) return;
+                  setSavingCatalog(true);
+                  try {
+                    await updateUnit(editUnitModal.id, { name: editUnitModal.name.trim(), code: editUnitModal.code || undefined });
+                    const desc = editUnitModal.oaDescription.trim();
+                    if (editUnitModal.oaDescriptionResourceId) {
+                      await updateResource(editUnitModal.oaDescriptionResourceId, { oaDescription: desc || null });
+                    } else if (desc) {
+                      await createResource({ subjectId: editUnitModal.subjectId, unitId: editUnitModal.id, title: editUnitModal.code || editUnitModal.name.trim(), oaDescription: desc });
+                    }
+                    setEditUnitModal(null);
+                    await loadCatalogUnits();
+                    showMsg('Unidad actualizada');
+                  } catch { showMsg('Error al actualizar', 'err'); }
+                  finally { setSavingCatalog(false); }
+                }}
+                className="px-4 rounded-xl text-sm font-bold disabled:opacity-40"
+                style={{ background: 'var(--accent)', color: '#1e0d38', height: 38 }}>
+                Guardar
+              </button>
+            </div>
           </div>
         </div>
       )}
