@@ -154,7 +154,7 @@ export default function AdminPage() {
   const [openSubjects, setOpenSubjects] = useState<Set<string>>(new Set());
   const [newCourseName, setNewCourseName] = useState('');
   const [newActivityTypeName, setNewActivityTypeName] = useState('');
-  const [newUnit, setNewUnit] = useState({ name: '', subjectId: 0, code: '', course: '', order: 0 });
+  const [newUnit, setNewUnit] = useState({ name: '', subjectId: 0, code: '', course: '', oaDescription: '', order: 0 });
   const [savingCatalog, setSavingCatalog] = useState(false);
   // Drag-and-drop state for units reorder
   const [dragUnitId, setDragUnitId] = useState<number | null>(null);
@@ -2165,8 +2165,11 @@ export default function AdminPage() {
                         if (e.key === 'Enter' && newUnit.name.trim() && newUnit.subjectId) {
                           setSavingCatalog(true);
                           try {
-                            await createUnit({ name: newUnit.name.trim(), subjectId: newUnit.subjectId, code: newUnit.code || undefined, course: newUnit.course || undefined });
-                            setNewUnit(prev => ({ ...prev, name: '', code: '', course: '' }));
+                            const created = await createUnit({ name: newUnit.name.trim(), subjectId: newUnit.subjectId, code: newUnit.code || undefined, course: newUnit.course || undefined });
+                            if (newUnit.oaDescription.trim()) {
+                              await createResource({ subjectId: newUnit.subjectId, unitId: created.id, title: newUnit.code || newUnit.name.trim(), oaDescription: newUnit.oaDescription.trim() });
+                            }
+                            setNewUnit(prev => ({ ...prev, name: '', code: '', course: '', oaDescription: '' }));
                             await loadCatalogUnits();
                             setOpenSubjects(prev => {
                               const next = new Set<string>();
@@ -2195,8 +2198,11 @@ export default function AdminPage() {
                         onClick={async () => {
                           setSavingCatalog(true);
                           try {
-                            await createUnit({ name: newUnit.name.trim(), subjectId: newUnit.subjectId, code: newUnit.code || undefined, course: newUnit.course || undefined });
-                            setNewUnit(prev => ({ ...prev, name: '', code: '', course: '' }));
+                            const created = await createUnit({ name: newUnit.name.trim(), subjectId: newUnit.subjectId, code: newUnit.code || undefined, course: newUnit.course || undefined });
+                            if (newUnit.oaDescription.trim()) {
+                              await createResource({ subjectId: newUnit.subjectId, unitId: created.id, title: newUnit.code || newUnit.name.trim(), oaDescription: newUnit.oaDescription.trim() });
+                            }
+                            setNewUnit(prev => ({ ...prev, name: '', code: '', course: '', oaDescription: '' }));
                             await loadCatalogUnits();
                             setOpenSubjects(prev => {
                               const next = new Set<string>();
@@ -2213,6 +2219,14 @@ export default function AdminPage() {
                         <Plus size={15} /> Crear
                       </button>
                     </div>
+                  </div>
+                  <div className="col-span-2">
+                    <label className="text-xs mb-1 block" style={{ color: 'var(--muted)' }}>Descripción OA</label>
+                    <textarea value={newUnit.oaDescription} placeholder="Descripción del objetivo de aprendizaje…"
+                      onChange={e => setNewUnit(prev => ({ ...prev, oaDescription: e.target.value }))}
+                      rows={2}
+                      className="w-full px-3 py-2 rounded-xl text-sm outline-none resize-none"
+                      style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }} />
                   </div>
                 </div>
               </div>
