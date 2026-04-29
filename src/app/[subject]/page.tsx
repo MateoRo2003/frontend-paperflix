@@ -341,7 +341,7 @@ export default function SubjectPage() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5 gap-2 sm:gap-3">
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-5">
           {resources.map(r => (
             <ResourceCard key={r.id} resource={r} onClick={() => setSelected(r)} />
           ))}
