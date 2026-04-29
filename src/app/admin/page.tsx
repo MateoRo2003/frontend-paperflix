@@ -3756,33 +3756,33 @@ export default function AdminPage() {
                 <X size={18} />
               </button>
             </div>
-            <div className="p-5 space-y-3">
-              <div className="flex gap-3">
-                <div className="flex-1">
-                  <label className="text-xs mb-1 block" style={{ color: 'var(--muted)' }}>Nombre *</label>
-                  <input autoFocus type="text" value={editUnitModal.name}
-                    onChange={e => setEditUnitModal(prev => prev ? { ...prev, name: e.target.value } : null)}
-                    className="w-full px-3 rounded-xl text-sm outline-none"
-                    style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)', height: 40 }} />
-                </div>
-                <div style={{ width: 100 }}>
-                  <label className="text-xs mb-1 block" style={{ color: 'var(--muted)' }}>Código <span className="opacity-50">(opcional)</span></label>
-                  <input type="text" value={editUnitModal.oaCode}
-                    onChange={e => setEditUnitModal(prev => prev ? { ...prev, oaCode: e.target.value } : null)}
-                    className="w-full px-3 rounded-xl text-sm outline-none font-mono"
-                    style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: '#c4b5fd', height: 40 }} />
-                </div>
+            <div className="p-5 space-y-4">
+              <div>
+                <label className="text-xs font-medium mb-1.5 block" style={{ color: 'var(--muted)' }}>Nombre *</label>
+                <input autoFocus type="text" value={editUnitModal.name}
+                  onChange={e => setEditUnitModal(prev => prev ? { ...prev, name: e.target.value } : null)}
+                  className="w-full px-3 rounded-xl text-sm outline-none"
+                  style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)', height: 42 }} />
               </div>
               <div>
-                <label className="text-xs mb-1 block" style={{ color: 'var(--muted)' }}>
-                  Descripción OA <span className="opacity-50">(opcional)</span>
+                <label className="text-xs font-medium mb-1.5 block" style={{ color: 'var(--muted)' }}>
+                  Código <span className="font-normal opacity-50">(opcional)</span>
+                </label>
+                <input type="text" value={editUnitModal.oaCode} placeholder="ej: MAT-OA1"
+                  onChange={e => setEditUnitModal(prev => prev ? { ...prev, oaCode: e.target.value } : null)}
+                  className="w-full px-3 rounded-xl text-sm outline-none font-mono"
+                  style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: '#c4b5fd', height: 42 }} />
+              </div>
+              <div>
+                <label className="text-xs font-medium mb-1.5 block" style={{ color: 'var(--muted)' }}>
+                  Descripción OA <span className="font-normal opacity-50">(opcional)</span>
                 </label>
                 <textarea value={editUnitModal.oaDescription}
                   onChange={e => setEditUnitModal(prev => prev ? { ...prev, oaDescription: e.target.value } : null)}
                   placeholder="Descripción del objetivo de aprendizaje…"
                   rows={4}
-                  className="w-full px-3 py-2 rounded-xl text-sm outline-none resize-none"
-                  style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }} />
+                  className="w-full px-3 py-2.5 rounded-xl text-sm outline-none resize-none"
+                  style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)', lineHeight: '1.5' }} />
               </div>
             </div>
             <div className="flex justify-end gap-2 px-5 pb-5">
