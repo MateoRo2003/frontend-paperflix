@@ -25,16 +25,17 @@ model Subject {
 }
 
 model Unit {
-  id        Int        @id @default(autoincrement())
-  subjectId Int        @map("subject_id")
-  name      String     @db.VarChar(200)
-  code      String?    @db.VarChar(50)
-  course    String?    @db.VarChar(100)
-  order     Int        @default(0)
-  createdAt DateTime   @default(now()) @map("created_at")
-  updatedAt DateTime   @updatedAt @map("updated_at")
-  subject   Subject    @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-  resources Resource[]
+  id            Int        @id @default(autoincrement())
+  subjectId     Int        @map("subject_id")
+  name          String     @db.VarChar(200)
+  code          String?    @db.VarChar(50)
+  course        String?    @db.VarChar(100)
+  oaDescription String?    @db.Text @map("oa_description")
+  order         Int        @default(0)
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+  subject       Subject    @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  resources     Resource[]
 
   @@map("units")
 }

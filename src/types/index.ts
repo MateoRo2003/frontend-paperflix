@@ -15,6 +15,7 @@ export interface Unit {
   name: string;
   code?: string;
   course?: string;
+  oaDescription?: string;
   order: number;
 }
 
