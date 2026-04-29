@@ -149,13 +149,13 @@ export default function AdminPage() {
   const [derivedCourses, setDerivedCourses] = useState<string[]>([]);
   const [derivedActTypes, setDerivedActTypes] = useState<string[]>([]);
   // Units structured by subject → course (from resources)
-  const [unitsByCourse, setUnitsByCourse] = useState<{ subjectId: number; subjectName: string; courses: { course: string; units: { id: number; name: string; code: string | null; order: number; oaDescription?: string | null; oaDescriptionResourceId?: number | null }[] }[] }[]>([]);
+  const [unitsByCourse, setUnitsByCourse] = useState<{ subjectId: number; subjectName: string; courses: { course: string; units: { id: number; name: string; code: string | null; order: number; oaDescription?: string | null; oaCode?: string | null; resourceId?: number | null }[] }[] }[]>([]);
   // Accordion open state: subjectId and "subjectId:course" keys
   const [openSubjects, setOpenSubjects] = useState<Set<string>>(new Set());
   const [newCourseName, setNewCourseName] = useState('');
   const [newActivityTypeName, setNewActivityTypeName] = useState('');
   const [newUnit, setNewUnit] = useState({ name: '', subjectId: 0, code: '', course: '', oaDescription: '', order: 0 });
-  const [editUnitModal, setEditUnitModal] = useState<{ id: number; name: string; code: string; oaDescription: string; oaDescriptionResourceId: number | null; subjectId: number } | null>(null);
+  const [editUnitModal, setEditUnitModal] = useState<{ id: number; name: string; oaCode: string; oaDescription: string; resourceId: number | null; subjectId: number } | null>(null);
   const [savingCatalog, setSavingCatalog] = useState(false);
   // Drag-and-drop state for units reorder
   const [dragUnitId, setDragUnitId] = useState<number | null>(null);
@@ -2167,8 +2167,8 @@ export default function AdminPage() {
                           setSavingCatalog(true);
                           try {
                             const created = await createUnit({ name: newUnit.name.trim(), subjectId: newUnit.subjectId, code: newUnit.code || undefined, course: newUnit.course || undefined });
-                            if (newUnit.oaDescription.trim()) {
-                              await createResource({ subjectId: newUnit.subjectId, unitId: created.id, title: newUnit.code || newUnit.name.trim(), oaDescription: newUnit.oaDescription.trim() });
+                            if (newUnit.oaDescription.trim() || newUnit.code.trim()) {
+                              await createResource({ subjectId: newUnit.subjectId, unitId: created.id, title: newUnit.code || newUnit.name.trim(), oaCode: newUnit.code.trim() || undefined, oaDescription: newUnit.oaDescription.trim() || undefined });
                             }
                             setNewUnit(prev => ({ ...prev, name: '', code: '', course: '', oaDescription: '' }));
                             await loadCatalogUnits();
@@ -2188,7 +2188,7 @@ export default function AdminPage() {
                   </div>
                   <div className="flex gap-2">
                     <div className="flex-1">
-                      <label className="text-xs mb-1 block" style={{ color: 'var(--muted)' }}>Código</label>
+                      <label className="text-xs mb-1 block" style={{ color: 'var(--muted)' }}>Código <span className="opacity-50">(opcional)</span></label>
                       <input type="text" value={newUnit.code} placeholder="OA7"
                         onChange={e => setNewUnit(prev => ({ ...prev, code: e.target.value }))}
                         className="w-full px-3 rounded-xl text-sm outline-none"
@@ -2200,8 +2200,8 @@ export default function AdminPage() {
                           setSavingCatalog(true);
                           try {
                             const created = await createUnit({ name: newUnit.name.trim(), subjectId: newUnit.subjectId, code: newUnit.code || undefined, course: newUnit.course || undefined });
-                            if (newUnit.oaDescription.trim()) {
-                              await createResource({ subjectId: newUnit.subjectId, unitId: created.id, title: newUnit.code || newUnit.name.trim(), oaDescription: newUnit.oaDescription.trim() });
+                            if (newUnit.oaDescription.trim() || newUnit.code.trim()) {
+                              await createResource({ subjectId: newUnit.subjectId, unitId: created.id, title: newUnit.code || newUnit.name.trim(), oaCode: newUnit.code.trim() || undefined, oaDescription: newUnit.oaDescription.trim() || undefined });
                             }
                             setNewUnit(prev => ({ ...prev, name: '', code: '', course: '', oaDescription: '' }));
                             await loadCatalogUnits();
@@ -2247,7 +2247,7 @@ export default function AdminPage() {
                   .map(u => ({ ...u, code: u.code ?? '' }));
 
                 // Inline unit row renderer (shared between course groups and unassigned)
-                const renderUnitRow = (u: { id: number; name: string; code: string | null; order: number; oaDescription?: string | null; oaDescriptionResourceId?: number | null }, idx: number, groupUnits: { id: number; name: string; code: string | null; order: number; oaDescription?: string | null; oaDescriptionResourceId?: number | null }[]) => {
+                const renderUnitRow = (u: { id: number; name: string; code: string | null; order: number; oaDescription?: string | null; oaCode?: string | null; resourceId?: number | null }, idx: number, groupUnits: { id: number; name: string; code: string | null; order: number; oaDescription?: string | null; oaCode?: string | null; resourceId?: number | null }[]) => {
                   const isDragging = dragUnitId === u.id;
                   const isOver = dragOverId === u.id;
 
@@ -2299,13 +2299,13 @@ export default function AdminPage() {
                             {idx + 1}
                           </span>
                           <span className="flex-1 text-sm text-white">{u.name}</span>
-                          {u.code && (
+                          {(u.oaCode || u.code) && (
                             <span className="text-[10px] px-1.5 py-0.5 rounded font-mono shrink-0"
                               style={{ background: 'rgba(124,58,237,0.15)', color: '#c4b5fd' }}>
-                              {u.code}
+                              {u.oaCode || u.code}
                             </span>
                           )}
-                          <button onClick={() => setEditUnitModal({ id: u.id, name: u.name, code: u.code || '', oaDescription: u.oaDescription || '', oaDescriptionResourceId: u.oaDescriptionResourceId ?? null, subjectId: s.subjectId })}
+                          <button onClick={() => setEditUnitModal({ id: u.id, name: u.name, oaCode: u.oaCode || u.code || '', oaDescription: u.oaDescription || '', resourceId: u.resourceId ?? null, subjectId: s.subjectId })}
                             className="icon-btn flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors shrink-0"
                             style={{ color: 'var(--muted)', width: 26, height: 26 }}>
                             <Pencil size={11} />
@@ -3765,10 +3765,10 @@ export default function AdminPage() {
                     className="w-full px-3 rounded-xl text-sm outline-none"
                     style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)', height: 40 }} />
                 </div>
-                <div style={{ width: 90 }}>
-                  <label className="text-xs mb-1 block" style={{ color: 'var(--muted)' }}>Código</label>
-                  <input type="text" value={editUnitModal.code}
-                    onChange={e => setEditUnitModal(prev => prev ? { ...prev, code: e.target.value } : null)}
+                <div style={{ width: 100 }}>
+                  <label className="text-xs mb-1 block" style={{ color: 'var(--muted)' }}>Código <span className="opacity-50">(opcional)</span></label>
+                  <input type="text" value={editUnitModal.oaCode}
+                    onChange={e => setEditUnitModal(prev => prev ? { ...prev, oaCode: e.target.value } : null)}
                     className="w-full px-3 rounded-xl text-sm outline-none font-mono"
                     style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: '#c4b5fd', height: 40 }} />
                 </div>
@@ -3796,12 +3796,13 @@ export default function AdminPage() {
                   if (!editUnitModal.name.trim()) return;
                   setSavingCatalog(true);
                   try {
-                    await updateUnit(editUnitModal.id, { name: editUnitModal.name.trim(), code: editUnitModal.code || undefined });
+                    await updateUnit(editUnitModal.id, { name: editUnitModal.name.trim() });
                     const desc = editUnitModal.oaDescription.trim();
-                    if (editUnitModal.oaDescriptionResourceId) {
-                      await updateResource(editUnitModal.oaDescriptionResourceId, { oaDescription: desc || null });
-                    } else if (desc) {
-                      await createResource({ subjectId: editUnitModal.subjectId, unitId: editUnitModal.id, title: editUnitModal.code || editUnitModal.name.trim(), oaDescription: desc });
+                    const code = editUnitModal.oaCode.trim();
+                    if (editUnitModal.resourceId) {
+                      await updateResource(editUnitModal.resourceId, { oaDescription: desc || null, oaCode: code || null });
+                    } else if (desc || code) {
+                      await createResource({ subjectId: editUnitModal.subjectId, unitId: editUnitModal.id, title: code || editUnitModal.name.trim(), oaDescription: desc || undefined, oaCode: code || undefined });
                     }
                     setEditUnitModal(null);
                     await loadCatalogUnits();

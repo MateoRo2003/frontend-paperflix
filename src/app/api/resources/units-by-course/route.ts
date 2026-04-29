@@ -21,8 +21,8 @@ export async function GET() {
     include: {
       subject: { select: { id: true, name: true, slug: true } },
       resources: {
-        where: { oaDescription: { not: null } },
-        select: { id: true, oaDescription: true },
+        where: { OR: [{ oaDescription: { not: null } }, { oaCode: { not: null } }] },
+        select: { id: true, oaDescription: true, oaCode: true },
         take: 1,
         orderBy: { id: 'asc' },
       },
@@ -53,7 +53,8 @@ export async function GET() {
       code: u.code,
       order: u.order,
       oaDescription: u.resources[0]?.oaDescription ?? null,
-      oaDescriptionResourceId: u.resources[0]?.id ?? null,
+      oaCode: u.resources[0]?.oaCode ?? null,
+      resourceId: u.resources[0]?.id ?? null,
     });
   }
 
