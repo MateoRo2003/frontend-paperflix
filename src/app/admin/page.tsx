@@ -1827,24 +1827,26 @@ export default function AdminPage() {
                           <ExternalLink size={14} />
                         </a>
                       )}
-                      {s.status === 'pending' && (
+                      {(s.status === 'pending' || s.status === 'rejected') && (
                         <>
                           <button
                             onClick={() => handleApproveSuggestion(s)}
                             className="icon-btn flex items-center justify-center rounded-lg transition-colors hover:bg-emerald-500/20 text-emerald-400"
                             style={{ width: 36, height: 36 }}
-                            title="Aprobar"
+                            title={s.status === 'rejected' ? 'Re-aprobar' : 'Aprobar'}
                           >
                             <ThumbsUp size={14} />
                           </button>
-                          <button
-                            onClick={() => handleRejectSuggestion(s.id)}
-                            className="icon-btn flex items-center justify-center rounded-lg transition-colors hover:bg-amber-500/20"
-                            style={{ color: '#fbbf24', width: 36, height: 36 }}
-                            title="Rechazar"
-                          >
-                            <ThumbsDown size={14} />
-                          </button>
+                          {s.status === 'pending' && (
+                            <button
+                              onClick={() => handleRejectSuggestion(s.id)}
+                              className="icon-btn flex items-center justify-center rounded-lg transition-colors hover:bg-amber-500/20"
+                              style={{ color: '#fbbf24', width: 36, height: 36 }}
+                              title="Rechazar"
+                            >
+                              <ThumbsDown size={14} />
+                            </button>
+                          )}
                         </>
                       )}
                       <button
