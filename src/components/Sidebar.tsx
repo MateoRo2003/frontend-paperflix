@@ -206,11 +206,11 @@ function NavItem({ label, href, icon: Icon, iconString, active, enabled, color, 
     return (
       <div
         className={`${base} subject-disabled`}
-        style={{ height: 60, cursor: 'not-allowed' }}
+        style={{ minHeight: 60, cursor: 'not-allowed', paddingTop: 10, paddingBottom: 10 }}
         title="Sin recursos disponibles"
       >
         <span style={{ opacity: 0.5 }}>{renderIcon(24, 2)}</span>
-        <span className="flex-1 truncate">{label}</span>
+        <span className="flex-1 leading-snug">{label}</span>
         <span
           className="text-sm px-2 py-0.5 rounded-full shrink-0"
           style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--muted)' }}
@@ -226,7 +226,9 @@ function NavItem({ label, href, icon: Icon, iconString, active, enabled, color, 
       href={href}
       className={`nav-item ${base} ${active ? 'active text-white' : 'text-[var(--muted)]'}`}
       style={{
-        height: 60,
+        minHeight: 60,
+        paddingTop: 10,
+        paddingBottom: 10,
         transition: 'background 0.15s, border-color 0.15s, color 0.15s',
         borderLeft: showColor ? `3px solid ${color}` : undefined,
         background: hovered && !active && color ? `${color}18` : undefined,
@@ -236,7 +238,7 @@ function NavItem({ label, href, icon: Icon, iconString, active, enabled, color, 
       onMouseLeave={() => setHovered(false)}
     >
       {renderIcon(24, active || hovered ? 2.5 : 2)}
-      <span className="flex-1 truncate">{label}</span>
+      <span className="flex-1 leading-snug">{label}</span>
     </Link>
   );
 }
