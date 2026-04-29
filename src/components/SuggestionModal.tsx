@@ -300,7 +300,7 @@ export default function SuggestionModal({ subjects, defaultSubjectId, defaultSub
                 </div>
                 <div>
                   <label className="text-xs font-semibold mb-1.5 block" style={{ color: 'var(--muted)' }}>
-                    Comentarios adicionales para el admin
+                    Comentarios adicionales para el admin (opcional)
                   </label>
                   <textarea
                     value={form.notes}
