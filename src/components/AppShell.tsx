@@ -66,10 +66,18 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <div className="flex-1 flex flex-col">{children}</div>
 
         <footer
-          className="px-6 py-4 text-sm text-center"
+          className="px-6 py-4 text-sm text-center flex items-center justify-center gap-2 flex-wrap"
           style={{ color: 'var(--muted)', borderTop: '1px solid var(--border)' }}
         >
-          © {new Date().getFullYear()} PaperFlix. Todos los derechos reservados.
+          <span>© {new Date().getFullYear()} PaperFlix. Todos los derechos reservados.</span>
+          <span style={{ opacity: 0.4 }}>·</span>
+          <a
+            href="/legal"
+            className="underline underline-offset-2 transition-colors"
+            style={{ color: 'var(--accent)' }}
+          >
+            Legal
+          </a>
         </footer>
       </main>
     </div>
