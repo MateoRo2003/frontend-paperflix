@@ -149,12 +149,12 @@ export default function AdminPage() {
   const [derivedCourses, setDerivedCourses] = useState<string[]>([]);
   const [derivedActTypes, setDerivedActTypes] = useState<string[]>([]);
   // Units structured by subject → course (from resources)
-  const [unitsByCourse, setUnitsByCourse] = useState<{ subjectId: number; subjectName: string; courses: { course: string; units: { id: number; name: string; code: string; oaDescription?: string; order: number }[] }[] }[]>([]);
+  const [unitsByCourse, setUnitsByCourse] = useState<{ subjectId: number; subjectName: string; courses: { course: string; units: { id: number; name: string; code: string; order: number }[] }[] }[]>([]);
   // Accordion open state: subjectId and "subjectId:course" keys
   const [openSubjects, setOpenSubjects] = useState<Set<string>>(new Set());
   const [newCourseName, setNewCourseName] = useState('');
   const [newActivityTypeName, setNewActivityTypeName] = useState('');
-  const [newUnit, setNewUnit] = useState({ name: '', subjectId: 0, code: '', course: '', oaDescription: '', order: 0 });
+  const [newUnit, setNewUnit] = useState({ name: '', subjectId: 0, code: '', course: '', order: 0 });
   const [savingCatalog, setSavingCatalog] = useState(false);
   // Drag-and-drop state for units reorder
   const [dragUnitId, setDragUnitId] = useState<number | null>(null);
@@ -170,7 +170,6 @@ export default function AdminPage() {
     name: string;
     code?: string;
     course?: string;
-    oaDescription?: string;
     order?: number;
   } | null>(null);
 
@@ -2166,8 +2165,8 @@ export default function AdminPage() {
                         if (e.key === 'Enter' && newUnit.name.trim() && newUnit.subjectId) {
                           setSavingCatalog(true);
                           try {
-                            await createUnit({ name: newUnit.name.trim(), subjectId: newUnit.subjectId, code: newUnit.code || undefined, course: newUnit.course || undefined, oaDescription: newUnit.oaDescription || undefined });
-                            setNewUnit(prev => ({ ...prev, name: '', code: '', course: '', oaDescription: '' }));
+                            await createUnit({ name: newUnit.name.trim(), subjectId: newUnit.subjectId, code: newUnit.code || undefined, course: newUnit.course || undefined });
+                            setNewUnit(prev => ({ ...prev, name: '', code: '', course: '' }));
                             await loadCatalogUnits();
                             setOpenSubjects(prev => {
                               const next = new Set<string>();
@@ -2196,8 +2195,8 @@ export default function AdminPage() {
                         onClick={async () => {
                           setSavingCatalog(true);
                           try {
-                            await createUnit({ name: newUnit.name.trim(), subjectId: newUnit.subjectId, code: newUnit.code || undefined, course: newUnit.course || undefined, oaDescription: newUnit.oaDescription || undefined });
-                            setNewUnit(prev => ({ ...prev, name: '', code: '', course: '', oaDescription: '' }));
+                            await createUnit({ name: newUnit.name.trim(), subjectId: newUnit.subjectId, code: newUnit.code || undefined, course: newUnit.course || undefined });
+                            setNewUnit(prev => ({ ...prev, name: '', code: '', course: '' }));
                             await loadCatalogUnits();
                             setOpenSubjects(prev => {
                               const next = new Set<string>();
@@ -2214,14 +2213,6 @@ export default function AdminPage() {
                         <Plus size={15} /> Crear
                       </button>
                     </div>
-                  </div>
-                  <div className="col-span-2">
-                    <label className="text-xs mb-1 block" style={{ color: 'var(--muted)' }}>Descripción</label>
-                    <textarea value={newUnit.oaDescription} placeholder="Descripción del objetivo o unidad…"
-                      onChange={e => setNewUnit(prev => ({ ...prev, oaDescription: e.target.value }))}
-                      rows={2}
-                      className="w-full px-3 py-2 rounded-xl text-sm outline-none resize-none"
-                      style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }} />
                   </div>
                 </div>
               </div>
@@ -2241,7 +2232,7 @@ export default function AdminPage() {
                   .map(u => ({ ...u, code: u.code ?? '' }));
 
                 // Inline unit row renderer (shared between course groups and unassigned)
-                const renderUnitRow = (u: { id: number; name: string; code: string; oaDescription?: string; order: number }, idx: number, groupUnits: { id: number; name: string; code: string; oaDescription?: string; order: number }[]) => {
+                const renderUnitRow = (u: { id: number; name: string; code: string; order: number }, idx: number, groupUnits: { id: number; name: string; code: string; order: number }[]) => {
                   const isEditing = editingCatalog?.type === 'unit' && editingCatalog.id === u.id;
                   const isDragging = dragUnitId === u.id;
                   const isOver = dragOverId === u.id;
@@ -2285,8 +2276,7 @@ export default function AdminPage() {
                         cursor: isEditing ? 'default' : 'grab',
                       }}>
                       {isEditing ? (
-                        <div className="flex flex-col gap-2 pl-8 pr-4 py-2">
-                          <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 pl-8 pr-4 py-2">
                           <span className="text-[11px] font-mono w-5 text-center shrink-0" style={{ color: 'var(--muted)' }}>{idx + 1}</span>
                           <input autoFocus value={editingCatalog.name}
                             onChange={e => setEditingCatalog(prev => prev ? { ...prev, name: e.target.value } : null)}
@@ -2295,7 +2285,7 @@ export default function AdminPage() {
                               if (e.key === 'Enter' && editingCatalog.name.trim()) {
                                 setSavingCatalog(true);
                                 try {
-                                  await updateUnit(u.id, { name: editingCatalog.name.trim(), code: editingCatalog.code || undefined, oaDescription: editingCatalog.oaDescription || undefined });
+                                  await updateUnit(u.id, { name: editingCatalog.name.trim(), code: editingCatalog.code || undefined });
                                   setEditingCatalog(null); await loadCatalogUnits(); showMsg('Unidad actualizada');
                                 } catch { showMsg('Error', 'err'); } finally { setSavingCatalog(false); }
                               }
@@ -2312,7 +2302,7 @@ export default function AdminPage() {
                             if (!editingCatalog.name.trim()) return;
                             setSavingCatalog(true);
                             try {
-                              await updateUnit(u.id, { name: editingCatalog.name.trim(), code: editingCatalog.code || undefined, oaDescription: editingCatalog.oaDescription || undefined });
+                              await updateUnit(u.id, { name: editingCatalog.name.trim(), code: editingCatalog.code || undefined });
                               setEditingCatalog(null); await loadCatalogUnits(); showMsg('Unidad actualizada');
                             } catch { showMsg('Error', 'err'); } finally { setSavingCatalog(false); }
                           }} style={{ width: 28, height: 28, background: 'rgba(124,58,237,0.2)', color: '#c4b5fd', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -2321,13 +2311,6 @@ export default function AdminPage() {
                           <button onClick={() => setEditingCatalog(null)} style={{ width: 28, height: 28, color: 'var(--muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                             <X size={12} />
                           </button>
-                          </div>
-                          <textarea value={editingCatalog.oaDescription ?? ''}
-                            onChange={e => setEditingCatalog(prev => prev ? { ...prev, oaDescription: e.target.value } : null)}
-                            placeholder="Descripción del objetivo o unidad…"
-                            rows={2}
-                            className="w-full px-2 py-1 rounded-lg text-xs outline-none resize-none ml-6"
-                            style={{ background: 'var(--bg)', border: '1px solid rgba(124,58,237,0.4)', color: 'var(--text)' }} />
                         </div>
                       ) : (
                         <div className="flex items-center gap-3 pl-8 pr-4 py-2">
@@ -2345,7 +2328,7 @@ export default function AdminPage() {
                               {u.code}
                             </span>
                           )}
-                          <button onClick={() => setEditingCatalog({ type: 'unit', id: u.id, name: u.name, code: u.code || '', oaDescription: u.oaDescription || '', order: u.order })}
+                          <button onClick={() => setEditingCatalog({ type: 'unit', id: u.id, name: u.name, code: u.code || '', order: u.order })}
                             className="icon-btn flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors shrink-0"
                             style={{ color: 'var(--muted)', width: 26, height: 26 }}>
                             <Pencil size={11} />
