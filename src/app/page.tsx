@@ -7,7 +7,7 @@ import ResourceCard from '@/components/ResourceCard';
 import ResourceModal from '@/components/ResourceModal';
 import SearchBar from '@/components/SearchBar';
 import { GridSkeleton } from '@/components/Skeleton';
-import { ChevronRight, ChevronLeft } from 'lucide-react';
+import { ChevronRight, ChevronLeft, ExternalLink } from 'lucide-react';
 import { SubjectIcon } from '@/components/SubjectIcon';
 import Link from 'next/link';
 import { useDataSync } from '@/hooks/useDataSync';
@@ -315,7 +315,7 @@ export default function HomePage() {
                       </Link>
                     </div>
 
-                    {/* bottom: badge + title + button */}
+                    {/* bottom: badge + title */}
                     <div className="absolute bottom-0 left-0 right-0 px-3 pb-3 pt-5">
                       {badgeColor && top.activityType && (
                         <span
@@ -325,15 +325,25 @@ export default function HomePage() {
                           {top.activityType.split(',')[0].trim()}
                         </span>
                       )}
-                      <p className="text-white font-semibold text-sm leading-snug line-clamp-2 mb-2">{top.title}</p>
-                      <button
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all hover:opacity-90 active:scale-95"
-                        style={{ background: 'var(--accent)', color: '#1e0d38' }}
-                        onClick={e => { e.stopPropagation(); setSelected(top); }}
-                      >
-                        Ver recurso
-                      </button>
+                      <p className="text-white font-semibold text-sm leading-snug line-clamp-2">{top.title}</p>
                     </div>
+
+                    {/* open-modal icon button — bottom right */}
+                    <button
+                      className="absolute bottom-3 right-3 flex items-center justify-center rounded-full transition-all hover:scale-110 active:scale-95"
+                      style={{
+                        width: 32,
+                        height: 32,
+                        background: 'rgba(255,255,255,0.18)',
+                        backdropFilter: 'blur(6px)',
+                        border: '1px solid rgba(255,255,255,0.3)',
+                        color: 'white',
+                      }}
+                      onClick={e => { e.stopPropagation(); setSelected(top); }}
+                      title="Ver recurso"
+                    >
+                      <ExternalLink size={14} strokeWidth={2.5} />
+                    </button>
                   </div>
                 );
               })
