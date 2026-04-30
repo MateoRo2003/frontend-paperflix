@@ -315,7 +315,7 @@ export default function HomePage() {
                       </Link>
                     </div>
 
-                    {/* bottom: badge + title */}
+                    {/* bottom: badge + title + button */}
                     <div className="absolute bottom-0 left-0 right-0 px-3 pb-3 pt-5">
                       {badgeColor && top.activityType && (
                         <span
@@ -325,7 +325,14 @@ export default function HomePage() {
                           {top.activityType.split(',')[0].trim()}
                         </span>
                       )}
-                      <p className="text-white font-semibold text-sm leading-snug line-clamp-2">{top.title}</p>
+                      <p className="text-white font-semibold text-sm leading-snug line-clamp-2 mb-2">{top.title}</p>
+                      <button
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all hover:opacity-90 active:scale-95"
+                        style={{ background: 'var(--accent)', color: '#1e0d38' }}
+                        onClick={e => { e.stopPropagation(); setSelected(top); }}
+                      >
+                        Ver recurso
+                      </button>
                     </div>
                   </div>
                 );
