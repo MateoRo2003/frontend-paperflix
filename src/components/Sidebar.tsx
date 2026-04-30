@@ -43,7 +43,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, isMob
   useEffect(() => { fetchAll(); }, [fetchAll]);
   useDataSync(fetchAll);
 
-  const w = isMobile ? 280 : (collapsed ? 72 : 320);
+  const w = isMobile ? 260 : (collapsed ? 64 : 240);
 
   return (
     <aside
@@ -83,7 +83,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, isMob
       </div>
 
       {/* Navigation */}
-      <nav className="sidebar-nav flex-1 overflow-y-auto overflow-x-hidden py-3" style={{ padding: collapsed ? '12px 8px' : '12px 10px' }}>
+      <nav className="sidebar-nav flex-1 overflow-y-auto overflow-x-hidden py-3" style={{ padding: collapsed ? '8px 6px' : '8px 8px' }}>
         <NavItem
           label="Principal"
           href="/"
@@ -99,7 +99,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, isMob
               <div
                 key={i}
                 className="skeleton mx-1 rounded-xl"
-                style={{ height: 60, width: collapsed ? 52 : undefined }}
+                style={{ height: 44, width: collapsed ? 48 : undefined }}
               />
             ))}
           </div>
@@ -166,13 +166,13 @@ function NavItem({ label, href, icon: Icon, iconString, active, enabled, color, 
 
   if (collapsed) {
     const style: React.CSSProperties = {
-      width: 52,
-      height: 52,
+      width: 48,
+      height: 44,
       margin: '0 auto',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius: 12,
+      borderRadius: 10,
       transition: 'background 0.15s, border-color 0.15s',
       ...(showColor ? { borderLeft: `3px solid ${color}`, background: `${color}28` } : {}),
       ...(!showColor && active ? { background: 'rgba(124,58,237,0.2)' } : {}),
@@ -180,8 +180,8 @@ function NavItem({ label, href, icon: Icon, iconString, active, enabled, color, 
 
     if (!enabled) {
       return (
-        <div title={label} style={{ ...style, opacity: 0.3, cursor: 'not-allowed', marginBottom: 4 }}>
-          {renderIcon(26, 2)}
+        <div title={label} style={{ ...style, opacity: 0.3, cursor: 'not-allowed', marginBottom: 2 }}>
+          {renderIcon(22, 2)}
         </div>
       );
     }
@@ -190,27 +190,27 @@ function NavItem({ label, href, icon: Icon, iconString, active, enabled, color, 
       <Link
         href={href}
         title={label}
-        className="block mb-1"
+        className="block mb-0.5"
         style={{ ...style, color: showColor ? color : undefined }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        {renderIcon(26, active || hovered ? 2.5 : 2)}
+        {renderIcon(22, active || hovered ? 2.5 : 2)}
       </Link>
     );
   }
 
-  const base = 'flex items-center gap-4 px-5 rounded-xl text-xl font-medium';
+  const base = 'flex items-center gap-3 px-4 rounded-xl text-sm font-medium';
 
   if (!enabled) {
     return (
       <div
         className={`${base} subject-disabled`}
-        style={{ minHeight: 60, cursor: 'not-allowed', paddingTop: 10, paddingBottom: 10 }}
+        style={{ minHeight: 44, cursor: 'not-allowed', paddingTop: 8, paddingBottom: 8 }}
         title="Sin recursos disponibles"
       >
-        <span style={{ opacity: 0.5 }}>{renderIcon(24, 2)}</span>
-        <span className="flex-1 leading-snug">{label}</span>
+        <span className="shrink-0" style={{ opacity: 0.5 }}>{renderIcon(20, 2)}</span>
+        <span className="flex-1 truncate min-w-0">{label}</span>
       </div>
     );
   }
@@ -220,9 +220,9 @@ function NavItem({ label, href, icon: Icon, iconString, active, enabled, color, 
       href={href}
       className={`nav-item ${base} ${active ? 'active text-white' : 'text-[var(--muted)]'}`}
       style={{
-        minHeight: 60,
-        paddingTop: 10,
-        paddingBottom: 10,
+        minHeight: 44,
+        paddingTop: 8,
+        paddingBottom: 8,
         transition: 'background 0.15s, border-color 0.15s, color 0.15s',
         borderLeft: showColor ? `3px solid ${color}` : undefined,
         background: hovered && !active && color ? `${color}18` : undefined,
@@ -231,8 +231,8 @@ function NavItem({ label, href, icon: Icon, iconString, active, enabled, color, 
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {renderIcon(24, active || hovered ? 2.5 : 2)}
-      <span className="flex-1 leading-snug">{label}</span>
+      <span className="shrink-0">{renderIcon(20, active || hovered ? 2.5 : 2)}</span>
+      <span className="flex-1 truncate min-w-0">{label}</span>
     </Link>
   );
 }
