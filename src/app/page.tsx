@@ -105,7 +105,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex flex-col flex-1 p-4 sm:p-5 md:p-6 gap-4 md:gap-5">
+    <div className="flex flex-col flex-1 p-4 sm:p-6 md:p-8 gap-5 md:gap-7">
 
       {/* ── Hero Banner ────────────────────────────────────────────── */}
       {(loading || hero) && (
@@ -245,10 +245,10 @@ export default function HomePage() {
 
       {/* ── Grid de asignaturas ──────────────────────────────────────── */}
       {searchResults === null && (
-        <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4" style={{ minHeight: 0, gridAutoRows: '1fr' }}>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
           {rowsLoading && subjectRows.length === 0
             ? [...Array(4)].map((_, i) => (
-                <div key={i} className="skeleton rounded-2xl" style={{ minHeight: 180 }} />
+                <div key={i} className="skeleton rounded-2xl" style={{ minHeight: 280 }} />
               ))
             : subjectRows.map(({ subject, resources }) => {
                 const top = resources[0];
@@ -262,6 +262,7 @@ export default function HomePage() {
                     key={subject.id}
                     className="relative overflow-hidden rounded-2xl cursor-pointer"
                     style={{
+                      minHeight: 280,
                       background: 'var(--sidebar)',
                       border: '1px solid var(--border)',
                       transition: 'transform 0.18s ease, box-shadow 0.18s ease',
