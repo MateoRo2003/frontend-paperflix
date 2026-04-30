@@ -260,9 +260,8 @@ export default function HomePage() {
                 return (
                   <div
                     key={subject.id}
-                    className="rounded-2xl overflow-hidden cursor-pointer group relative"
+                    className="rounded-2xl overflow-hidden cursor-pointer group"
                     style={{
-                      aspectRatio: '4/3',
                       background: 'var(--card)',
                       border: '1px solid var(--border)',
                       transition: 'transform 0.18s ease, box-shadow 0.18s ease',
@@ -277,73 +276,67 @@ export default function HomePage() {
                       (e.currentTarget as HTMLDivElement).style.boxShadow = '';
                     }}
                   >
-                    {imgSrc ? (
-                      <img
-                        src={imgSrc}
-                        alt={top.title}
-                        loading="lazy"
-                        className="absolute inset-0 w-full h-full object-cover"
-                        onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'var(--sidebar)' }}>
-                        <SubjectIcon icon={subject.icon} color={subject.color} size={52} fallback={subject.name.charAt(0)} />
-                      </div>
-                    )}
+                    {/* ── Image area ── */}
+                    <div className="relative w-full" style={{ aspectRatio: '16/9', background: 'var(--sidebar)' }}>
+                      {imgSrc ? (
+                        <img
+                          src={imgSrc}
+                          alt={top.title}
+                          loading="lazy"
+                          className="absolute inset-0 w-full h-full object-cover"
+                          onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <SubjectIcon icon={subject.icon} color={subject.color} size={48} fallback={subject.name.charAt(0)} />
+                        </div>
+                      )}
 
-                    {/* gradient: dark top + dark bottom, clear middle */}
-                    <div
-                      className="absolute inset-0"
-                      style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 38%, transparent 52%, rgba(0,0,0,0.82) 100%)' }}
-                    />
-
-                    {/* top bar: subject name + Ver todos */}
-                    <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-3 py-2.5">
-                      <div className="flex items-center gap-1.5 min-w-0">
-                        <SubjectIcon icon={subject.icon} color={subject.color} size={15} fallback={subject.name.charAt(0)} />
-                        <span className="text-white font-bold text-xs truncate" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.7)' }}>
-                          {subject.name}
-                        </span>
-                      </div>
-                      <Link
-                        href={`/${subject.slug}`}
-                        onClick={e => e.stopPropagation()}
-                        className="flex items-center gap-0.5 text-xs font-semibold shrink-0 ml-2 hover:opacity-75 transition-opacity"
-                        style={{ color: 'var(--accent)' }}
+                      {/* top: subject + Ver todos */}
+                      <div
+                        className="absolute top-0 left-0 right-0 flex items-center justify-between px-3 py-2"
+                        style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%)' }}
                       >
-                        Ver todos <ChevronRight size={11} />
-                      </Link>
-                    </div>
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <SubjectIcon icon={subject.icon} color={subject.color} size={14} fallback={subject.name.charAt(0)} />
+                          <span className="text-white font-bold text-xs truncate">{subject.name}</span>
+                        </div>
+                        <Link
+                          href={`/${subject.slug}`}
+                          onClick={e => e.stopPropagation()}
+                          className="flex items-center gap-0.5 text-xs font-semibold shrink-0 ml-2 hover:opacity-75 transition-opacity"
+                          style={{ color: 'var(--accent)' }}
+                        >
+                          Ver todos <ChevronRight size={11} />
+                        </Link>
+                      </div>
 
-                    {/* bottom: badge + title */}
-                    <div className="absolute bottom-0 left-0 right-0 px-3 pb-3 pt-5">
+                      {/* activity badge */}
                       {badgeColor && top.activityType && (
                         <span
-                          className="inline-block text-xs font-bold px-2 py-0.5 rounded-full text-white mb-1"
+                          className="absolute bottom-2 left-2 text-xs font-bold px-2 py-0.5 rounded-full text-white"
                           style={{ background: badgeColor }}
                         >
                           {top.activityType.split(',')[0].trim()}
                         </span>
                       )}
-                      <p className="text-white font-semibold text-sm leading-snug line-clamp-2">{top.title}</p>
                     </div>
 
-                    {/* open-modal icon button — bottom right */}
-                    <button
-                      className="absolute bottom-3 right-3 flex items-center justify-center rounded-full transition-all hover:scale-110 active:scale-95"
-                      style={{
-                        width: 32,
-                        height: 32,
-                        background: 'rgba(255,255,255,0.18)',
-                        backdropFilter: 'blur(6px)',
-                        border: '1px solid rgba(255,255,255,0.3)',
-                        color: 'white',
-                      }}
-                      onClick={e => { e.stopPropagation(); setSelected(top); }}
-                      title="Ver recurso"
+                    {/* ── Footer: title + button ── */}
+                    <div
+                      className="flex items-center justify-between gap-2 px-3 py-2.5"
+                      style={{ borderTop: '1px solid var(--border)' }}
                     >
-                      <ExternalLink size={14} strokeWidth={2.5} />
-                    </button>
+                      <p className="text-white text-xs font-semibold leading-snug line-clamp-2 flex-1">{top.title}</p>
+                      <button
+                        className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all hover:opacity-90 active:scale-95"
+                        style={{ background: 'var(--accent)', color: '#1e0d38', whiteSpace: 'nowrap' }}
+                        onClick={e => { e.stopPropagation(); setSelected(top); }}
+                      >
+                        <ExternalLink size={12} strokeWidth={2.5} />
+                        Ver recurso
+                      </button>
+                    </div>
                   </div>
                 );
               })
