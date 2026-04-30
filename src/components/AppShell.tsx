@@ -17,7 +17,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener('resize', check);
   }, []);
 
-  const w = mounted && !isMobile ? (collapsed ? 64 : 240) : 0;
+  const w = mounted && !isMobile ? (collapsed ? 68 : 268) : 0;
 
   return (
     <div className="flex min-h-screen">
