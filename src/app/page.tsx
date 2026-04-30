@@ -111,7 +111,7 @@ export default function HomePage() {
       {(loading || hero) && (
         <div
           className="relative w-full rounded-2xl overflow-hidden select-none"
-          style={{ height: 'clamp(245px, 38.5vw, 385px)' }}
+          style={{ height: 'clamp(250px, 39vw, 390px)' }}
         >
           {hero ? (
             <>
@@ -245,25 +245,24 @@ export default function HomePage() {
 
       {/* ── Grid de asignaturas ──────────────────────────────────────── */}
       {searchResults === null && (
-        <div className="flex-1 grid grid-cols-2 xl:grid-cols-4 gap-4" style={{ gridAutoRows: '1fr', minHeight: 0 }}>
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
           {rowsLoading && subjectRows.length === 0
             ? [...Array(8)].map((_, i) => (
-                <div key={i} className="skeleton rounded-2xl" style={{ height: 210 }} />
+                <div key={i} className="skeleton rounded-2xl" style={{ aspectRatio: '4/3' }} />
               ))
             : subjectRows.map(({ subject, resources }) => {
                 const top = resources[0];
                 if (!top) return null;
-                const imgSrc = top.imageUrl
-                  ? (isProxiable(top.imageUrl) ? top.imageUrl : top.imageUrl)
-                  : null;
+                const imgSrc = top.imageUrl ?? null;
                 const badgeColor = top.activityType
                   ? ({ 'Introductoria': '#3b82f6', 'De desarrollo': '#10b981', 'De cierre': '#f59e0b', 'Herramienta': '#8b5cf6' } as Record<string,string>)[top.activityType.split(',')[0].trim()] ?? '#6b7280'
                   : null;
                 return (
                   <div
                     key={subject.id}
-                    className="rounded-2xl overflow-hidden cursor-pointer group flex flex-col h-full"
+                    className="rounded-2xl overflow-hidden cursor-pointer group relative"
                     style={{
+                      aspectRatio: '4/3',
                       background: 'var(--card)',
                       border: '1px solid var(--border)',
                       transition: 'transform 0.18s ease, box-shadow 0.18s ease',
@@ -271,59 +270,62 @@ export default function HomePage() {
                     onClick={() => setSelected(top)}
                     onMouseEnter={e => {
                       (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-3px)';
-                      (e.currentTarget as HTMLDivElement).style.boxShadow = '0 12px 32px rgba(0,0,0,0.35)';
+                      (e.currentTarget as HTMLDivElement).style.boxShadow = '0 12px 32px rgba(0,0,0,0.4)';
                     }}
                     onMouseLeave={e => {
                       (e.currentTarget as HTMLDivElement).style.transform = '';
                       (e.currentTarget as HTMLDivElement).style.boxShadow = '';
                     }}
                   >
+                    {imgSrc ? (
+                      <img
+                        src={imgSrc}
+                        alt={top.title}
+                        loading="lazy"
+                        className="absolute inset-0 w-full h-full object-cover"
+                        onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'var(--sidebar)' }}>
+                        <SubjectIcon icon={subject.icon} color={subject.color} size={52} fallback={subject.name.charAt(0)} />
+                      </div>
+                    )}
+
+                    {/* gradient: dark top + dark bottom, clear middle */}
                     <div
-                      className="flex items-center justify-between px-3 py-2"
-                      style={{ background: 'rgba(255,255,255,0.05)', borderBottom: '1px solid var(--border)' }}
-                    >
-                      <div className="flex items-center gap-2 min-w-0">
-                        <SubjectIcon icon={subject.icon} color={subject.color} size={18} fallback={subject.name.charAt(0)} />
-                        <span className="font-bold text-base text-white truncate">{subject.name}</span>
+                      className="absolute inset-0"
+                      style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 38%, transparent 52%, rgba(0,0,0,0.82) 100%)' }}
+                    />
+
+                    {/* top bar: subject name + Ver todos */}
+                    <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-3 py-2.5">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <SubjectIcon icon={subject.icon} color={subject.color} size={15} fallback={subject.name.charAt(0)} />
+                        <span className="text-white font-bold text-xs truncate" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.7)' }}>
+                          {subject.name}
+                        </span>
                       </div>
                       <Link
                         href={`/${subject.slug}`}
                         onClick={e => e.stopPropagation()}
-                        className="flex items-center gap-0.5 text-sm font-semibold shrink-0 hover:opacity-75 transition-opacity ml-2"
+                        className="flex items-center gap-0.5 text-xs font-semibold shrink-0 ml-2 hover:opacity-75 transition-opacity"
                         style={{ color: 'var(--accent)' }}
                       >
-                        Ver todos <ChevronRight size={14} />
+                        Ver todos <ChevronRight size={11} />
                       </Link>
                     </div>
 
-                    <div className="relative flex-1 min-h-0" style={{ background: 'var(--sidebar)' }}>
-                      {imgSrc ? (
-                        <img
-                          src={imgSrc}
-                          alt={top.title}
-                          loading="lazy"
-                          className="w-full h-full object-cover"
-                          onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center" style={{ background: 'var(--sidebar)' }}>
-                          <SubjectIcon icon={subject.icon} color={subject.color} size={44} fallback={subject.name.charAt(0)} />
-                        </div>
-                      )}
+                    {/* bottom: badge + title */}
+                    <div className="absolute bottom-0 left-0 right-0 px-3 pb-3 pt-5">
                       {badgeColor && top.activityType && (
                         <span
-                          className="absolute top-2 left-2 text-xs font-bold px-2 py-0.5 rounded-full text-white"
+                          className="inline-block text-xs font-bold px-2 py-0.5 rounded-full text-white mb-1"
                           style={{ background: badgeColor }}
                         >
                           {top.activityType.split(',')[0].trim()}
                         </span>
                       )}
-                      <div
-                        className="absolute inset-x-0 bottom-0 px-3 py-2"
-                        style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%)' }}
-                      >
-                        <p className="text-white font-semibold text-sm leading-snug line-clamp-2">{top.title}</p>
-                      </div>
+                      <p className="text-white font-semibold text-sm leading-snug line-clamp-2">{top.title}</p>
                     </div>
                   </div>
                 );
