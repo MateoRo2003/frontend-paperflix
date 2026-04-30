@@ -245,10 +245,10 @@ export default function HomePage() {
 
       {/* ── Grid de asignaturas ──────────────────────────────────────── */}
       {searchResults === null && (
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4" style={{ minHeight: 0, gridAutoRows: '1fr' }}>
           {rowsLoading && subjectRows.length === 0
-            ? [...Array(8)].map((_, i) => (
-                <div key={i} className="skeleton rounded-2xl" style={{ aspectRatio: '4/3' }} />
+            ? [...Array(4)].map((_, i) => (
+                <div key={i} className="skeleton rounded-2xl" style={{ minHeight: 180 }} />
               ))
             : subjectRows.map(({ subject, resources }) => {
                 const top = resources[0];
@@ -260,77 +260,76 @@ export default function HomePage() {
                 return (
                   <div
                     key={subject.id}
-                    className="rounded-2xl overflow-hidden cursor-pointer group"
+                    className="relative overflow-hidden rounded-2xl cursor-pointer"
                     style={{
-                      background: 'var(--card)',
+                      background: 'var(--sidebar)',
                       border: '1px solid var(--border)',
                       transition: 'transform 0.18s ease, box-shadow 0.18s ease',
                     }}
                     onClick={() => setSelected(top)}
                     onMouseEnter={e => {
                       (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-3px)';
-                      (e.currentTarget as HTMLDivElement).style.boxShadow = '0 12px 32px rgba(0,0,0,0.4)';
+                      (e.currentTarget as HTMLDivElement).style.boxShadow = '0 14px 36px rgba(0,0,0,0.5)';
                     }}
                     onMouseLeave={e => {
                       (e.currentTarget as HTMLDivElement).style.transform = '';
                       (e.currentTarget as HTMLDivElement).style.boxShadow = '';
                     }}
                   >
-                    {/* ── Image area ── */}
-                    <div className="relative w-full" style={{ aspectRatio: '16/9', background: 'var(--sidebar)' }}>
-                      {imgSrc ? (
-                        <img
-                          src={imgSrc}
-                          alt={top.title}
-                          loading="lazy"
-                          className="absolute inset-0 w-full h-full object-cover"
-                          onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                        />
-                      ) : (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <SubjectIcon icon={subject.icon} color={subject.color} size={48} fallback={subject.name.charAt(0)} />
-                        </div>
-                      )}
-
-                      {/* top: subject + Ver todos */}
-                      <div
-                        className="absolute top-0 left-0 right-0 flex items-center justify-between px-3 py-2"
-                        style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%)' }}
-                      >
-                        <div className="flex items-center gap-1.5 min-w-0">
-                          <SubjectIcon icon={subject.icon} color={subject.color} size={14} fallback={subject.name.charAt(0)} />
-                          <span className="text-white font-bold text-xs truncate">{subject.name}</span>
-                        </div>
-                        <Link
-                          href={`/${subject.slug}`}
-                          onClick={e => e.stopPropagation()}
-                          className="flex items-center gap-0.5 text-xs font-semibold shrink-0 ml-2 hover:opacity-75 transition-opacity"
-                          style={{ color: 'var(--accent)' }}
-                        >
-                          Ver todos <ChevronRight size={11} />
-                        </Link>
+                    {/* Background image */}
+                    {imgSrc ? (
+                      <img
+                        src={imgSrc}
+                        alt={top.title}
+                        loading="lazy"
+                        className="absolute inset-0 w-full h-full object-cover"
+                        onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <SubjectIcon icon={subject.icon} color={subject.color} size={52} fallback={subject.name.charAt(0)} />
                       </div>
+                    )}
 
-                      {/* activity badge */}
+                    {/* Dual gradient: strong top + strong bottom */}
+                    <div
+                      className="absolute inset-0"
+                      style={{ background: 'linear-gradient(180deg, rgba(8,4,18,0.75) 0%, transparent 35%, transparent 52%, rgba(8,4,18,0.92) 100%)' }}
+                    />
+
+                    {/* Top pills: subject name | Ver todos */}
+                    <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
+                      <div
+                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-full min-w-0"
+                        style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.13)' }}
+                      >
+                        <SubjectIcon icon={subject.icon} color={subject.color} size={13} fallback={subject.name.charAt(0)} />
+                        <span className="text-white font-bold text-xs truncate">{subject.name}</span>
+                      </div>
+                      <Link
+                        href={`/${subject.slug}`}
+                        onClick={e => e.stopPropagation()}
+                        className="flex items-center gap-0.5 px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 hover:opacity-80 transition-opacity"
+                        style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', border: '1px solid rgba(245,197,24,0.3)', color: 'var(--accent)' }}
+                      >
+                        Ver todos
+                      </Link>
+                    </div>
+
+                    {/* Bottom: badge + title + CTA */}
+                    <div className="absolute bottom-0 left-0 right-0 px-3 pb-3 pt-6">
                       {badgeColor && top.activityType && (
                         <span
-                          className="absolute bottom-2 left-2 text-xs font-bold px-2 py-0.5 rounded-full text-white"
+                          className="inline-block text-xs font-bold px-2 py-0.5 rounded-full text-white mb-1.5"
                           style={{ background: badgeColor }}
                         >
                           {top.activityType.split(',')[0].trim()}
                         </span>
                       )}
-                    </div>
-
-                    {/* ── Footer: title + button ── */}
-                    <div
-                      className="flex items-center justify-between gap-2 px-3 py-2.5"
-                      style={{ borderTop: '1px solid var(--border)' }}
-                    >
-                      <p className="text-white text-xs font-semibold leading-snug line-clamp-2 flex-1">{top.title}</p>
+                      <p className="text-white font-semibold text-sm leading-snug line-clamp-2 mb-2.5">{top.title}</p>
                       <button
-                        className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all hover:opacity-90 active:scale-95"
-                        style={{ background: 'var(--accent)', color: '#1e0d38', whiteSpace: 'nowrap' }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all hover:opacity-90 active:scale-95"
+                        style={{ background: 'var(--accent)', color: '#1e0d38' }}
                         onClick={e => { e.stopPropagation(); setSelected(top); }}
                       >
                         <ExternalLink size={12} strokeWidth={2.5} />
