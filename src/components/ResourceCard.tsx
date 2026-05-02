@@ -71,21 +71,28 @@ export default function ResourceCard({ resource, onClick, compact = false }: { r
 
       {/* Info */}
       {compact ? (
-        <div className="px-3 py-2 shrink-0 flex items-center justify-between gap-2">
-          <h3 className="text-sm font-bold text-white leading-snug line-clamp-1 flex-1 min-w-0">
-            {resource.title}
-          </h3>
-          {resource.linkUrl && (
-            <a
-              href={resource.linkUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="icon-btn shrink-0 flex items-center justify-center rounded-lg transition-colors hover:bg-white/10"
-              style={{ color: 'var(--accent)', width: 28, height: 28 }}
-            >
-              <ExternalLink size={15} />
-            </a>
+        <div className="px-3 pt-2 pb-2.5 shrink-0">
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="text-sm font-bold text-white leading-snug line-clamp-1 flex-1 min-w-0">
+              {resource.title}
+            </h3>
+            {resource.linkUrl && (
+              <a
+                href={resource.linkUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="icon-btn shrink-0 flex items-center justify-center rounded-lg transition-colors hover:bg-white/10"
+                style={{ color: 'var(--accent)', width: 28, height: 28 }}
+              >
+                <ExternalLink size={15} />
+              </a>
+            )}
+          </div>
+          {resource.description && (
+            <p className="text-xs line-clamp-1 mt-0.5" style={{ color: 'var(--muted)' }}>
+              {resource.description}
+            </p>
           )}
         </div>
       ) : (
