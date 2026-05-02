@@ -271,7 +271,11 @@ export default function SubjectPage() {
                       }}
                     >
                       <option value="" style={{ color: '#1e0d38', background: '#e9e0f7' }}>{isObj ? 'Todos los objetivos' : 'Todas las unidades'}</option>
-                      {availUnits.map(u => <option key={u.id} value={u.id} style={{ color: '#1e0d38', background: '#e9e0f7' }}>{u.name}</option>)}
+                      {availUnits.map(u => (
+                        <option key={u.id} value={u.id} style={{ color: '#1e0d38', background: '#e9e0f7' }}>
+                          {u.name}{u.oaDescription ? `: ${u.oaDescription}` : ''}
+                        </option>
+                      ))}
                     </select>
                     <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--muted)' }} />
                   </div>
