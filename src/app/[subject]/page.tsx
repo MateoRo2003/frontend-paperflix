@@ -305,16 +305,6 @@ export default function SubjectPage() {
                 </div>
               </div>
 
-              {/* OA Description — aparece al seleccionar una unidad/objetivo */}
-              {unitId && (() => {
-                const selectedUnit = availUnits.find(u => u.id === unitId);
-                return selectedUnit?.oaDescription ? (
-                  <div className="rounded-lg px-3 py-2" style={{ background: 'rgba(124,58,237,0.10)' }}>
-                    <p className="text-xs font-semibold mb-0.5" style={{ color: '#c4b5fd' }}>Objetivo de Aprendizaje</p>
-                    <p className="text-xs leading-snug" style={{ color: 'var(--muted)' }}>{selectedUnit.oaDescription}</p>
-                  </div>
-                ) : null;
-              })()}
             </div>
           </div>
         )}
