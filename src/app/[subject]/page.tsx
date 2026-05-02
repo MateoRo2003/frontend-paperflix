@@ -10,6 +10,7 @@ import SearchBar from '@/components/SearchBar';
 import { GridSkeleton } from '@/components/Skeleton';
 import { ChevronLeft, ChevronRight, X, Lightbulb, ChevronDown } from 'lucide-react';
 import { useDataSync } from '@/hooks/useDataSync';
+import { SubjectIcon } from '@/components/SubjectIcon';
 
 // Order helper so courses always appear in a logical sequence
 const COURSE_ORDER = ['Primero','Segundo','Tercero','Cuarto','Quinto','Sexto','Séptimo','Septimo','Octavo'];
@@ -137,7 +138,13 @@ export default function SubjectPage() {
 
       {/* ── Header ─────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between gap-4">
-        <div>
+        <div className="flex items-center gap-3 min-w-0">
+          {subject && (
+            <div className="shrink-0">
+              <SubjectIcon icon={subject.icon} color={subject.color} size={36} fallback={subject.name.charAt(0)} />
+            </div>
+          )}
+          <div>
           <h1 className="text-2xl font-bold text-white">{subject?.name || '...'}</h1>
           {!loading && (
             <p className="text-sm mt-0.5" style={{ color: 'var(--muted)' }}>
@@ -145,6 +152,7 @@ export default function SubjectPage() {
               {hasActiveFilters && ' · filtrado'}
             </p>
           )}
+          </div>
         </div>
 
         <div className="flex gap-2 shrink-0">
