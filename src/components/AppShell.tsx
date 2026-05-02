@@ -74,7 +74,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <a
             href="/legal"
             className="underline underline-offset-2 transition-colors"
-            style={{ color: 'var(--accent)' }}
+            style={{ color: 'var(--muted)' }}
           >
             Legal
           </a>
