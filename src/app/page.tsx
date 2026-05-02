@@ -7,7 +7,7 @@ import ResourceCard from '@/components/ResourceCard';
 import ResourceModal from '@/components/ResourceModal';
 import SearchBar from '@/components/SearchBar';
 import { GridSkeleton } from '@/components/Skeleton';
-import { ChevronRight, ChevronLeft, ExternalLink } from 'lucide-react';
+import { ChevronRight, ChevronLeft } from 'lucide-react';
 import { SubjectIcon } from '@/components/SubjectIcon';
 import Link from 'next/link';
 import { useDataSync } from '@/hooks/useDataSync';
@@ -248,95 +248,30 @@ export default function HomePage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
           {rowsLoading && subjectRows.length === 0
             ? [...Array(4)].map((_, i) => (
-                <div key={i} className="skeleton rounded-2xl" style={{ minHeight: 280 }} />
+                <div key={i} className="flex flex-col gap-2">
+                  <div className="skeleton rounded-xl h-6 w-3/4" />
+                  <div className="skeleton rounded-2xl" style={{ minHeight: 260 }} />
+                </div>
               ))
             : subjectRows.map(({ subject, resources }) => {
                 const top = resources[0];
                 if (!top) return null;
-                const imgSrc = top.imageUrl ?? null;
-                const badgeColor = top.activityType
-                  ? ({ 'Introductoria': '#3b82f6', 'De desarrollo': '#10b981', 'De cierre': '#f59e0b', 'Herramienta': '#8b5cf6' } as Record<string,string>)[top.activityType.split(',')[0].trim()] ?? '#6b7280'
-                  : null;
                 return (
-                  <div
-                    key={subject.id}
-                    className="relative overflow-hidden rounded-2xl cursor-pointer"
-                    style={{
-                      minHeight: 280,
-                      background: 'var(--sidebar)',
-                      border: '1px solid var(--border)',
-                      transition: 'transform 0.18s ease, box-shadow 0.18s ease',
-                    }}
-                    onClick={() => setSelected(top)}
-                    onMouseEnter={e => {
-                      (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-3px)';
-                      (e.currentTarget as HTMLDivElement).style.boxShadow = '0 14px 36px rgba(0,0,0,0.5)';
-                    }}
-                    onMouseLeave={e => {
-                      (e.currentTarget as HTMLDivElement).style.transform = '';
-                      (e.currentTarget as HTMLDivElement).style.boxShadow = '';
-                    }}
-                  >
-                    {/* Background image */}
-                    {imgSrc ? (
-                      <img
-                        src={imgSrc}
-                        alt={top.title}
-                        loading="lazy"
-                        className="absolute inset-0 w-full h-full object-cover"
-                        onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <SubjectIcon icon={subject.icon} color={subject.color} size={52} fallback={subject.name.charAt(0)} />
-                      </div>
-                    )}
-
-                    {/* Dual gradient: strong top + strong bottom */}
-                    <div
-                      className="absolute inset-0"
-                      style={{ background: 'linear-gradient(180deg, rgba(8,4,18,0.75) 0%, transparent 35%, transparent 52%, rgba(8,4,18,0.92) 100%)' }}
-                    />
-
-                    {/* Top pills: subject name | Ver todos */}
-                    <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
-                      <div
-                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-full min-w-0"
-                        style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.13)' }}
-                      >
-                        <SubjectIcon icon={subject.icon} color={subject.color} size={13} fallback={subject.name.charAt(0)} />
-                        <span className="text-white font-bold text-xs truncate">{subject.name}</span>
+                  <div key={subject.id} className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between px-1">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <SubjectIcon icon={subject.icon} color={subject.color} size={16} fallback={subject.name.charAt(0)} />
+                        <span className="text-white font-bold text-sm truncate">{subject.name}</span>
                       </div>
                       <Link
                         href={`/${subject.slug}`}
-                        onClick={e => e.stopPropagation()}
-                        className="flex items-center gap-0.5 px-2.5 py-1 rounded-full text-xs font-semibold shrink-0 hover:opacity-80 transition-opacity"
-                        style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', border: '1px solid rgba(245,197,24,0.3)', color: 'var(--accent)' }}
+                        className="flex items-center gap-0.5 text-xs font-semibold shrink-0 ml-2 hover:opacity-75 transition-opacity"
+                        style={{ color: 'var(--accent)' }}
                       >
-                        Ver todos
+                        Ver todos <ChevronRight size={12} />
                       </Link>
                     </div>
-
-                    {/* Bottom: badge + title + CTA */}
-                    <div className="absolute bottom-0 left-0 right-0 px-3 pb-3 pt-6">
-                      {badgeColor && top.activityType && (
-                        <span
-                          className="inline-block text-xs font-bold px-2 py-0.5 rounded-full text-white mb-1.5"
-                          style={{ background: badgeColor }}
-                        >
-                          {top.activityType.split(',')[0].trim()}
-                        </span>
-                      )}
-                      <p className="text-white font-semibold text-sm leading-snug line-clamp-2 mb-2.5">{top.title}</p>
-                      <button
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all hover:opacity-90 active:scale-95"
-                        style={{ background: 'var(--accent)', color: '#1e0d38' }}
-                        onClick={e => { e.stopPropagation(); setSelected(top); }}
-                      >
-                        <ExternalLink size={12} strokeWidth={2.5} />
-                        Ver recurso
-                      </button>
-                    </div>
+                    <ResourceCard resource={top} onClick={() => setSelected(top)} />
                   </div>
                 );
               })
