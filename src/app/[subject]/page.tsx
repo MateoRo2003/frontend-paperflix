@@ -133,7 +133,7 @@ export default function SubjectPage() {
   const unitLabel = isObj ? 'Objetivo' : 'Unidad';
 
   return (
-    <div className="p-3 sm:p-6 space-y-4">
+    <div className="p-3 sm:p-4 flex flex-col gap-3">
 
       {/* ── Header ─────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between gap-4">
@@ -184,7 +184,7 @@ export default function SubjectPage() {
       <div className="rounded-xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
 
         {/* Step 1 — Curso (siempre visible) */}
-        <div className="px-4 py-2 space-y-2">
+        <div className="px-3 py-2 space-y-1.5">
           <div className="flex items-center gap-2">
             <span
               className="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0"
@@ -210,10 +210,10 @@ export default function SubjectPage() {
                   onClick={() => { setCourse(prev => prev === c ? '' : c); setPage(1); }}
                   className="pill-btn shrink-0 rounded-full text-sm font-semibold transition-all hover:brightness-110 hover:scale-[1.03]"
                   style={{
-                    height: 40,
-                    minHeight: 40,
-                    paddingLeft: 16,
-                    paddingRight: 16,
+                    height: 32,
+                    minHeight: 32,
+                    paddingLeft: 14,
+                    paddingRight: 14,
                     background: course === c ? 'var(--accent)' : 'transparent',
                     color: course === c ? '#1e0d38' : '#ffffff',
                     border: `1px solid ${course === c ? 'transparent' : 'rgba(255,255,255,0.3)'}`,
@@ -230,7 +230,7 @@ export default function SubjectPage() {
         {/* Step 2 — Unidad + Tipo (solo visible cuando hay curso seleccionado) */}
         {courseSelected && (
           <div
-            className="border-t px-4 py-2 space-y-2"
+            className="border-t px-3 py-2 space-y-1.5"
             style={{ borderColor: 'var(--border)' }}
           >
             <div className="flex items-center gap-2">
@@ -258,8 +258,8 @@ export default function SubjectPage() {
                         background: unitId ? 'rgba(124,58,237,0.15)' : 'var(--bg)',
                         border: `1px solid ${unitId ? 'rgba(124,58,237,0.45)' : 'var(--border)'}`,
                         color: unitId ? '#c4b5fd' : 'var(--muted)',
-                        height: 42,
-                        minHeight: 42,
+                        height: 36,
+                        minHeight: 36,
                       }}
                     >
                       <option value="" style={{ color: '#1e0d38', background: '#e9e0f7' }}>{isObj ? 'Todos los objetivos' : 'Todas las unidades'}</option>
@@ -281,8 +281,8 @@ export default function SubjectPage() {
                         background: activityType ? 'rgba(124,58,237,0.15)' : 'var(--bg)',
                         border: `1px solid ${activityType ? 'rgba(124,58,237,0.45)' : 'var(--border)'}`,
                         color: activityType ? '#c4b5fd' : 'var(--muted)',
-                        height: 42,
-                        minHeight: 42,
+                        height: 36,
+                        minHeight: 36,
                       }}
                     >
                       <option value="" style={{ color: '#1e0d38', background: '#e9e0f7' }}>Todos los tipos</option>
@@ -308,7 +308,7 @@ export default function SubjectPage() {
         )}
 
         {/* Búsqueda */}
-        <div className="border-t px-4 py-2" style={{ borderColor: 'var(--border)' }}>
+        <div className="border-t px-3 py-2" style={{ borderColor: 'var(--border)' }}>
           <SearchBar
             onSearch={(q) => { setSearch(q); setPage(1); }}
             placeholder={`Buscar en ${subject?.name || 'esta asignatura'}...`}
@@ -343,35 +343,33 @@ export default function SubjectPage() {
       ) : (
         <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-5">
           {resources.map(r => (
-            <ResourceCard key={r.id} resource={r} onClick={() => setSelected(r)} />
+            <ResourceCard key={r.id} resource={r} onClick={() => setSelected(r)} compact />
           ))}
         </div>
       )}
 
       {/* ── Paginación ──────────────────────────────────────────────── */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-3 pt-2">
+        <div className="flex items-center justify-center gap-2">
           <button
             disabled={page === 1}
             onClick={() => setPage(p => p - 1)}
-            className="flex items-center justify-center rounded-xl disabled:opacity-30 hover:bg-white/5 transition-colors"
-            style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', width: 48, height: 48, minHeight: 48 }}
+            className="flex items-center justify-center rounded-lg disabled:opacity-30 hover:bg-white/5 transition-colors"
+            style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', width: 36, height: 36 }}
           >
-            <ChevronLeft size={18} />
+            <ChevronLeft size={15} />
           </button>
 
-          {/* Números — máximo 5 visibles */}
           {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
             const p = Math.max(1, Math.min(page - 2, totalPages - 4)) + i;
             return (
               <button
                 key={p}
                 onClick={() => setPage(p)}
-                className="flex items-center justify-center rounded-xl text-sm font-semibold transition-colors"
+                className="flex items-center justify-center rounded-lg text-xs font-semibold transition-colors"
                 style={{
-                  width: 48,
-                  height: 48,
-                  minHeight: 48,
+                  width: 36,
+                  height: 36,
                   background: p === page ? 'var(--purple)' : 'var(--card)',
                   color: p === page ? '#fff' : 'var(--muted)',
                   border: `1px solid ${p === page ? 'rgba(124,58,237,0.5)' : 'var(--border)'}`,
@@ -385,10 +383,10 @@ export default function SubjectPage() {
           <button
             disabled={page === totalPages}
             onClick={() => setPage(p => p + 1)}
-            className="flex items-center justify-center rounded-xl disabled:opacity-30 hover:bg-white/5 transition-colors"
-            style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', width: 48, height: 48, minHeight: 48 }}
+            className="flex items-center justify-center rounded-lg disabled:opacity-30 hover:bg-white/5 transition-colors"
+            style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', width: 36, height: 36 }}
           >
-            <ChevronRight size={18} />
+            <ChevronRight size={15} />
           </button>
         </div>
       )}

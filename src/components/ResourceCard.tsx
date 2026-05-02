@@ -70,28 +70,11 @@ export default function ResourceCard({ resource, onClick, compact = false }: { r
       </div>
 
       {/* Info */}
-      <div className={`${compact ? 'p-3' : 'p-3 sm:p-5'} flex flex-col flex-1`}>
-        <h3 className={`${compact ? 'text-sm line-clamp-1' : 'text-base sm:text-lg line-clamp-2'} font-bold text-white leading-snug mb-1.5`}>
-          {resource.title}
-        </h3>
-        {!compact && (
-          <p className="text-sm line-clamp-2 mb-3" style={{ color: 'var(--muted)', minHeight: '2.5em' }}>
-            {resource.description || '\u00A0'}
-          </p>
-        )}
-        <div className={`${compact ? '' : 'mt-auto'} flex items-center justify-between gap-1`}>
-          <div className="flex items-center gap-1.5 flex-wrap min-w-0">
-            {resource.author && (
-              <span className="text-xs truncate max-w-[90px] sm:max-w-[130px]" style={{ color: 'var(--muted)' }}>
-                {resource.author}
-              </span>
-            )}
-            {resource.course && (
-              <span className="text-xs px-2 py-0.5 rounded shrink-0" style={{ background: 'rgba(124,58,237,0.25)', color: '#c4b5fd' }}>
-                {resource.course.trim()}
-              </span>
-            )}
-          </div>
+      {compact ? (
+        <div className="px-3 py-2 shrink-0 flex items-center justify-between gap-2">
+          <h3 className="text-sm font-bold text-white leading-snug line-clamp-1 flex-1 min-w-0">
+            {resource.title}
+          </h3>
           {resource.linkUrl && (
             <a
               href={resource.linkUrl}
@@ -99,20 +82,55 @@ export default function ResourceCard({ resource, onClick, compact = false }: { r
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
               className="icon-btn shrink-0 flex items-center justify-center rounded-lg transition-colors hover:bg-white/10"
-              style={{ color: 'var(--accent)', width: 36, height: 36 }}
+              style={{ color: 'var(--accent)', width: 28, height: 28 }}
             >
-              <ExternalLink size={20} />
+              <ExternalLink size={15} />
             </a>
           )}
         </div>
-        {resource.oaCode && (
-          <div className="mt-2">
-            <span className="text-xs px-2 py-0.5 rounded font-mono" style={{ background: 'rgba(245,197,24,0.15)', color: 'var(--accent)' }}>
-              {resource.oaCode}
-            </span>
+      ) : (
+        <div className="p-3 sm:p-5 flex flex-col flex-1">
+          <h3 className="text-base sm:text-lg font-bold text-white leading-snug line-clamp-2 mb-1.5">
+            {resource.title}
+          </h3>
+          <p className="text-sm line-clamp-2 mb-3" style={{ color: 'var(--muted)', minHeight: '2.5em' }}>
+            {resource.description || '\u00A0'}
+          </p>
+          <div className="mt-auto flex items-center justify-between gap-1">
+            <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+              {resource.author && (
+                <span className="text-xs truncate max-w-[90px] sm:max-w-[130px]" style={{ color: 'var(--muted)' }}>
+                  {resource.author}
+                </span>
+              )}
+              {resource.course && (
+                <span className="text-xs px-2 py-0.5 rounded shrink-0" style={{ background: 'rgba(124,58,237,0.25)', color: '#c4b5fd' }}>
+                  {resource.course.trim()}
+                </span>
+              )}
+            </div>
+            {resource.linkUrl && (
+              <a
+                href={resource.linkUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="icon-btn shrink-0 flex items-center justify-center rounded-lg transition-colors hover:bg-white/10"
+                style={{ color: 'var(--accent)', width: 36, height: 36 }}
+              >
+                <ExternalLink size={20} />
+              </a>
+            )}
           </div>
-        )}
-      </div>
+          {resource.oaCode && (
+            <div className="mt-2">
+              <span className="text-xs px-2 py-0.5 rounded font-mono" style={{ background: 'rgba(245,197,24,0.15)', color: 'var(--accent)' }}>
+                {resource.oaCode}
+              </span>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
