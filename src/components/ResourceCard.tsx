@@ -18,7 +18,7 @@ function resolveImg(url: string | null | undefined): string | null {
   return IMG_BASE + url;
 }
 
-export default function ResourceCard({ resource, onClick }: { resource: Resource; onClick?: () => void }) {
+export default function ResourceCard({ resource, onClick, compact = false }: { resource: Resource; onClick?: () => void; compact?: boolean }) {
   const { showViews } = useAppSettings();
   const badgeColor = resource.activityType
     ? ACTIVITY_COLORS[resource.activityType.split(',')[0].trim()] || '#6b7280'
@@ -70,14 +70,16 @@ export default function ResourceCard({ resource, onClick }: { resource: Resource
       </div>
 
       {/* Info */}
-      <div className="p-3 sm:p-5 flex flex-col flex-1">
-        <h3 className="text-base sm:text-lg font-bold text-white leading-snug line-clamp-2 mb-1.5">
+      <div className={`${compact ? 'p-3' : 'p-3 sm:p-5'} flex flex-col flex-1`}>
+        <h3 className={`${compact ? 'text-sm line-clamp-1' : 'text-base sm:text-lg line-clamp-2'} font-bold text-white leading-snug mb-1.5`}>
           {resource.title}
         </h3>
-        <p className="text-sm line-clamp-2 mb-3" style={{ color: 'var(--muted)', minHeight: '2.5em' }}>
-          {resource.description || '\u00A0'}
-        </p>
-        <div className="mt-auto flex items-center justify-between gap-1">
+        {!compact && (
+          <p className="text-sm line-clamp-2 mb-3" style={{ color: 'var(--muted)', minHeight: '2.5em' }}>
+            {resource.description || '\u00A0'}
+          </p>
+        )}
+        <div className={`${compact ? '' : 'mt-auto'} flex items-center justify-between gap-1`}>
           <div className="flex items-center gap-1.5 flex-wrap min-w-0">
             {resource.author && (
               <span className="text-xs truncate max-w-[90px] sm:max-w-[130px]" style={{ color: 'var(--muted)' }}>

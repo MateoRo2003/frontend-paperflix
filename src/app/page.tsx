@@ -105,13 +105,13 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex flex-col flex-1 p-4 sm:p-6 md:p-8 gap-5 md:gap-7">
+    <div className="flex flex-col flex-1 p-4 sm:p-5 md:p-6 gap-4 md:gap-5">
 
       {/* ── Hero Banner ────────────────────────────────────────────── */}
       {(loading || hero) && (
         <div
           className="relative w-full rounded-2xl overflow-hidden select-none"
-          style={{ height: 'clamp(250px, 39vw, 390px)' }}
+          style={{ height: 'clamp(180px, min(38vw, 32vh), 360px)' }}
         >
           {hero ? (
             <>
@@ -271,7 +271,7 @@ export default function HomePage() {
                         Ver todos <ChevronRight size={12} />
                       </Link>
                     </div>
-                    <ResourceCard resource={top} onClick={() => setSelected(top)} />
+                    <ResourceCard resource={top} onClick={() => setSelected(top)} compact />
                   </div>
                 );
               })
