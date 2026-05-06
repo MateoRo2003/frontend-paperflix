@@ -27,8 +27,12 @@ export default function HomePage() {
   const [slides, setSlides]               = useState<Slide[]>([]);
   const [featured, setFeatured]           = useState<Resource[]>([]);
   const [subjectRows, setSubjectRows]     = useState<SubjectRow[]>([]);
-  const [searchResults, setSearchResults] = useState<Resource[] | null>(null);
-  const [searching, setSearching]         = useState(false);
+  const [searchResults, setSearchResults]   = useState<Resource[] | null>(null);
+  const [searching, setSearching]           = useState(false);
+  const [searchQuery, setSearchQuery]       = useState('');
+  const [searchPage, setSearchPage]         = useState(1);
+  const [searchTotalPages, setSearchTotalPages] = useState(1);
+  const [searchTotal, setSearchTotal]       = useState(0);
   const [selected, setSelected]           = useState<Resource | null>(null);
   const [loading, setLoading]             = useState(true);
   const [rowsLoading, setRowsLoading]     = useState(true);
@@ -83,13 +87,26 @@ export default function HomePage() {
     setHeroKey(k => k + 1);
   }, []);
 
-  async function handleSearch(q: string) {
-    if (!q.trim()) { setSearchResults(null); return; }
+  const fetchSearch = useCallback(async (q: string, page: number) => {
     setSearching(true);
-    const res = await getResources({ search: q, limit: 24 });
+    const res = await getResources({ search: q, limit: 8, page });
     setSearchResults(res.data);
+    setSearchTotal(res.total);
+    setSearchTotalPages(res.totalPages);
     setSearching(false);
+  }, []);
+
+  async function handleSearch(q: string) {
+    if (!q.trim()) { setSearchResults(null); setSearchQuery(''); return; }
+    setSearchQuery(q);
+    setSearchPage(1);
+    fetchSearch(q, 1);
   }
+
+  useEffect(() => {
+    if (searchQuery && searchPage > 0) fetchSearch(searchQuery, searchPage);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchPage]);
 
   const hero = heroItems[heroIdx];
   const heroIsSlide = hero && 'buttonText' in hero;
@@ -229,16 +246,55 @@ export default function HomePage() {
 
       {/* ── Search Results ──────────────────────────────────────────── */}
       {searchResults !== null && (
-        <section>
-          <h2 className="text-2xl font-bold text-white mb-3">
-            {searching ? 'Buscando...' : `${searchResults.length} resultado${searchResults.length !== 1 ? 's' : ''}`}
+        <section className="flex flex-col gap-3">
+          <h2 className="text-lg font-bold text-white">
+            {searching ? 'Buscando...' : `${searchTotal} resultado${searchTotal !== 1 ? 's' : ''}`}
           </h2>
           {searching ? <GridSkeleton count={8} /> : (
-            <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
-              {searchResults.map(r => (
-                <ResourceCard key={r.id} resource={r} onClick={() => setSelected(r)} compact />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
+                {searchResults.map(r => (
+                  <ResourceCard key={r.id} resource={r} onClick={() => setSelected(r)} compact />
+                ))}
+              </div>
+
+              {searchTotalPages > 1 && (
+                <div className="flex items-center justify-center gap-2">
+                  <button
+                    disabled={searchPage === 1}
+                    onClick={() => setSearchPage(p => p - 1)}
+                    className="flex items-center justify-center rounded-lg disabled:opacity-30 hover:bg-white/5 transition-colors"
+                    style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', width: 32, height: 32 }}
+                  >
+                    <ChevronLeft size={14} />
+                  </button>
+                  {Array.from({ length: Math.min(searchTotalPages, 5) }, (_, i) => {
+                    const p = Math.max(1, Math.min(searchPage - 2, searchTotalPages - 4)) + i;
+                    return (
+                      <button
+                        key={p}
+                        onClick={() => setSearchPage(p)}
+                        className="flex items-center justify-center rounded-lg text-xs font-semibold transition-colors"
+                        style={{
+                          width: 32, height: 32,
+                          background: p === searchPage ? 'var(--purple)' : 'var(--card)',
+                          color: p === searchPage ? '#fff' : 'var(--muted)',
+                          border: `1px solid ${p === searchPage ? 'rgba(124,58,237,0.5)' : 'var(--border)'}`,
+                        }}
+                      >{p}</button>
+                    );
+                  })}
+                  <button
+                    disabled={searchPage === searchTotalPages}
+                    onClick={() => setSearchPage(p => p + 1)}
+                    className="flex items-center justify-center rounded-lg disabled:opacity-30 hover:bg-white/5 transition-colors"
+                    style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', width: 32, height: 32 }}
+                  >
+                    <ChevronRight size={14} />
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </section>
       )}
