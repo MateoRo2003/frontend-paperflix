@@ -234,9 +234,9 @@ export default function HomePage() {
             {searching ? 'Buscando...' : `${searchResults.length} resultado${searchResults.length !== 1 ? 's' : ''}`}
           </h2>
           {searching ? <GridSkeleton count={8} /> : (
-            <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 md:gap-5">
+            <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
               {searchResults.map(r => (
-                <ResourceCard key={r.id} resource={r} onClick={() => setSelected(r)} />
+                <ResourceCard key={r.id} resource={r} onClick={() => setSelected(r)} compact />
               ))}
             </div>
           )}
