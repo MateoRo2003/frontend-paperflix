@@ -2,8 +2,10 @@
 import { useState, useEffect } from 'react';
 import { Menu } from 'lucide-react';
 import Sidebar from './Sidebar';
+import { useDragScroll } from '@/hooks/useDragScroll';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
+  useDragScroll();
   const [collapsed, setCollapsed]     = useState(true);
   const [mobileOpen, setMobileOpen]   = useState(false);
   const [isMobile, setIsMobile]       = useState(false);
