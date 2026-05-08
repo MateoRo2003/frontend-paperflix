@@ -122,13 +122,13 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex flex-col flex-1 p-4 sm:p-5 md:p-6 gap-4 md:gap-5">
+    <div className="flex flex-col flex-1 p-3 sm:p-4 md:p-5 gap-3 md:gap-4">
 
       {/* ── Hero Banner ────────────────────────────────────────────── */}
       {(loading || hero) && (
         <div
           className="relative w-full rounded-2xl overflow-hidden select-none"
-          style={{ height: 'clamp(250px, 39vw, 390px)' }}
+          style={{ height: 'clamp(210px, 33vw, 350px)' }}
         >
           {hero ? (
             <>
@@ -301,19 +301,19 @@ export default function HomePage() {
 
       {/* ── Grid de asignaturas ──────────────────────────────────────── */}
       {searchResults === null && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
           {rowsLoading && subjectRows.length === 0
             ? [...Array(4)].map((_, i) => (
-                <div key={i} className="flex flex-col gap-2">
+                <div key={i} className="flex flex-col gap-1.5">
                   <div className="skeleton rounded-xl h-6 w-3/4" />
-                  <div className="skeleton rounded-2xl" style={{ minHeight: 260 }} />
+                  <div className="skeleton rounded-2xl" style={{ minHeight: 220 }} />
                 </div>
               ))
             : subjectRows.map(({ subject, resources }) => {
                 const top = resources[0];
                 if (!top) return null;
                 return (
-                  <div key={subject.id} className="flex flex-col gap-2">
+                  <div key={subject.id} className="flex flex-col gap-1.5">
                     <div className="flex items-center justify-between px-1">
                       <div className="flex items-center gap-2 min-w-0">
                         <SubjectIcon icon={subject.icon} color={subject.color} size={16} fallback={subject.name.charAt(0)} />
