@@ -344,10 +344,10 @@ export default function SubjectPage() {
           <button
             disabled={page === 1}
             onClick={() => setPage(p => p - 1)}
-            className="flex items-center justify-center rounded-lg disabled:opacity-30 hover:bg-white/5 transition-colors"
-            style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', width: 32, height: 32 }}
+            className="flex items-center justify-center rounded-xl disabled:opacity-30 hover:bg-white/5 transition-colors"
+            style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', width: 42, height: 42 }}
           >
-            <ChevronLeft size={14} />
+            <ChevronLeft size={18} />
           </button>
 
           {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
@@ -356,10 +356,10 @@ export default function SubjectPage() {
               <button
                 key={p}
                 onClick={() => setPage(p)}
-                className="flex items-center justify-center rounded-lg text-xs font-semibold transition-colors"
+                className="flex items-center justify-center rounded-xl text-sm font-semibold transition-colors"
                 style={{
-                  width: 32,
-                  height: 32,
+                  width: 42,
+                  height: 42,
                   background: p === page ? 'var(--purple)' : 'var(--card)',
                   color: p === page ? '#fff' : 'var(--muted)',
                   border: `1px solid ${p === page ? 'rgba(124,58,237,0.5)' : 'var(--border)'}`,
@@ -373,10 +373,10 @@ export default function SubjectPage() {
           <button
             disabled={page === totalPages}
             onClick={() => setPage(p => p + 1)}
-            className="flex items-center justify-center rounded-lg disabled:opacity-30 hover:bg-white/5 transition-colors"
-            style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', width: 32, height: 32 }}
+            className="flex items-center justify-center rounded-xl disabled:opacity-30 hover:bg-white/5 transition-colors"
+            style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', width: 42, height: 42 }}
           >
-            <ChevronRight size={14} />
+            <ChevronRight size={18} />
           </button>
         </div>
       )}

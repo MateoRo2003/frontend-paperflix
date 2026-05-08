@@ -263,10 +263,10 @@ export default function HomePage() {
                   <button
                     disabled={searchPage === 1}
                     onClick={() => setSearchPage(p => p - 1)}
-                    className="flex items-center justify-center rounded-lg disabled:opacity-30 hover:bg-white/5 transition-colors"
-                    style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', width: 32, height: 32 }}
+                    className="flex items-center justify-center rounded-xl disabled:opacity-30 hover:bg-white/5 transition-colors"
+                    style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', width: 42, height: 42 }}
                   >
-                    <ChevronLeft size={14} />
+                    <ChevronLeft size={18} />
                   </button>
                   {Array.from({ length: Math.min(searchTotalPages, 5) }, (_, i) => {
                     const p = Math.max(1, Math.min(searchPage - 2, searchTotalPages - 4)) + i;
@@ -274,9 +274,9 @@ export default function HomePage() {
                       <button
                         key={p}
                         onClick={() => setSearchPage(p)}
-                        className="flex items-center justify-center rounded-lg text-xs font-semibold transition-colors"
+                        className="flex items-center justify-center rounded-xl text-sm font-semibold transition-colors"
                         style={{
-                          width: 32, height: 32,
+                          width: 42, height: 42,
                           background: p === searchPage ? 'var(--purple)' : 'var(--card)',
                           color: p === searchPage ? '#fff' : 'var(--muted)',
                           border: `1px solid ${p === searchPage ? 'rgba(124,58,237,0.5)' : 'var(--border)'}`,
@@ -287,10 +287,10 @@ export default function HomePage() {
                   <button
                     disabled={searchPage === searchTotalPages}
                     onClick={() => setSearchPage(p => p + 1)}
-                    className="flex items-center justify-center rounded-lg disabled:opacity-30 hover:bg-white/5 transition-colors"
-                    style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', width: 32, height: 32 }}
+                    className="flex items-center justify-center rounded-xl disabled:opacity-30 hover:bg-white/5 transition-colors"
+                    style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', width: 42, height: 42 }}
                   >
-                    <ChevronRight size={14} />
+                    <ChevronRight size={18} />
                   </button>
                 </div>
               )}
