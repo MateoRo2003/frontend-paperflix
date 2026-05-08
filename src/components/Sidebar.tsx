@@ -125,20 +125,21 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, isMob
       </nav>
 
       {/* Toggle button — siempre abajo */}
-      <div className="shrink-0 flex justify-center pb-3">
+      <div className="shrink-0 flex justify-center pb-3 px-3">
         <button
           onClick={onToggle}
           title={collapsed ? 'Expandir sidebar' : 'Colapsar sidebar'}
-          className="rounded-xl flex items-center justify-center transition-all hover:brightness-110 active:scale-95"
+          className="rounded-xl flex items-center justify-center gap-2 transition-all hover:brightness-110 active:scale-95"
           style={{
-            width: 60,
+            width: collapsed ? 60 : '100%',
             height: 40,
             background: 'rgba(124,58,237,0.18)',
             border: '1px solid rgba(124,58,237,0.35)',
             color: '#c4b5fd',
           }}
         >
-          {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+          <ChevronLeft size={20} style={{ transform: collapsed ? 'rotate(180deg)' : 'none', transition: 'transform 0.25s ease' }} />
+          {!collapsed && <span className="text-xs font-semibold">Colapsar</span>}
         </button>
       </div>
     </aside>
