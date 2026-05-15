@@ -615,14 +615,15 @@ export default function AdminPage() {
   }
 
   async function toggleHomeSubject(id: number, active: boolean) {
-    const current: number[] = homeVisibleSubjects ?? subjects.map(s => s.id);
+    const withResources = subjects.filter(s => s.isActive && (s as any)._count?.resources > 0).map(s => s.id);
+    const current: number[] = homeVisibleSubjects ?? withResources;
     const next = active ? [...current, id] : current.filter(x => x !== id);
-    // null means "all" — if all subjects end up selected, clear the setting
-    const allIds = subjects.map(s => s.id).sort().join(',');
+    const allSorted = [...withResources].sort().join(',');
     const nextSorted = [...next].sort().join(',');
-    const value = next.length === 0 || nextSorted === allIds ? null : JSON.stringify(next);
+    const value = next.length === 0 || nextSorted === allSorted ? null : JSON.stringify(next);
     setHomeVisibleSubjects(value ? next : null);
     await updateSetting('home_visible_subjects', value ?? '');
+    broadcastDataChange();
   }
 
   async function handleSaveSlide() {
@@ -2924,45 +2925,76 @@ export default function AdminPage() {
 
           {/* ── Asignaturas visibles en el inicio ── */}
           <div className="rounded-2xl p-5" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
-            <div className="mb-4">
-              <h2 className="text-base font-bold text-white">Asignaturas en el inicio</h2>
-              <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>
-                Elegí qué asignaturas se muestran en la página de inicio. Los recursos se eligen aleatoriamente por visita.
-              </p>
+            <div className="flex items-start justify-between gap-3 mb-4">
+              <div>
+                <h2 className="text-base font-bold text-white">Asignaturas en el inicio</h2>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>
+                  Máximo 4. Los recursos de cada fila se eligen aleatoriamente por visita.
+                </p>
+              </div>
+              <span className="text-xs font-semibold px-2 py-1 rounded-lg shrink-0" style={{ background: 'var(--bg)', color: 'var(--muted)' }}>
+                {(homeVisibleSubjects ?? subjects.filter(s => s.isActive && (s as any)._count?.resources > 0).map(s => s.id)).length} / 4
+              </span>
             </div>
-            <div className="flex flex-wrap gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {subjects.filter(s => s.isActive).map(s => {
-                const visible = homeVisibleSubjects === null || homeVisibleSubjects.includes(s.id);
+                const resourceCount = (s as any)._count?.resources ?? 0;
+                const hasResources = resourceCount > 0;
+                const selected = homeVisibleSubjects === null
+                  ? hasResources
+                  : homeVisibleSubjects.includes(s.id);
+                const selectedCount = homeVisibleSubjects
+                  ? homeVisibleSubjects.length
+                  : subjects.filter(x => x.isActive && (x as any)._count?.resources > 0).length;
+                const atMax = selectedCount >= 4;
+                const disabled = !hasResources || (!selected && atMax);
                 return (
                   <button
                     key={s.id}
-                    onClick={() => toggleHomeSubject(s.id, !visible)}
-                    className="flex items-center gap-2 px-4 rounded-xl text-sm font-semibold transition-all"
+                    onClick={() => !disabled && toggleHomeSubject(s.id, !selected)}
+                    disabled={disabled}
+                    className="flex items-center justify-between gap-3 px-4 rounded-xl text-sm transition-all text-left"
                     style={{
-                      height: 42,
-                      background: visible ? `${s.color}22` : 'var(--bg)',
-                      border: `2px solid ${visible ? s.color : 'var(--border)'}`,
-                      color: visible ? s.color : 'var(--muted)',
-                      opacity: visible ? 1 : 0.5,
+                      height: 48,
+                      background: selected ? 'rgba(255,255,255,0.06)' : 'var(--bg)',
+                      border: `1px solid ${selected ? 'rgba(255,255,255,0.18)' : 'var(--border)'}`,
+                      color: !hasResources ? 'var(--border)' : selected ? 'var(--text)' : 'var(--muted)',
+                      cursor: disabled ? 'not-allowed' : 'pointer',
+                      opacity: !hasResources ? 0.4 : 1,
                     }}
                   >
-                    <span
-                      className="w-3 h-3 rounded-full shrink-0"
-                      style={{ background: visible ? s.color : 'var(--muted)' }}
-                    />
-                    {s.name}
-                    {visible && <Check size={13} />}
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span
+                        className="w-2 h-2 rounded-full shrink-0"
+                        style={{ background: hasResources ? (selected ? 'var(--accent)' : 'var(--muted)') : 'var(--border)' }}
+                      />
+                      <span className="truncate font-medium">{s.name}</span>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-[11px]" style={{ color: 'var(--muted)' }}>
+                        {hasResources ? `${resourceCount} rec.` : 'Sin recursos'}
+                      </span>
+                      <span
+                        className="w-4 h-4 rounded flex items-center justify-center"
+                        style={{
+                          background: selected ? 'var(--accent)' : 'transparent',
+                          border: selected ? 'none' : '1px solid var(--border)',
+                        }}
+                      >
+                        {selected && <Check size={11} style={{ color: '#1e0d38' }} />}
+                      </span>
+                    </div>
                   </button>
                 );
               })}
             </div>
             {homeVisibleSubjects !== null && (
               <button
-                onClick={() => { setHomeVisibleSubjects(null); updateSetting('home_visible_subjects', ''); }}
-                className="mt-3 text-xs"
+                onClick={() => { setHomeVisibleSubjects(null); updateSetting('home_visible_subjects', ''); broadcastDataChange(); }}
+                className="mt-3 text-xs hover:underline"
                 style={{ color: 'var(--muted)' }}
               >
-                Mostrar todas →
+                Restablecer (mostrar todas con recursos)
               </button>
             )}
           </div>
