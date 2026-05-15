@@ -228,6 +228,7 @@ export default function AdminPage() {
   const [suggestionFilter, setSuggestionFilter] = useState<'' | 'pending' | 'approved' | 'rejected'>('');
   const [editingSugId, setEditingSugId] = useState<number | null>(null);
   const [editingSugForm, setEditingSugForm] = useState<Partial<Suggestion>>({});
+  const [editingSugSaved, setEditingSugSaved] = useState(false);
 
   function showMsg(text: string, type: 'ok' | 'err' = 'ok') {
     setMsg(text); setMsgType(type);
@@ -569,9 +570,12 @@ export default function AdminPage() {
     if (!editingSugId) return;
     try {
       await updateSuggestion(editingSugId, editingSugForm);
-      setEditingSugId(null);
+      setEditingSugSaved(true);
       loadSuggestions(suggestionFilter || undefined);
-      showMsg('Sugerencia actualizada');
+      setTimeout(() => {
+        setEditingSugSaved(false);
+        setEditingSugId(null);
+      }, 1500);
     } catch { showMsg('Error al guardar', 'err'); }
   }
 
@@ -1844,11 +1848,15 @@ export default function AdminPage() {
                     <div className="flex gap-1 shrink-0">
                       {s.linkUrl && (
                         <a
-                          href={s.linkUrl}
+                          href={editingSugId === s.id ? undefined : s.linkUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="icon-btn flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
-                          style={{ color: 'var(--muted)', width: 36, height: 36 }}
+                          className="icon-btn flex items-center justify-center rounded-lg transition-colors"
+                          style={{
+                            color: 'var(--muted)', width: 36, height: 36,
+                            opacity: editingSugId === s.id ? 0.3 : 1,
+                            pointerEvents: editingSugId === s.id ? 'none' : 'auto',
+                          }}
                           title="Ver recurso"
                         >
                           <ExternalLink size={14} />
@@ -1858,7 +1866,7 @@ export default function AdminPage() {
                         onClick={() => editingSugId === s.id ? setEditingSugId(null) : openEditSuggestion(s)}
                         className="icon-btn flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
                         style={{ color: editingSugId === s.id ? 'var(--accent)' : 'var(--muted)', width: 36, height: 36 }}
-                        title="Editar"
+                        title={editingSugId === s.id ? 'Cancelar edición' : 'Editar'}
                       >
                         <Pencil size={14} />
                       </button>
@@ -1866,7 +1874,8 @@ export default function AdminPage() {
                         <>
                           <button
                             onClick={() => handleApproveSuggestion(s)}
-                            className="icon-btn flex items-center justify-center rounded-lg transition-colors hover:bg-emerald-500/20 text-emerald-400"
+                            disabled={editingSugId === s.id}
+                            className="icon-btn flex items-center justify-center rounded-lg transition-colors hover:bg-emerald-500/20 text-emerald-400 disabled:opacity-30 disabled:pointer-events-none"
                             style={{ width: 36, height: 36 }}
                             title={s.status === 'rejected' ? 'Re-aprobar' : 'Aprobar'}
                           >
@@ -1875,7 +1884,8 @@ export default function AdminPage() {
                           {s.status === 'pending' && (
                             <button
                               onClick={() => handleRejectSuggestion(s.id)}
-                              className="icon-btn flex items-center justify-center rounded-lg transition-colors hover:bg-amber-500/20"
+                              disabled={editingSugId === s.id}
+                              className="icon-btn flex items-center justify-center rounded-lg transition-colors hover:bg-amber-500/20 disabled:opacity-30 disabled:pointer-events-none"
                               style={{ color: '#fbbf24', width: 36, height: 36 }}
                               title="Rechazar"
                             >
@@ -1886,7 +1896,8 @@ export default function AdminPage() {
                       )}
                       <button
                         onClick={() => handleDeleteSuggestion(s.id)}
-                        className="icon-btn flex items-center justify-center rounded-lg hover:bg-red-500/20 transition-colors text-red-400"
+                        disabled={editingSugId === s.id}
+                        className="icon-btn flex items-center justify-center rounded-lg hover:bg-red-500/20 transition-colors text-red-400 disabled:opacity-30 disabled:pointer-events-none"
                         style={{ width: 36, height: 36 }}
                         title="Eliminar"
                       >
@@ -1897,8 +1908,10 @@ export default function AdminPage() {
 
                   {/* ── Formulario de edición inline ── */}
                   {editingSugId === s.id && (
-                    <div className="rounded-xl p-4 space-y-3 mt-1" style={{ background: 'var(--bg)', border: '1px solid rgba(245,197,24,0.25)' }}>
-                      <p className="text-xs font-semibold" style={{ color: 'var(--accent)' }}>✏️ Editando sugerencia</p>
+                    <div className="rounded-xl p-4 space-y-3 mt-1" style={{ background: 'var(--bg)', border: `1px solid ${editingSugSaved ? 'rgba(16,185,129,0.4)' : 'rgba(245,197,24,0.25)'}` }}>
+                      <p className="text-xs font-semibold flex items-center gap-2" style={{ color: editingSugSaved ? '#34d399' : 'var(--accent)' }}>
+                        {editingSugSaved ? <><CheckCircle2 size={14} /> Cambios guardados</> : <>✏️ Editando sugerencia</>}
+                      </p>
 
                       {/* Título + URL */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -1991,10 +2004,11 @@ export default function AdminPage() {
                         </button>
                         <button
                           onClick={handleSaveSuggestion}
-                          className="flex items-center gap-2 px-4 rounded-lg text-sm font-bold"
-                          style={{ background: 'var(--accent)', color: '#1e0d38', height: 36 }}
+                          disabled={editingSugSaved}
+                          className="flex items-center gap-2 px-4 rounded-lg text-sm font-bold disabled:opacity-60"
+                          style={{ background: editingSugSaved ? '#10b981' : 'var(--accent)', color: '#1e0d38', height: 36 }}
                         >
-                          <Check size={14} /> Guardar cambios
+                          <Check size={14} /> {editingSugSaved ? 'Guardado' : 'Guardar cambios'}
                         </button>
                       </div>
                     </div>
