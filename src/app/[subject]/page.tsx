@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { getSubject, getResources, getSubjects, getResourceFilters } from '@/lib/api';
 import { Resource, Subject } from '@/types';
@@ -42,6 +42,8 @@ export default function SubjectPage() {
   const [availUnits, setAvailUnits]             = useState<{ id: number; name: string; oaDescription?: string | null }[]>([]);
   const [availActTypes, setAvailActTypes]       = useState<string[]>([]);
   const [filtersLoading, setFiltersLoading]     = useState(false);
+  const baseUnitsRef    = useRef<{ id: number; name: string; oaDescription?: string | null }[]>([]);
+  const baseActTypesRef = useRef<string[]>([]);
 
   // ── Active filter values ───────────────────────────────────────
   const [page, setPage]               = useState(1);
@@ -50,7 +52,7 @@ export default function SubjectPage() {
   const [unitId, setUnitId]           = useState<number | undefined>();
   const [activityType, setActivityType] = useState('');
 
-  // Load subject + initial courses
+  // Load subject + initial filters (courses + all units)
   useEffect(() => {
     getSubjects().then(setAllSubjects).catch(() => {});
     getSubject(slug)
@@ -58,6 +60,10 @@ export default function SubjectPage() {
         setSubject(s);
         const f = await getResourceFilters(s.id);
         setAvailCourses(sortCourses(f.courses));
+        setAvailUnits(f.units);
+        setAvailActTypes(f.activityTypes);
+        baseUnitsRef.current    = f.units;
+        baseActTypesRef.current = f.activityTypes;
       })
       .catch(console.error);
   }, [slug]);
@@ -66,10 +72,11 @@ export default function SubjectPage() {
   useEffect(() => {
     if (!subject) return;
     if (!course) {
-      setAvailUnits([]);
-      setAvailActTypes([]);
-      setUnitId(undefined);
-      setActivityType('');
+      // Restore base (all-courses) units instead of clearing them
+      setAvailUnits(baseUnitsRef.current);
+      setAvailActTypes(baseActTypesRef.current);
+      setUnitId(prev => baseUnitsRef.current.some(u => u.id === prev) ? prev : undefined);
+      setActivityType(prev => baseActTypesRef.current.includes(prev) ? prev : '');
       return;
     }
     setFiltersLoading(true);
@@ -77,7 +84,6 @@ export default function SubjectPage() {
       .then(f => {
         setAvailUnits(f.units);
         setAvailActTypes(f.activityTypes);
-        // Reset dependent filters if they no longer apply
         setUnitId(prev => f.units.some(u => u.id === prev) ? prev : undefined);
         setActivityType(prev => f.activityTypes.includes(prev) ? prev : '');
       })
@@ -229,8 +235,8 @@ export default function SubjectPage() {
           )}
         </div>
 
-        {/* Step 2 — Unidad + Tipo (solo visible cuando hay curso seleccionado) */}
-        {courseSelected && (
+        {/* Step 2 — Unidad + Tipo (visible cuando hay unidades o tipos disponibles) */}
+        {(availUnits.length > 0 || availActTypes.length > 0) && (
           <div
             className="border-t px-3 py-1.5 space-y-1.5"
             style={{ borderColor: 'var(--border)' }}
