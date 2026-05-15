@@ -1927,13 +1927,27 @@ export default function AdminPage() {
                         </div>
                         <div>
                           <label className="text-[11px] font-semibold mb-1 block" style={{ color: 'var(--muted)' }}>URL del recurso</label>
-                          <input
-                            type="url"
-                            value={editingSugForm.linkUrl ?? ''}
-                            onChange={e => setEditingSugForm(f => ({ ...f, linkUrl: e.target.value }))}
-                            className="w-full px-3 rounded-lg text-sm outline-none font-mono"
-                            style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', height: 38 }}
-                          />
+                          <div className="flex gap-2">
+                            <input
+                              type="url"
+                              value={editingSugForm.linkUrl ?? ''}
+                              onChange={e => setEditingSugForm(f => ({ ...f, linkUrl: e.target.value }))}
+                              className="flex-1 px-3 rounded-lg text-sm outline-none font-mono min-w-0"
+                              style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', height: 38 }}
+                            />
+                            {editingSugForm.linkUrl && (
+                              <a
+                                href={editingSugForm.linkUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-center rounded-lg shrink-0 transition-colors hover:bg-white/10"
+                                style={{ color: 'var(--accent)', width: 38, height: 38, border: '1px solid var(--border)', background: 'var(--card)' }}
+                                title="Abrir enlace"
+                              >
+                                <ExternalLink size={14} />
+                              </a>
+                            )}
+                          </div>
                         </div>
                       </div>
 
