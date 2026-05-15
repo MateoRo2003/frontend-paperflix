@@ -300,6 +300,25 @@ export default function SubjectPage() {
                 <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--muted)' }} />
               </div>
             </div>
+
+            {/* Descripción completa del objetivo/unidad seleccionado */}
+            {unitId && (() => {
+              const u = availUnits.find(u => u.id === unitId);
+              if (!u?.oaDescription) return null;
+              return (
+                <div
+                  className="rounded-xl px-3 py-2.5 text-xs leading-relaxed"
+                  style={{
+                    background: 'rgba(124,58,237,0.08)',
+                    border: '1px solid rgba(124,58,237,0.25)',
+                    color: 'var(--text)',
+                  }}
+                >
+                  <span className="font-bold mr-1.5" style={{ color: '#c4b5fd' }}>{u.name}:</span>
+                  {u.oaDescription.replace(/^\d+\s+/, '')}
+                </div>
+              );
+            })()}
           </div>
         )}
 
