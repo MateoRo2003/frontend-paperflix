@@ -139,6 +139,7 @@ export default function AdminPage() {
   const [statsTo, setStatsTo] = useState('');
 
   const [tab, setTab] = useState<'resources' | 'stats' | 'subjects' | 'suggestions' | 'carousel' | 'config' | 'catalogs'>('resources');
+  const [homeVisibleSubjects, setHomeVisibleSubjects] = useState<number[] | null>(null); // null = todos
 
   // Catalog tab
   const [catalogTab, setCatalogTab] = useState<'courses' | 'activityTypes' | 'units'>('courses');
@@ -605,6 +606,25 @@ export default function AdminPage() {
     try { setSlides(await getAllSlides()); } catch { }
   }
 
+  async function loadHomeVisibleSubjects() {
+    try {
+      const settings = await getSettings();
+      const raw = settings['home_visible_subjects'];
+      setHomeVisibleSubjects(raw ? JSON.parse(raw) : null);
+    } catch { setHomeVisibleSubjects(null); }
+  }
+
+  async function toggleHomeSubject(id: number, active: boolean) {
+    const current: number[] = homeVisibleSubjects ?? subjects.map(s => s.id);
+    const next = active ? [...current, id] : current.filter(x => x !== id);
+    // null means "all" — if all subjects end up selected, clear the setting
+    const allIds = subjects.map(s => s.id).sort().join(',');
+    const nextSorted = [...next].sort().join(',');
+    const value = next.length === 0 || nextSorted === allIds ? null : JSON.stringify(next);
+    setHomeVisibleSubjects(value ? next : null);
+    await updateSetting('home_visible_subjects', value ?? '');
+  }
+
   async function handleSaveSlide() {
     if (!editingSlide || !editingSlide.title?.trim()) {
       showMsg('El título es obligatorio', 'err'); return;
@@ -791,7 +811,7 @@ export default function AdminPage() {
           { key: 'stats', label: 'Estadísticas', icon: BarChart2 },
           { key: 'subjects', label: 'Asignaturas', icon: Layers },
           { key: 'suggestions', label: 'Sugerencias', icon: Lightbulb },
-          { key: 'carousel', label: 'Carrusel', icon: Monitor },
+          { key: 'carousel', label: 'Inicio', icon: Monitor },
           { key: 'catalogs', label: 'Catálogos', icon: Layers },
           { key: 'config', label: 'Configuración', icon: Star },
         ] as const).map(({ key, label, icon: Icon }) => (
@@ -800,7 +820,7 @@ export default function AdminPage() {
             onClick={() => {
               setTab(key);
               if (key === 'suggestions') loadSuggestions(suggestionFilter || undefined);
-              if (key === 'carousel') { loadSlides(); setPreviewIdx(0); }
+              if (key === 'carousel') { loadSlides(); setPreviewIdx(0); loadHomeVisibleSubjects(); }
               if (key === 'catalogs') { loadCatalogCourses(); loadCatalogActivityTypes(); loadCatalogUnits(); }
               if (key === 'stats') loadExtendedStats();
             }}
@@ -2897,10 +2917,57 @@ export default function AdminPage() {
       )}
 
       {/* ══════════════════════════════════════════════════════════════
-          TAB: CARRUSEL
+          TAB: INICIO
       ══════════════════════════════════════════════════════════════ */}
       {tab === 'carousel' && (
-        <div className="space-y-4 sm:space-y-6">
+        <div className="space-y-6 sm:space-y-8">
+
+          {/* ── Asignaturas visibles en el inicio ── */}
+          <div className="rounded-2xl p-5" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
+            <div className="mb-4">
+              <h2 className="text-base font-bold text-white">Asignaturas en el inicio</h2>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>
+                Elegí qué asignaturas se muestran en la página de inicio. Los recursos se eligen aleatoriamente por visita.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {subjects.filter(s => s.isActive).map(s => {
+                const visible = homeVisibleSubjects === null || homeVisibleSubjects.includes(s.id);
+                return (
+                  <button
+                    key={s.id}
+                    onClick={() => toggleHomeSubject(s.id, !visible)}
+                    className="flex items-center gap-2 px-4 rounded-xl text-sm font-semibold transition-all"
+                    style={{
+                      height: 42,
+                      background: visible ? `${s.color}22` : 'var(--bg)',
+                      border: `2px solid ${visible ? s.color : 'var(--border)'}`,
+                      color: visible ? s.color : 'var(--muted)',
+                      opacity: visible ? 1 : 0.5,
+                    }}
+                  >
+                    <span
+                      className="w-3 h-3 rounded-full shrink-0"
+                      style={{ background: visible ? s.color : 'var(--muted)' }}
+                    />
+                    {s.name}
+                    {visible && <Check size={13} />}
+                  </button>
+                );
+              })}
+            </div>
+            {homeVisibleSubjects !== null && (
+              <button
+                onClick={() => { setHomeVisibleSubjects(null); updateSetting('home_visible_subjects', ''); }}
+                className="mt-3 text-xs"
+                style={{ color: 'var(--muted)' }}
+              >
+                Mostrar todas →
+              </button>
+            )}
+          </div>
+
+          {/* ── Slides del Carrusel ── */}
           <div className="flex items-center justify-between gap-3">
             <div>
               <h2 className="text-base font-bold text-white">Slides del Carrusel</h2>

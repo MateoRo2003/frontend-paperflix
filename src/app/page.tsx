@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
 import { useState, useEffect, useCallback } from 'react';
-import { getSlides, getFeatured, getSubjects, getResources } from '@/lib/api';
+import { getSlides, getFeatured, getSubjects, getResources, getSettings } from '@/lib/api';
 import { Resource, Subject, Slide } from '@/types';
 import ResourceCard from '@/components/ResourceCard';
 import ResourceModal from '@/components/ResourceModal';
@@ -40,17 +40,24 @@ export default function HomePage() {
   const [heroKey, setHeroKey]             = useState(0);
 
   const fetchHome = useCallback(() => {
-    // Fetch hero/slides + featured + subjects in parallel
-    Promise.all([getSlides(), getFeatured(), getSubjects()])
-      .then(async ([sl, f, subjects]) => {
+    // Fetch hero/slides + featured + subjects + settings in parallel
+    Promise.all([getSlides(), getFeatured(), getSubjects(), getSettings()])
+      .then(async ([sl, f, allSubjects, settings]) => {
         setSlides(sl);
         setFeatured(f);
         setLoading(false);
 
+        // Filter subjects by home_visible_subjects setting (null/empty = show all)
+        const visibleRaw = settings['home_visible_subjects'];
+        const visibleIds: number[] | null = visibleRaw ? JSON.parse(visibleRaw) : null;
+        const subjects = visibleIds
+          ? allSubjects.filter((s: Subject) => visibleIds.includes(s.id))
+          : allSubjects;
+
         // For each subject with resources, fetch 4 cards
         setRowsLoading(true);
         const rows = await Promise.all(
-          subjects.map(async (subject) => {
+          subjects.map(async (subject: Subject) => {
             try {
               const res = await getResources({ subjectId: subject.id, limit: 4, page: 1, random: true });
               return { subject, resources: res.data };
@@ -59,7 +66,7 @@ export default function HomePage() {
             }
           })
         );
-        setSubjectRows(rows.filter(r => r.resources.length > 0));
+        setSubjectRows(rows.filter((r: SubjectRow) => r.resources.length > 0));
         setRowsLoading(false);
       })
       .catch(() => setLoading(false));
