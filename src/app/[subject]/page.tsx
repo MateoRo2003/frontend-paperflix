@@ -41,7 +41,8 @@ export default function SubjectPage() {
   const [availCourses, setAvailCourses]         = useState<string[]>([]);
   const [availUnits, setAvailUnits]             = useState<{ id: number; name: string; oaDescription?: string | null }[]>([]);
   const [availActTypes, setAvailActTypes]       = useState<string[]>([]);
-  const [filtersLoading, setFiltersLoading]     = useState(false);
+  const [filtersLoading, setFiltersLoading]         = useState(false);
+  const [filtersInitialized, setFiltersInitialized] = useState(false);
   const baseUnitsRef    = useRef<{ id: number; name: string; oaDescription?: string | null }[]>([]);
   const baseActTypesRef = useRef<string[]>([]);
 
@@ -64,6 +65,7 @@ export default function SubjectPage() {
         setAvailActTypes(f.activityTypes);
         baseUnitsRef.current    = f.units;
         baseActTypesRef.current = f.activityTypes;
+        setFiltersInitialized(true);
       })
       .catch(console.error);
   }, [slug]);
@@ -189,128 +191,137 @@ export default function SubjectPage() {
       </div>
 
       {/* ── Panel de Filtros ────────────────────────────────────────── */}
-      <div className="rounded-xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
+      {(() => {
+        const hasCourses  = availCourses.length > 0;
+        const hasUnits    = availUnits.length > 0;
+        const hasActTypes = availActTypes.length > 0;
+        const step2Num    = hasCourses ? '2' : '1';
+        return (
+          <div className="rounded-xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
 
-        {/* Step 1 — Curso (siempre visible) */}
-        <div className="px-3 py-1.5 space-y-1.5">
-          <div className="flex items-center gap-2">
-            <span
-              className="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0"
-              style={{ background: courseSelected ? 'var(--accent)' : 'rgba(255,255,255,0.15)', color: courseSelected ? '#1e0d38' : 'var(--muted)' }}
-            >1</span>
-            <span className="text-xs font-semibold" style={{ color: courseSelected ? 'var(--text)' : 'var(--muted)' }}>
-              Selecciona un curso
-            </span>
+            {/* Cursos — solo si hay o aún cargando */}
+            {(!filtersInitialized || hasCourses) && (
+              <div className="px-3 py-1.5 space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <span
+                    className="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0"
+                    style={{ background: courseSelected ? 'var(--accent)' : 'rgba(255,255,255,0.15)', color: courseSelected ? '#1e0d38' : 'var(--muted)' }}
+                  >1</span>
+                  <span className="text-xs font-semibold" style={{ color: courseSelected ? 'var(--text)' : 'var(--muted)' }}>
+                    Selecciona un curso
+                  </span>
+                </div>
+                {!filtersInitialized ? (
+                  <div className="flex gap-2">
+                    {[...Array(5)].map((_, i) => (
+                      <div key={i} className="skeleton rounded-full" style={{ width: 80, height: 28 }} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {availCourses.map(c => (
+                      <button
+                        key={c}
+                        onClick={() => { setCourse(prev => prev === c ? '' : c); setPage(1); }}
+                        className="pill-btn shrink-0 rounded-full text-sm font-semibold transition-all hover:brightness-110 hover:scale-[1.03]"
+                        style={{
+                          height: 28, minHeight: 28, paddingLeft: 12, paddingRight: 12,
+                          background: course === c ? 'var(--accent)' : 'transparent',
+                          color: course === c ? '#1e0d38' : '#ffffff',
+                          border: `1px solid ${course === c ? 'transparent' : 'rgba(255,255,255,0.3)'}`,
+                          fontWeight: course === c ? 700 : 500,
+                        }}
+                      >{c}</button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Unidades y/o Tipo de actividad — solo si hay datos */}
+            {filtersInitialized && (hasUnits || hasActTypes) && (
+              <div
+                className="px-3 py-1.5 space-y-1.5"
+                style={{ borderTop: hasCourses ? `1px solid var(--border)` : undefined }}
+              >
+                {/* Labels */}
+                <div className="grid gap-2" style={{ gridTemplateColumns: hasUnits && hasActTypes ? '2fr 1fr' : '1fr' }}>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0"
+                      style={{ background: (!!unitId || !!activityType) ? 'var(--purple)' : 'rgba(255,255,255,0.15)', color: (!!unitId || !!activityType) ? '#fff' : 'var(--muted)' }}
+                    >{step2Num}</span>
+                    <span className="text-xs font-semibold" style={{ color: 'var(--muted)' }}>
+                      {hasUnits
+                        ? <>{isObj ? 'Objetivo' : 'Unidad'} {isObj && <strong style={{ color: 'var(--text)' }}>Curricular</strong>}{hasActTypes ? ' y tipo de actividad' : ''}</>
+                        : 'Tipo de actividad'
+                      }
+                    </span>
+                    {filtersLoading && <span className="text-[10px] ml-1" style={{ color: 'var(--muted)' }}>cargando…</span>}
+                  </div>
+                  {hasUnits && hasActTypes && (
+                    <span className="text-xs font-medium self-center" style={{ color: 'var(--muted)' }}>Tipo de actividad</span>
+                  )}
+                </div>
+
+                {/* Selects */}
+                <div className="grid gap-2" style={{ gridTemplateColumns: hasUnits && hasActTypes ? '2fr 1fr' : '1fr' }}>
+                  {hasUnits && (
+                    <div className="relative">
+                      <select
+                        value={unitId ?? ''}
+                        onChange={(e) => { setUnitId(e.target.value ? +e.target.value : undefined); setPage(1); }}
+                        className="w-full pl-3 pr-9 rounded-xl outline-none appearance-none"
+                        style={{
+                          background: unitId ? 'rgba(124,58,237,0.15)' : 'var(--bg)',
+                          border: `1px solid ${unitId ? 'rgba(124,58,237,0.45)' : 'var(--border)'}`,
+                          color: unitId ? '#c4b5fd' : 'var(--muted)',
+                          height: 36, minHeight: 36,
+                        }}
+                      >
+                        <option value="" style={{ color: '#1e0d38', background: '#e9e0f7' }}>{isObj ? 'Todos los objetivos' : 'Todas las unidades'}</option>
+                        {availUnits.map(u => (
+                          <option key={u.id} value={u.id} style={{ color: '#1e0d38', background: '#e9e0f7' }}>
+                            {u.name}{u.oaDescription ? (() => { const desc = u.oaDescription!.replace(/^\d+\s+/, ''); return `: ${desc.length > 55 ? desc.slice(0, 55) + '…' : desc}`; })() : ''}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--muted)' }} />
+                    </div>
+                  )}
+                  {hasActTypes && (
+                    <div className="relative">
+                      <select
+                        value={activityType}
+                        onChange={(e) => { setActivityType(e.target.value); setPage(1); }}
+                        className="w-full pl-3 pr-9 rounded-xl outline-none appearance-none"
+                        style={{
+                          background: activityType ? 'rgba(124,58,237,0.15)' : 'var(--bg)',
+                          border: `1px solid ${activityType ? 'rgba(124,58,237,0.45)' : 'var(--border)'}`,
+                          color: activityType ? '#c4b5fd' : 'var(--muted)',
+                          height: 36, minHeight: 36,
+                        }}
+                      >
+                        <option value="" style={{ color: '#1e0d38', background: '#e9e0f7' }}>Todos los tipos</option>
+                        {availActTypes.map(t => <option key={t} value={t} style={{ color: '#1e0d38', background: '#e9e0f7' }}>{t}</option>)}
+                      </select>
+                      <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--muted)' }} />
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Búsqueda */}
+            <div className="border-t px-3 py-1.5" style={{ borderColor: 'var(--border)' }}>
+              <SearchBar
+                onSearch={(q) => { setSearch(q); setPage(1); }}
+                placeholder={`Buscar en ${subject?.name || 'esta asignatura'}...`}
+              />
+            </div>
           </div>
-
-          {/* Course pills */}
-          {availCourses.length === 0 ? (
-            <div className="flex gap-2">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="skeleton rounded-full" style={{ width: 80, height: 40 }} />
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-wrap gap-2">
-              {availCourses.map(c => (
-                <button
-                  key={c}
-                  onClick={() => { setCourse(prev => prev === c ? '' : c); setPage(1); }}
-                  className="pill-btn shrink-0 rounded-full text-sm font-semibold transition-all hover:brightness-110 hover:scale-[1.03]"
-                  style={{
-                    height: 28,
-                    minHeight: 28,
-                    paddingLeft: 12,
-                    paddingRight: 12,
-                    background: course === c ? 'var(--accent)' : 'transparent',
-                    color: course === c ? '#1e0d38' : '#ffffff',
-                    border: `1px solid ${course === c ? 'transparent' : 'rgba(255,255,255,0.3)'}`,
-                    fontWeight: course === c ? 700 : 500,
-                  }}
-                >
-                  {c}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Step 2 — Unidad + Tipo (visible cuando hay unidades o tipos disponibles) */}
-        {(availUnits.length > 0 || availActTypes.length > 0) && (
-          <div
-            className="border-t px-3 py-1.5 space-y-1.5"
-            style={{ borderColor: 'var(--border)' }}
-          >
-            {/* Header row: step label left, "Tipo de actividad" label right */}
-            <div className="grid gap-2" style={{ gridTemplateColumns: '2fr 1fr' }}>
-              <div className="flex items-center gap-2">
-                <span
-                  className="w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0"
-                  style={{ background: (!!unitId || !!activityType) ? 'var(--purple)' : 'rgba(255,255,255,0.15)', color: (!!unitId || !!activityType) ? '#fff' : 'var(--muted)' }}
-                >2</span>
-                <span className="text-xs font-semibold" style={{ color: 'var(--muted)' }}>
-                  Elige {unitLabel.toLowerCase()} {isObj && <strong style={{ color: 'var(--text)' }}>Curricular</strong>} y tipo de actividad
-                </span>
-                {filtersLoading && <span className="text-[10px] ml-1" style={{ color: 'var(--muted)' }}>cargando…</span>}
-              </div>
-              <span className="text-xs font-medium self-center" style={{ color: 'var(--muted)' }}>Tipo de actividad</span>
-            </div>
-
-            {/* Selects row */}
-            <div className="grid gap-2" style={{ gridTemplateColumns: '2fr 1fr' }}>
-              <div className="relative">
-                <select
-                  value={unitId ?? ''}
-                  onChange={(e) => { setUnitId(e.target.value ? +e.target.value : undefined); setPage(1); }}
-                  className="w-full pl-3 pr-9 rounded-xl outline-none appearance-none"
-                  style={{
-                    background: unitId ? 'rgba(124,58,237,0.15)' : 'var(--bg)',
-                    border: `1px solid ${unitId ? 'rgba(124,58,237,0.45)' : 'var(--border)'}`,
-                    color: unitId ? '#c4b5fd' : 'var(--muted)',
-                    height: 36,
-                    minHeight: 36,
-                  }}
-                >
-                  <option value="" style={{ color: '#1e0d38', background: '#e9e0f7' }}>{isObj ? 'Todos los objetivos' : 'Todas las unidades'}</option>
-                  {availUnits.map(u => (
-                    <option key={u.id} value={u.id} style={{ color: '#1e0d38', background: '#e9e0f7' }}>
-                      {u.name}{u.oaDescription ? (() => { const desc = u.oaDescription!.replace(/^\d+\s+/, ''); return `: ${desc.length > 55 ? desc.slice(0, 55) + '…' : desc}`; })() : ''}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--muted)' }} />
-              </div>
-
-              <div className="relative">
-                <select
-                  value={activityType}
-                  onChange={(e) => { setActivityType(e.target.value); setPage(1); }}
-                  className="w-full pl-3 pr-9 rounded-xl outline-none appearance-none"
-                  style={{
-                    background: activityType ? 'rgba(124,58,237,0.15)' : 'var(--bg)',
-                    border: `1px solid ${activityType ? 'rgba(124,58,237,0.45)' : 'var(--border)'}`,
-                    color: activityType ? '#c4b5fd' : 'var(--muted)',
-                    height: 36,
-                    minHeight: 36,
-                  }}
-                >
-                  <option value="" style={{ color: '#1e0d38', background: '#e9e0f7' }}>Todos los tipos</option>
-                  {availActTypes.map(t => <option key={t} value={t} style={{ color: '#1e0d38', background: '#e9e0f7' }}>{t}</option>)}
-                </select>
-                <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--muted)' }} />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Búsqueda */}
-        <div className="border-t px-3 py-1.5" style={{ borderColor: 'var(--border)' }}>
-          <SearchBar
-            onSearch={(q) => { setSearch(q); setPage(1); }}
-            placeholder={`Buscar en ${subject?.name || 'esta asignatura'}...`}
-          />
-        </div>
-      </div>
+        );
+      })()}
 
 
 
