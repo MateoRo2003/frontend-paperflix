@@ -12,7 +12,7 @@ import {
   getTopResources, getStatsByCourse, getStatsByActivityType,
   seedCourses, seedActivityTypes,
   createSubject, updateSubject, deleteSubject, reorderSubjects,
-  getSuggestions, approveSuggestion, rejectSuggestion, deleteSuggestion, getPendingCount,
+  getSuggestions, updateSuggestion, approveSuggestion, rejectSuggestion, deleteSuggestion, getPendingCount,
   getAllSlides, createSlide, updateSlide, deleteSlide, reorderSlides, uploadSlideImage,
   getUnits, createUnit, updateUnit, deleteUnit, reorderUnits,
   getCourses, createCourse, updateCourse, deleteCourse,
@@ -226,6 +226,8 @@ export default function AdminPage() {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [pendingCount, setPendingCount] = useState(0);
   const [suggestionFilter, setSuggestionFilter] = useState<'' | 'pending' | 'approved' | 'rejected'>('');
+  const [editingSugId, setEditingSugId] = useState<number | null>(null);
+  const [editingSugForm, setEditingSugForm] = useState<Partial<Suggestion>>({});
 
   function showMsg(text: string, type: 'ok' | 'err' = 'ok') {
     setMsg(text); setMsgType(type);
@@ -547,6 +549,30 @@ export default function AdminPage() {
         confirmButtonText: 'Cerrar',
       });
     }
+  }
+
+  function openEditSuggestion(s: Suggestion) {
+    setEditingSugId(s.id);
+    setEditingSugForm({
+      title:        s.title,
+      linkUrl:      s.linkUrl       ?? '',
+      description:  s.description   ?? '',
+      subjectId:    s.subjectId,
+      subjectName:  s.subjectName   ?? '',
+      course:       s.course        ?? '',
+      activityType: s.activityType  ?? '',
+      notes:        s.notes         ?? '',
+    });
+  }
+
+  async function handleSaveSuggestion() {
+    if (!editingSugId) return;
+    try {
+      await updateSuggestion(editingSugId, editingSugForm);
+      setEditingSugId(null);
+      loadSuggestions(suggestionFilter || undefined);
+      showMsg('Sugerencia actualizada');
+    } catch { showMsg('Error al guardar', 'err'); }
   }
 
   async function handleRejectSuggestion(id: number) {
@@ -1828,6 +1854,14 @@ export default function AdminPage() {
                           <ExternalLink size={14} />
                         </a>
                       )}
+                      <button
+                        onClick={() => editingSugId === s.id ? setEditingSugId(null) : openEditSuggestion(s)}
+                        className="icon-btn flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
+                        style={{ color: editingSugId === s.id ? 'var(--accent)' : 'var(--muted)', width: 36, height: 36 }}
+                        title="Editar"
+                      >
+                        <Pencil size={14} />
+                      </button>
                       {(s.status === 'pending' || s.status === 'rejected') && (
                         <>
                           <button
@@ -1861,8 +1895,113 @@ export default function AdminPage() {
                     </div>
                   </div>
 
-                  {/* Descripción / notas */}
-                  {(s.description || s.notes) && (
+                  {/* ── Formulario de edición inline ── */}
+                  {editingSugId === s.id && (
+                    <div className="rounded-xl p-4 space-y-3 mt-1" style={{ background: 'var(--bg)', border: '1px solid rgba(245,197,24,0.25)' }}>
+                      <p className="text-xs font-semibold" style={{ color: 'var(--accent)' }}>✏️ Editando sugerencia</p>
+
+                      {/* Título + URL */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-[11px] font-semibold mb-1 block" style={{ color: 'var(--muted)' }}>Título</label>
+                          <input
+                            type="text"
+                            value={editingSugForm.title ?? ''}
+                            onChange={e => setEditingSugForm(f => ({ ...f, title: e.target.value }))}
+                            className="w-full px-3 rounded-lg text-sm outline-none"
+                            style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', height: 38 }}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[11px] font-semibold mb-1 block" style={{ color: 'var(--muted)' }}>URL del recurso</label>
+                          <input
+                            type="url"
+                            value={editingSugForm.linkUrl ?? ''}
+                            onChange={e => setEditingSugForm(f => ({ ...f, linkUrl: e.target.value }))}
+                            className="w-full px-3 rounded-lg text-sm outline-none font-mono"
+                            style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', height: 38 }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Asignatura + Curso */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="text-[11px] font-semibold mb-1 block" style={{ color: 'var(--muted)' }}>Asignatura</label>
+                          <select
+                            value={editingSugForm.subjectId ?? ''}
+                            onChange={e => {
+                              const id = e.target.value ? +e.target.value : undefined;
+                              const name = subjects.find(s => s.id === id)?.name ?? '';
+                              setEditingSugForm(f => ({ ...f, subjectId: id, subjectName: name }));
+                            }}
+                            className="w-full px-3 rounded-lg text-sm outline-none"
+                            style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', height: 38 }}
+                          >
+                            <option value="">Sin asignatura</option>
+                            {subjects.map(sub => <option key={sub.id} value={sub.id}>{sub.name}</option>)}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-[11px] font-semibold mb-1 block" style={{ color: 'var(--muted)' }}>Curso</label>
+                          <input
+                            type="text"
+                            value={editingSugForm.course ?? ''}
+                            onChange={e => setEditingSugForm(f => ({ ...f, course: e.target.value }))}
+                            placeholder="Ej: Primero"
+                            className="w-full px-3 rounded-lg text-sm outline-none"
+                            style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', height: 38 }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Tipo de actividad */}
+                      <div>
+                        <label className="text-[11px] font-semibold mb-1 block" style={{ color: 'var(--muted)' }}>Tipo de actividad</label>
+                        <input
+                          type="text"
+                          value={editingSugForm.activityType ?? ''}
+                          onChange={e => setEditingSugForm(f => ({ ...f, activityType: e.target.value }))}
+                          placeholder="Ej: Introductoria"
+                          className="w-full px-3 rounded-lg text-sm outline-none"
+                          style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', height: 38 }}
+                        />
+                      </div>
+
+                      {/* Descripción */}
+                      <div>
+                        <label className="text-[11px] font-semibold mb-1 block" style={{ color: 'var(--muted)' }}>Descripción</label>
+                        <textarea
+                          value={editingSugForm.description ?? ''}
+                          onChange={e => setEditingSugForm(f => ({ ...f, description: e.target.value }))}
+                          rows={2}
+                          className="w-full px-3 py-2 rounded-lg text-sm outline-none resize-none"
+                          style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)' }}
+                        />
+                      </div>
+
+                      {/* Botones */}
+                      <div className="flex justify-end gap-2">
+                        <button
+                          onClick={() => setEditingSugId(null)}
+                          className="px-4 rounded-lg text-sm font-medium"
+                          style={{ color: 'var(--muted)', height: 36 }}
+                        >
+                          Cancelar
+                        </button>
+                        <button
+                          onClick={handleSaveSuggestion}
+                          className="flex items-center gap-2 px-4 rounded-lg text-sm font-bold"
+                          style={{ background: 'var(--accent)', color: '#1e0d38', height: 36 }}
+                        >
+                          <Check size={14} /> Guardar cambios
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Descripción / notas (solo si no está editando) */}
+                  {editingSugId !== s.id && (s.description || s.notes) && (
                     <div className="space-y-1">
                       {s.description && (
                         <p className="text-xs rounded-lg px-3 py-2" style={{ background: 'var(--bg)', color: 'var(--muted)' }}>
@@ -1877,8 +2016,8 @@ export default function AdminPage() {
                     </div>
                   )}
 
-                  {/* URL del recurso */}
-                  {s.linkUrl && (
+                  {/* URL del recurso (solo si no está editando) */}
+                  {editingSugId !== s.id && s.linkUrl && (
                     <p className="text-[11px] truncate" style={{ color: 'var(--muted)' }}>
                       🔗 <span className="font-mono">{s.linkUrl}</span>
                     </p>

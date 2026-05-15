@@ -123,6 +123,7 @@ export const uploadSlideImage = (file: File) => {
 export const createSuggestion    = (data: any)           => api.post('/suggestions', data).then(r => r.data);
 export const getSuggestions      = (status?: string)     => api.get('/suggestions', { params: status ? { status } : {} }).then(r => r.data);
 export const getPendingCount     = ()                    => api.get('/suggestions/count-pending').then(r => r.data);
+export const updateSuggestion    = (id: number, data: any) => api.patch(`/suggestions/${id}`, data).then(r => r.data);
 export const approveSuggestion   = (id: number)          => api.patch(`/suggestions/${id}/approve`).then(r => r.data);
 export const rejectSuggestion    = (id: number)          => api.patch(`/suggestions/${id}/reject`).then(r => r.data);
 export const deleteSuggestion    = (id: number)          => api.delete(`/suggestions/${id}`).then(r => r.data);
