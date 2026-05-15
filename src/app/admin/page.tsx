@@ -2988,15 +2988,6 @@ export default function AdminPage() {
                 );
               })}
             </div>
-            {homeVisibleSubjects !== null && (
-              <button
-                onClick={() => { setHomeVisibleSubjects(null); updateSetting('home_visible_subjects', ''); broadcastDataChange(); }}
-                className="mt-3 text-xs hover:underline"
-                style={{ color: 'var(--muted)' }}
-              >
-                Restablecer (mostrar todas con recursos)
-              </button>
-            )}
           </div>
 
           {/* ── Slides del Carrusel ── */}
