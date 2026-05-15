@@ -23,6 +23,11 @@ export function useDragScroll() {
       return document.documentElement as HTMLElement;
     }
 
+    function onDragStart(e: DragEvent) {
+      // Block native image/element drag while a pointer interaction is live
+      if (active) e.preventDefault();
+    }
+
     function onDown(e: PointerEvent) {
       active        = true;
       dragging      = false;
@@ -68,12 +73,14 @@ export function useDragScroll() {
     document.addEventListener('pointermove',  onMove,  { passive: false });
     document.addEventListener('pointerup',    onUp);
     document.addEventListener('pointercancel', onUp);
+    document.addEventListener('dragstart',    onDragStart);
 
     return () => {
       document.removeEventListener('pointerdown',  onDown);
       document.removeEventListener('pointermove',  onMove);
       document.removeEventListener('pointerup',    onUp);
       document.removeEventListener('pointercancel', onUp);
+      document.removeEventListener('dragstart',    onDragStart);
     };
   }, []);
 }
