@@ -83,5 +83,5 @@ export function useDragScroll(enabled = true) {
       document.removeEventListener('pointercancel', onUp);
       document.removeEventListener('dragstart',    onDragStart);
     };
-  }, []);
+  }, [enabled]);
 }
