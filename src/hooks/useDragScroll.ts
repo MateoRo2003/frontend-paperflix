@@ -1,8 +1,9 @@
 'use client';
 import { useEffect } from 'react';
 
-export function useDragScroll() {
+export function useDragScroll(enabled = true) {
   useEffect(() => {
+    if (!enabled) return;
     const THRESHOLD = 6; // px before treating move as a drag
 
     let active       = false;

@@ -1,11 +1,13 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { Menu } from 'lucide-react';
 import Sidebar from './Sidebar';
 import { useDragScroll } from '@/hooks/useDragScroll';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
-  useDragScroll();
+  const pathname = usePathname();
+  useDragScroll(pathname?.startsWith('/admin') ? false : true);
   const [collapsed, setCollapsed]     = useState(true);
   const [mobileOpen, setMobileOpen]   = useState(false);
   const [isMobile, setIsMobile]       = useState(false);
