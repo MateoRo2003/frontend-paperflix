@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { SubjectIcon, SUBJECT_ICONS, normalizeIconName } from '@/components/SubjectIcon';
 import PaperSwal, { swalConfirm, swalConfirmDanger } from '@/lib/swal';
+import VirtualKeyboard from '@/components/VirtualKeyboard';
 
 // ─── Local types ──────────────────────────────────────────────────────────────
 
@@ -222,6 +223,9 @@ export default function AdminPage() {
   const [previewIdx, setPreviewIdx] = useState(0);
   const [msg, setMsg] = useState('');
   const [msgType, setMsgType] = useState<'ok' | 'err'>('ok');
+
+  // Virtual keyboard for admin search
+  const [showAdminKb, setShowAdminKb] = useState(false);
 
   // Suggestions tab
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -870,7 +874,17 @@ export default function AdminPage() {
                       placeholder="Buscar por título, descripción…"
                       className="w-full pl-9 pr-3 rounded-xl text-sm outline-none"
                       style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--text)', height: 44 }}
+                      readOnly
+                      onFocus={() => setShowAdminKb(true)}
                     />
+                    {showAdminKb && (
+                      <VirtualKeyboard
+                        value={search}
+                        onChange={(v) => { setSearch(v); setPage(1); }}
+                        onClose={() => setShowAdminKb(false)}
+                        placeholder="Buscar por título, descripción…"
+                      />
+                    )}
                   </div>
                   <button
                     onClick={() => setShowAdvanced(v => !v)}

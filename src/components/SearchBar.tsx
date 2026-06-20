@@ -1,6 +1,7 @@
 'use client';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Search, X } from 'lucide-react';
+import VirtualKeyboard from './VirtualKeyboard';
 
 interface Props {
   onSearch: (q: string) => void;
@@ -8,7 +9,9 @@ interface Props {
 }
 
 export default function SearchBar({ onSearch, placeholder = 'Buscar recursos...' }: Props) {
-  const [value, setValue] = useState('');
+  const [value, setValue]           = useState('');
+  const [showKeyboard, setShowKeyboard] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handle = useCallback((v: string) => {
     setValue(v);
@@ -19,6 +22,7 @@ export default function SearchBar({ onSearch, placeholder = 'Buscar recursos...'
     <div className="relative w-full">
       <Search size={22} className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: 'var(--muted)' }} />
       <input
+        ref={inputRef}
         type="text"
         value={value}
         onChange={(e) => handle(e.target.value)}
@@ -29,17 +33,34 @@ export default function SearchBar({ onSearch, placeholder = 'Buscar recursos...'
           border: '1px solid var(--border)',
           color: 'var(--text)',
         }}
-        onFocus={(e) => e.target.style.borderColor = 'var(--purple)'}
-        onBlur={(e) => e.target.style.borderColor = 'var(--border)'}
+        onFocus={(e) => {
+          e.target.style.borderColor = 'var(--purple)';
+          setShowKeyboard(true);
+        }}
+        onBlur={(e) => {
+          e.target.style.borderColor = 'var(--border)';
+        }}
+        readOnly
       />
       {value && (
         <button
-          onClick={() => handle('')}
+          onPointerDown={(e) => { e.preventDefault(); handle(''); }}
           className="absolute right-4 top-1/2 -translate-y-1/2 hover:text-white"
           style={{ color: 'var(--muted)' }}
         >
           <X size={18} />
         </button>
+      )}
+      {showKeyboard && (
+        <VirtualKeyboard
+          value={value}
+          onChange={handle}
+          onClose={() => {
+            setShowKeyboard(false);
+            inputRef.current?.blur();
+          }}
+          placeholder={placeholder}
+        />
       )}
     </div>
   );

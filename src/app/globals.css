@@ -236,6 +236,12 @@ textarea {
   pointer-events: none;
 }
 
+/* Teclado virtual — slide up */
+@keyframes kbSlideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
 /* SweetAlert2 — tema PaperFlix */
 .paper-swal-popup {
   border: 1px solid rgba(255,255,255,0.1) !important;
