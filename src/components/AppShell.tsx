@@ -23,6 +23,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   const w = mounted && !isMobile ? (collapsed ? 68 : 268) : 0;
 
+  useEffect(() => {
+    document.documentElement.style.setProperty('--sidebar-w', `${w}px`);
+  }, [w]);
+
   return (
     <div className="flex min-h-screen">
 

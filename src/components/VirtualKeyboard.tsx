@@ -78,7 +78,11 @@ export default function VirtualKeyboard({ value, onChange, onClose, placeholder 
 
   const keyboard = (
     <div style={{
-      position: 'fixed', inset: 0, zIndex: 9999,
+      position: 'fixed',
+      top: 0, right: 0, bottom: 0,
+      left: 'var(--sidebar-w, 0px)',
+      transition: 'left 0.25s ease',
+      zIndex: 9999,
       display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
       pointerEvents: 'none',
     }}>
