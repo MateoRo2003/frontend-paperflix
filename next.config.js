@@ -7,6 +7,9 @@ const isDev = process.env.NODE_ENV !== 'production';
 // so institutional filters don't need to whitelist any embedded origin.
 // connect-src 'self': all API traffic flows through /api/* (Next.js rewrite),
 // so the browser only connects to its own origin — firewall-friendly.
+// frame-ancestors: whitelist of who is allowed to embed THIS app in an
+// iframe. MiPaperlux nests PaperFlix inside its own dashboard, so its domain
+// needs to be explicitly allowed here — everyone else stays blocked.
 const CSP = [
   "default-src 'self'",
   // Next.js requires unsafe-inline for styles; unsafe-eval only in dev (HMR)
@@ -18,6 +21,8 @@ const CSP = [
   "connect-src 'self' https://*.supabase.co",
   // Never embed external content in iframes — key for institutional filters
   "frame-src https://vercel.live",
+  // Only MiPaperlux is allowed to embed this app in an iframe.
+  "frame-ancestors 'self' https://onboarding-zeta-murex.vercel.app",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -26,8 +31,10 @@ const CSP = [
 const securityHeaders = [
   // Forces HTTPS for 2 years including subdomains (ignored on plain HTTP in dev)
   { key: 'Strict-Transport-Security',  value: 'max-age=63072000; includeSubDomains; preload' },
-  // Prevents the platform from being embedded in external iframes (clickjacking)
-  { key: 'X-Frame-Options',            value: 'SAMEORIGIN' },
+  // X-Frame-Options removed: CSP's frame-ancestors above replaces it, allowing
+  // MiPaperlux specifically to embed this app while still blocking everyone
+  // else (X-Frame-Options can only say "nobody" or "same-origin", not name a
+  // specific external origin, and would override frame-ancestors if kept).
   // Stops browsers from MIME-sniffing responses away from the declared content-type
   { key: 'X-Content-Type-Options',     value: 'nosniff' },
   // Limits referrer to origin only when crossing origins
