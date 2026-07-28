@@ -2,27 +2,15 @@
 
 const isDev = process.env.NODE_ENV !== 'production';
 
-// Dominio(s) que pueden embeber esta app en un iframe (MiPaperlux). Si el
-// link de MiPaperlux cambia en el futuro (dominio propio, otro deploy…), se
-// actualiza la variable de entorno EMBED_ALLOWED_ORIGINS en Vercel (Project
-// Settings → Environment Variables) — separados por coma si hace falta más
-// de uno durante una migración — y se redespliega. No requiere tocar código.
-const embedAllowedOrigins = (
-  process.env.EMBED_ALLOWED_ORIGINS || 'https://onboarding-zeta-murex.vercel.app'
-)
-  .split(',')
-  .map((o) => o.trim())
-  .filter(Boolean)
-  .join(' ');
-
 // ── Content Security Policy ──────────────────────────────────────────────────
 // frame-src 'none' is critical: the platform never embeds external iframes,
 // so institutional filters don't need to whitelist any embedded origin.
 // connect-src 'self': all API traffic flows through /api/* (Next.js rewrite),
 // so the browser only connects to its own origin — firewall-friendly.
-// frame-ancestors: whitelist de quién puede embeber ESTA app en un iframe.
-// MiPaperlux anida PaperFlix en su propio dashboard, así que su dominio debe
-// estar autorizado acá explícitamente — todo lo demás sigue bloqueado.
+// frame-ancestors '*': cualquier sitio puede embeber esta app en un iframe
+// (a propósito — así el link de MiPaperlux puede cambiar de dominio sin
+// tocar código ni configuración acá). Trade-off aceptado: esto abre la
+// puerta a clickjacking desde cualquier origen, no solo MiPaperlux.
 const CSP = [
   "default-src 'self'",
   // Next.js requires unsafe-inline for styles; unsafe-eval only in dev (HMR)
@@ -34,9 +22,7 @@ const CSP = [
   "connect-src 'self' https://*.supabase.co",
   // Never embed external content in iframes — key for institutional filters
   "frame-src https://vercel.live",
-  // Solo el/los dominio(s) de MiPaperlux pueden embeber esta app (ver
-  // embedAllowedOrigins arriba — editable sin tocar código).
-  `frame-ancestors 'self' ${embedAllowedOrigins}`,
+  "frame-ancestors *",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
