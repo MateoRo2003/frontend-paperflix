@@ -2,14 +2,27 @@
 
 const isDev = process.env.NODE_ENV !== 'production';
 
+// Dominio(s) que pueden embeber esta app en un iframe (MiPaperlux). Si el
+// link de MiPaperlux cambia en el futuro (dominio propio, otro deploy…), se
+// actualiza la variable de entorno EMBED_ALLOWED_ORIGINS en Vercel (Project
+// Settings → Environment Variables) — separados por coma si hace falta más
+// de uno durante una migración — y se redespliega. No requiere tocar código.
+const embedAllowedOrigins = (
+  process.env.EMBED_ALLOWED_ORIGINS || 'https://onboarding-zeta-murex.vercel.app'
+)
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean)
+  .join(' ');
+
 // ── Content Security Policy ──────────────────────────────────────────────────
 // frame-src 'none' is critical: the platform never embeds external iframes,
 // so institutional filters don't need to whitelist any embedded origin.
 // connect-src 'self': all API traffic flows through /api/* (Next.js rewrite),
 // so the browser only connects to its own origin — firewall-friendly.
-// frame-ancestors: whitelist of who is allowed to embed THIS app in an
-// iframe. MiPaperlux nests PaperFlix inside its own dashboard, so its domain
-// needs to be explicitly allowed here — everyone else stays blocked.
+// frame-ancestors: whitelist de quién puede embeber ESTA app en un iframe.
+// MiPaperlux anida PaperFlix en su propio dashboard, así que su dominio debe
+// estar autorizado acá explícitamente — todo lo demás sigue bloqueado.
 const CSP = [
   "default-src 'self'",
   // Next.js requires unsafe-inline for styles; unsafe-eval only in dev (HMR)
@@ -21,8 +34,9 @@ const CSP = [
   "connect-src 'self' https://*.supabase.co",
   // Never embed external content in iframes — key for institutional filters
   "frame-src https://vercel.live",
-  // Only MiPaperlux is allowed to embed this app in an iframe.
-  "frame-ancestors 'self' https://onboarding-zeta-murex.vercel.app",
+  // Solo el/los dominio(s) de MiPaperlux pueden embeber esta app (ver
+  // embedAllowedOrigins arriba — editable sin tocar código).
+  `frame-ancestors 'self' ${embedAllowedOrigins}`,
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
